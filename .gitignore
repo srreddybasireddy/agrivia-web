@@ -1,0 +1,10 @@
+# Terraform temporary files and providers
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# OS & IDE Files
+.DS_Store
+*.log
+agrivia-web/
