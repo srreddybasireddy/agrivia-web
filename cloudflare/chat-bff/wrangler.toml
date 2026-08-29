@@ -1,0 +1,10 @@
+name = "agrivia-chat-bff"
+main = "worker.js"
+compatibility_date = "2026-08-01"
+
+[vars]
+ORIGIN_API_BASE = "https://api.agrivia.ai/api"
+
+# After first deploy, attach the route in Cloudflare:
+#   agrivia.ai/api/*
+# Leave api.agrivia.ai DNS-only (grey). Do not orange-cloud it.
