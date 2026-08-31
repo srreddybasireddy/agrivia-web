@@ -47,7 +47,11 @@
         if (!text) {
             return {};
         }
-        return JSON.parse(text);
+        try {
+            return JSON.parse(text);
+        } catch (err) {
+            throw new Error("The advisor returned an unexpected response. Try again shortly.");
+        }
     }
 
     async function fetchWithTimeout(url, options, timeoutMs) {

@@ -52,7 +52,7 @@ iOS and Android call:
 
 The website uses that same contract, with category locked to `General` and a browser UUID in localStorage. It does not call `/register`, location, or inventory endpoints.
 
-Until the Cloudflare Worker at `cloudflare/chat-bff` is routed to `agrivia.ai/api/*`, the page calls `https://api.agrivia.ai/api` directly. After the Worker is attached, set `apiBasePath` in `js/config.js` to `"/api"` so the 1–2 rps cap sits in front of EC2.
+On https://agrivia.ai the page calls `/api` (Worker `agrivia-chat-bff`, route `agrivia.ai/api/*`). Local preview still calls `https://api.agrivia.ai/api` directly.
 
 Do not orange-cloud `api.agrivia.ai`.
 
