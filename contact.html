@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Agrivia</title>
+    <meta name="description" content="Email Agrivia at support@agrivia.ai for guides, the app in development, or partnerships.">
+    <link rel="canonical" href="https://agrivia.ai/contact.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="paper-theme">
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo-link"><span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span></a>
+            <nav class="main-nav" id="mainNav">
+                <a href="index.html" class="nav-item">Home</a>
+                <a href="index.html#ai-advisor" class="nav-item">Advisor</a>
+                <a href="index.html#calculator" class="nav-item">Calculator</a>
+                <a href="guides/index.html" class="nav-item">Guides</a>
+                <a href="about.html" class="nav-item">About</a>
+                <a href="contact.html" class="nav-item active">Contact</a>
+            </nav>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+        </div>
+    </header>
+    <main class="container section-padding">
+        <div class="contact-wrapper grid-2col">
+            <div class="contact-info glass-card">
+                <span class="badge-tag">Get in Touch</span>
+                <h1>Contact Agrivia</h1>
+                <p>Questions about the site, guides, or the app in development? Email us. Messages are not stored on this page; they open your email app or Gmail in the browser.</p>
+                <div class="info-list">
+                    <div class="info-item">
+                        <div class="info-icon">📧</div>
+                        <div>
+                            <strong>Support &amp; general</strong>
+                            <p><a href="mailto:support@agrivia.ai" class="text-emerald">support@agrivia.ai</a></p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">💼</div>
+                        <div>
+                            <strong>Partnerships</strong>
+                            <p><a href="mailto:partnerships@agrivia.ai" class="text-emerald">partnerships@agrivia.ai</a></p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">📍</div>
+                        <div>
+                            <strong>Location</strong>
+                            <p>United States</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-form-card glass-card">
+                <h2>Write to us</h2>
+                <p class="form-help" style="margin-top:0;margin-bottom:1rem;">If your computer has no Mail app, use Gmail in the browser, or copy the address on the left.</p>
+                <div class="form-group">
+                    <label for="contactSubject">Subject</label>
+                    <select id="contactSubject" class="form-select" onchange="updateContactMailtoLinks()">
+                        <option value="General inquiry">General inquiry</option>
+                        <option value="App updates">App updates (not in stores yet)</option>
+                        <option value="Affiliate / partnerships">Affiliate / partnerships</option>
+                        <option value="Website feedback">Website feedback</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contactMessage">Message (optional)</label>
+                    <textarea id="contactMessage" rows="5" class="form-input" oninput="updateContactMailtoLinks()"></textarea>
+                </div>
+                <a id="contactMailtoLink" class="btn btn-emerald btn-block" href="mailto:support@agrivia.ai"><span>Email support@agrivia.ai</span></a>
+                <a id="contactGmailLink" class="btn btn-outline btn-block" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=support@agrivia.ai" target="_blank" rel="noopener noreferrer" style="margin-top:0.75rem;"><span>Open in Gmail (browser)</span></a>
+            </div>
+        </div>
+    </main>
+
+    <div class="cookie-banner" id="cookieBanner">
+        <div class="cookie-content">
+            <p>We store a local preference if you dismiss this notice. See our <a href="privacy.html">Privacy Policy</a>.</p>
+            <div class="cookie-btns">
+                <button class="btn btn-emerald btn-sm" onclick="acceptCookies()">OK</button>
+            </div>
+        </div>
+    </div>
+    <footer class="site-footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Agrivia. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="affiliate-disclosure.html">Disclosure</a></p>
+        </div>
+    </footer>
+    <script src="js/main.js"></script>
+</body>
+</html>

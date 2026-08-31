@@ -9,6 +9,14 @@ const HOME_SECTIONS = {
     download: 'download-section',
 };
 
+const STANDALONE_PAGES = {
+    about: 'about.html',
+    privacy: 'privacy.html',
+    terms: 'terms.html',
+    'affiliate-disclosure': 'affiliate-disclosure.html',
+    contact: 'contact.html',
+};
+
 // Initialize Page Navigation
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('appContainer')) {
@@ -22,6 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // SPA Hash Navigation Handler
 function navigateTo(viewId, targetElementId = null) {
+    if (STANDALONE_PAGES[viewId]) {
+        window.location.href = STANDALONE_PAGES[viewId];
+        return;
+    }
+
     if (HOME_SECTIONS[viewId] && !document.getElementById(`view-${viewId}`)) {
         targetElementId = targetElementId || HOME_SECTIONS[viewId];
         viewId = 'home';
@@ -58,7 +71,13 @@ function navigateTo(viewId, targetElementId = null) {
 
 function handleHashRouting() {
     const hash = window.location.hash.replace('#', '') || 'home';
-    const validViews = ['home', 'ai-advisor', 'about', 'privacy', 'terms', 'affiliate-disclosure', 'contact'];
+
+    if (STANDALONE_PAGES[hash]) {
+        window.location.replace(STANDALONE_PAGES[hash]);
+        return;
+    }
+
+    const validViews = ['home', 'ai-advisor'];
 
     if (HOME_SECTIONS[hash]) {
         navigateTo('home', HOME_SECTIONS[hash]);

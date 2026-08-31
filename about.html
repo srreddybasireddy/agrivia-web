@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Agrivia | Farm equipment guides</title>
+    <meta name="description" content="Agrivia publishes independent farm equipment guides and is building a farm operations app. The app is not in the public app stores yet.">
+    <link rel="canonical" href="https://agrivia.ai/about.html">
+    <meta property="og:title" content="About Agrivia">
+    <meta property="og:url" content="https://agrivia.ai/about.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="paper-theme">
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo-link"><span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span></a>
+            <nav class="main-nav" id="mainNav">
+                <a href="index.html" class="nav-item">Home</a>
+                <a href="index.html#ai-advisor" class="nav-item">Advisor</a>
+                <a href="index.html#calculator" class="nav-item">Calculator</a>
+                <a href="guides/index.html" class="nav-item">Guides</a>
+                <a href="about.html" class="nav-item active">About</a>
+                <a href="contact.html" class="nav-item">Contact</a>
+            </nav>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+        </div>
+    </header>
+    <main class="container section-padding">
+        <div class="page-header text-center">
+            <span class="badge-tag">Our Mission</span>
+            <h1 class="page-title">About Agrivia</h1>
+            <p class="page-subtitle">We publish farm equipment guides and are building a farm operations app. The app is not in the public app stores yet.</p>
+        </div>
+        <div class="about-grid">
+            <div class="glass-card about-card">
+                <h3>Who we are</h3>
+                <p>Agrivia is operated from the United States. This website is the public home for our guides and product updates. We are a small team building software for growers and ranchers. We do not claim a large research staff or published field-trial results on this site.</p>
+            </div>
+            <div class="glass-card about-card">
+                <h3>What we are building</h3>
+                <p>The planned app includes crop timelines, livestock logs, weather-risk alerts, and an agronomy assistant. Those features are in development. This website uses AWS S3 and Cloudflare for HTTPS. Chat on this site uses the same advisory API as the apps, through a Cloudflare Worker.</p>
+            </div>
+        </div>
+        <div class="team-values glass-card text-center margin-top-lg">
+            <h2>How we work</h2>
+            <div class="values-grid">
+                <div class="val-item">
+                    <span class="val-icon">🌱</span>
+                    <h4>Clear language</h4>
+                    <p>We describe the product as it is today, including when something is still in development.</p>
+                </div>
+                <div class="val-item">
+                    <span class="val-icon">🔒</span>
+                    <h4>Privacy</h4>
+                    <p>If you email us, we use that address to reply. We do not sell your contact details.</p>
+                </div>
+                <div class="val-item">
+                    <span class="val-icon">⚡</span>
+                    <h4>Guides first</h4>
+                    <p>This site exists so people can read equipment primers while the app is being built.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="cookie-banner" id="cookieBanner">
+        <div class="cookie-content">
+            <p>We store a local preference if you dismiss this notice. See our <a href="privacy.html">Privacy Policy</a>.</p>
+            <div class="cookie-btns">
+                <button class="btn btn-emerald btn-sm" onclick="acceptCookies()">OK</button>
+            </div>
+        </div>
+    </div>
+    <footer class="site-footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Agrivia. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="affiliate-disclosure.html">Disclosure</a> · <a href="contact.html">Contact</a></p>
+        </div>
+    </footer>
+    <script src="js/main.js"></script>
+</body>
+</html>

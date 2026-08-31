@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Primary Meta Tags -->
+
     <title>Agrivia | Farm Equipment Guides &amp; Farm App in Development</title>
     <meta name="title" content="Agrivia | Farm Equipment Guides &amp; Farm App in Development">
     <meta name="description" content="Agrivia publishes independent guides on farm equipment and is building a farm operations app. The mobile app is not in the App Store or Google Play yet.">
@@ -12,29 +11,23 @@
     <meta name="author" content="Agrivia">
     <meta name="robots" content="index, follow">
 
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://agrivia.ai/">
-    <meta property="og:title" content="Agrivia | AI Precision Farming & Smart Agriculture Platform">
+    <meta property="og:title" content="Agrivia | Farm Equipment Guides &amp; Farm App in Development">
     <meta property="og:description" content="Independent farm equipment guides. Agrivia's mobile app is in development and is not listed in the app stores yet.">
     <meta property="og:image" content="assets/images/hero-mockup.jpg">
 
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://agrivia.ai/">
-    <meta property="twitter:title" content="Agrivia | AI Precision Farming & Smart Agriculture Platform">
+    <meta property="twitter:title" content="Agrivia | Farm Equipment Guides &amp; Farm App in Development">
     <meta property="twitter:description" content="Independent farm equipment guides. Agrivia's mobile app is in development and is not listed in the app stores yet.">
     <meta property="twitter:image" content="assets/images/hero-mockup.jpg">
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Stylesheet -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -51,42 +44,24 @@
     }
     </script>
 </head>
-<body class="dark-theme">
+<body class="paper-theme">
 
-    <!-- Navigation Header -->
     <header class="site-header" id="siteHeader">
         <div class="header-container">
             <a href="#home" class="logo-link" onclick="navigateTo('home')">
-                <div class="logo-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="url(#logo-grad)"/>
-                        <path d="M12 4C14.21 7.5 18 10 20 14C18 14 14.5 12.5 12 8.5C9.5 12.5 6 14 4 14C6 10 9.79 7.5 12 4Z" fill="#10B981"/>
-                        <defs>
-                            <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="21" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#10B981"/>
-                                <stop offset="1" stop-color="#34D399"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
                 <span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span>
             </a>
 
             <nav class="main-nav" id="mainNav">
                 <a href="#home" class="nav-item active" id="nav-home" onclick="navigateTo('home')">Home</a>
-                <a href="#features" class="nav-item" id="nav-features" onclick="navigateTo('home', 'features')">Features</a>
-                <a href="#ai-advisor" class="nav-item" id="nav-ai-advisor" onclick="navigateTo('ai-advisor')">AI Advisor</a>
-                <a href="#calculator" class="nav-item" id="nav-calculator" onclick="navigateTo('home', 'calculator')">ROI Calculator</a>
                 <a href="guides/index.html" class="nav-item" id="nav-blog">Guides</a>
-                <a href="#about" class="nav-item" id="nav-about" onclick="navigateTo('about')">About Us</a>
-                <a href="#contact" class="nav-item" id="nav-contact" onclick="navigateTo('contact')">Contact</a>
+                <a href="#ai-advisor" class="nav-item" id="nav-ai-advisor" onclick="navigateTo('ai-advisor')">Advisor</a>
+                <a href="#calculator" class="nav-item" id="nav-calculator" onclick="navigateTo('home', 'calculator')">Calculator</a>
+                <a href="about.html" class="nav-item" id="nav-about">About</a>
+                <a href="contact.html" class="nav-item" id="nav-contact">Contact</a>
             </nav>
 
             <div class="header-actions">
-                <a href="#download" class="btn btn-primary btn-glow" onclick="navigateTo('home', 'download-section')">
-                    <span>Get App</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </a>
                 <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation Menu" onclick="toggleMobileMenu()">
                     <span class="bar"></span>
                     <span class="bar"></span>
@@ -96,172 +71,67 @@
         </div>
     </header>
 
-    <div class="affiliate-top-bar" id="affiliateTopBar">
-        <div class="container affiliate-bar-content">
-            <span class="badge-tag">Notice</span>
-            <p>Agrivia publishes farm equipment guides. Some links may become affiliate links in the future. We do not currently run affiliate network tracking on this site. <a href="#affiliate-disclosure" onclick="navigateTo('affiliate-disclosure')">Read disclosure</a>.</p>
-            <button class="close-bar-btn" onclick="closeAffiliateBar()">&times;</button>
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT CONTAINER (SPA VIEWS) -->
     <main id="appContainer">
 
-        <!-- VIEW 1: HOME PAGE -->
         <section id="view-home" class="page-view active">
-            
-            <!-- Hero Section -->
+
             <div class="hero-section">
-                <div class="hero-bg-glow"></div>
                 <div class="container hero-grid">
                     <div class="hero-content">
-                        <div class="hero-badge">
-                            <span class="pulse-dot"></span>
-                            <span>Farm guides · App in development</span>
-                        </div>
-                        <h1 class="hero-title">Precision farming tools and <span class="text-gradient">equipment guides</span></h1>
+                        <p class="hero-badge">Farm guides · App in development</p>
+                        <h1 class="hero-title">Equipment guides for growers and ranchers</h1>
                         <p class="hero-subtitle">
-                            Agrivia publishes independent guides on sensors, livestock gear, and irrigation. We are also building a farm operations app for iOS and Android. That app is not listed in the stores yet.
+                            Agrivia publishes independent primers on sensors, livestock gear, and irrigation. We are also building a farm operations app for iOS and Android. That app is not listed in the stores yet.
                         </p>
-
                         <div class="hero-cta-group">
-                            <a href="guides/index.html" class="btn btn-emerald btn-lg">
-                                <span>Read guides</span>
-                            </a>
-                            <a href="#ai-advisor" class="btn btn-outline btn-lg" onclick="navigateTo('ai-advisor')">
-                                <span>Ask the advisor</span>
-                            </a>
+                            <a href="guides/index.html" class="btn btn-primary btn-lg">Read guides</a>
+                            <a href="#ai-advisor" class="btn btn-outline btn-lg" onclick="navigateTo('ai-advisor')">Ask the advisor</a>
                         </div>
                     </div>
-
                     <div class="hero-visual">
-                        <div class="phone-frame-wrapper">
-                            <img src="assets/images/hero-mockup.jpg" alt="Agrivia app preview (not a live store listing)" class="hero-img-mockup" id="heroMockupImg">
-                            <div class="glass-float-card card-top-left floating-anim-slow">
-                                <div class="float-icon">🌱</div>
-                                <div class="float-info">
-                                    <span class="float-title">Corn Field B</span>
-                                    <span class="float-sub text-emerald">Stage: Flowering (72%)</span>
-                                </div>
-                            </div>
-                            <div class="glass-float-card card-bottom-right floating-anim-fast">
-                                <div class="float-icon">🐂</div>
-                                <div class="float-info">
-                                    <span class="float-title">Cattle Pen #4</span>
-                                    <span class="float-sub text-mint">50 Healthy • Feed Log OK</span>
-                                </div>
-                            </div>
-                        </div>
+                        <img src="assets/images/hero-mockup.jpg" alt="Agrivia app preview. Not a live store listing." class="hero-img-mockup" id="heroMockupImg">
                     </div>
                 </div>
             </div>
 
-            <!-- App Features Grid -->
             <section class="features-section" id="features">
                 <div class="container">
-                    <div class="section-header text-center">
-                        <span class="section-tag">Planned app features</span>
+                    <div class="section-header">
+                        <span class="section-tag">The app</span>
                         <h2 class="section-title">What we are building</h2>
-                        <p class="section-desc">These are product goals for the Agrivia app. They are not available in an app store listing today.</p>
+                        <p class="section-desc">These are product goals. They are not in an app store listing today.</p>
                     </div>
-
-                    <div class="features-grid">
-                        <div class="feature-card glass-card">
-                            <div class="card-icon-wrapper">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                            </div>
-                            <h3>Crop Health & Timelines</h3>
-                            <p>Track planted dates, varieties, acreage, soil moisture profiles, and estimated harvest dates with automated stage reminders.</p>
-                            <ul class="feature-bullets">
-                                <li>Multi-variety crop tracking</li>
-                                <li>Soil moisture index logging</li>
-                                <li>Automated yield forecasting</li>
-                            </ul>
-                        </div>
-
-                        <div class="feature-card glass-card">
-                            <div class="card-icon-wrapper">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            </div>
-                            <h3>Livestock & Cattle Analytics</h3>
-                            <p>Comprehensive tag management, breed profiles, age tracking, feed logs, and disease symptom alerts for your herd.</p>
-                            <ul class="feature-bullets">
-                                <li>Individual & pen tag registry</li>
-                                <li>Feed hydration & ration logs</li>
-                                <li>Heat stress & disease alerts</li>
-                            </ul>
-                        </div>
-
-                        <div class="feature-card glass-card feature-highlight">
-                            <div class="card-badge">AI Powered</div>
-                            <div class="card-icon-wrapper">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                            </div>
-                            <h3>24/7 AI Farm Advisor</h3>
-                            <p>Instant agronomic guidance powered by specialized PyTorch vector embeddings and local LLMs tailored to your farm's exact location.</p>
-                            <ul class="feature-bullets">
-                                <li>Pest & disease photo scanning</li>
-                                <li>Customized irrigation advice</li>
-                                <li>Localized weather mitigation</li>
-                            </ul>
-                        </div>
-
-                        <div class="feature-card glass-card">
-                            <div class="card-icon-wrapper">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/></svg>
-                            </div>
-                            <h3>Micro-Climate Weather Risks</h3>
-                            <p>Hyper-local weather warnings tailored to your GPS location, protecting against frost, extreme heat, and heavy rain risks.</p>
-                            <ul class="feature-bullets">
-                                <li>Hoof rot wet-season warnings</li>
-                                <li>Frost shelter push alerts</li>
-                                <li>Wind damage risk assessment</li>
-                            </ul>
-                        </div>
-
-                        <div class="feature-card glass-card">
-                            <div class="card-icon-wrapper">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                            </div>
-                            <h3>Equipment & Asset Storage</h3>
-                            <p>Track granaries, poultry coops, beehives, tractors, and specialty crops with dedicated inventory logs.</p>
-                            <ul class="feature-bullets">
-                                <li>Machinery maintenance logs</li>
-                                <li>Honey & egg yield metrics</li>
-                                <li>Storage capacity alerts</li>
-                            </ul>
-                        </div>
-
-                        <div class="feature-card glass-card">
-                            <div class="card-icon-wrapper">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
-                            </div>
-                            <h3>Gear guides on this site</h3>
-                            <p>Website articles on soil sensors, fencing, weather stations, and irrigation. Not exclusive discounts and not agronomist lab tests.</p>
-                            <ul class="feature-bullets">
-                                <li>Buying criteria</li>
-                                <li>Equipment categories</li>
-                                <li>Honest affiliate disclosure</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <ul class="building-list">
+                        <li>
+                            <strong>Crop timelines</strong>
+                            Planted dates, varieties, and stage reminders.
+                        </li>
+                        <li>
+                            <strong>Livestock logs</strong>
+                            Tags, feed notes, and heat-stress checks.
+                        </li>
+                        <li>
+                            <strong>Weather-risk alerts</strong>
+                            Frost, heat, and wet-season warnings for a saved location.
+                        </li>
+                        <li>
+                            <strong>Farm advisor</strong>
+                            The same advisory API this website already uses.
+                        </li>
+                    </ul>
                 </div>
             </section>
 
-            <!-- AI Advisor preview — live chat lives on #ai-advisor -->
             <section class="ai-demo-section" id="ai-advisor-preview">
                 <div class="container">
-                    <div class="ai-demo-card glass-card">
+                    <div class="ai-demo-card paper-card">
                         <div class="grid-2col">
                             <div class="demo-info">
-                                <span class="badge-tag">Live advisor</span>
+                                <span class="badge-tag">Advisor</span>
                                 <h2>Ask the same farm advisor the app uses</h2>
-                                <p>Questions go to Agrivia’s existing <code>POST /api/chat</code> endpoint — the same body iOS and Android send. This website uses the General category and a browser-only ID. It does not load an app farm profile or GPS.</p>
-                                <a href="#ai-advisor" class="btn btn-emerald btn-lg" onclick="navigateTo('ai-advisor')">
-                                    <span>Open the advisor</span>
-                                </a>
+                                <p>Questions go to Agrivia’s existing advisory API — the same contract iOS and Android send. This website uses the General category and a browser-only ID. It does not load a farm profile or GPS.</p>
+                                <a href="#ai-advisor" class="btn btn-primary" onclick="navigateTo('ai-advisor')">Open the advisor</a>
                             </div>
-
                             <div class="demo-image-col">
                                 <img src="assets/images/ai-advisor.jpg" alt="Agrivia advisor interface preview" class="demo-screenshot-img">
                             </div>
@@ -270,160 +140,141 @@
                 </div>
             </section>
 
-            <!-- ROI Calculator Section -->
             <section class="calculator-section" id="calculator">
                 <div class="container">
-                    <div class="section-header text-center">
-                        <span class="section-tag">Illustrative only</span>
+                    <div class="section-header">
+                        <span class="section-tag">Worksheet</span>
                         <h2 class="section-title">Example cost-savings calculator</h2>
-                        <p class="section-desc">This uses simple assumptions, not your farm data. It is not a guarantee and is not based on Agrivia customer results.</p>
+                        <p class="section-desc">A simple arithmetic worksheet. It is not your farm data, not a guarantee, and not based on Agrivia customer results.</p>
                     </div>
 
-                    <div class="calculator-card glass-card">
+                    <div class="calculator-card paper-card">
                         <div class="calc-grid">
                             <div class="calc-controls">
                                 <div class="form-group">
                                     <div class="label-row">
-                                        <label for="acreageInput">Farmland Acreage:</label>
+                                        <label for="acreageInput">Farmland acreage</label>
                                         <span class="calc-val" id="acreageVal">250 Acres</span>
                                     </div>
                                     <input type="range" id="acreageInput" min="10" max="2500" value="250" step="10" oninput="updateROICalculation()">
                                 </div>
-
                                 <div class="form-group">
                                     <div class="label-row">
-                                        <label for="cattleInput">Livestock Head Count:</label>
+                                        <label for="cattleInput">Livestock head count</label>
                                         <span class="calc-val" id="cattleVal">75 Cattle</span>
                                     </div>
                                     <input type="range" id="cattleInput" min="0" max="500" value="75" step="5" oninput="updateROICalculation()">
                                 </div>
-
                                 <div class="form-group">
-                                    <label>Primary Crop Type:</label>
+                                    <label for="cropTypeSelect">Primary crop type</label>
                                     <select id="cropTypeSelect" class="form-select" onchange="updateROICalculation()">
-                                        <option value="corn">Corn / Maize</option>
+                                        <option value="corn">Corn / maize</option>
                                         <option value="soybeans">Soybeans</option>
-                                        <option value="wheat">Wheat / Grains</option>
-                                        <option value="specialty">Specialty Crops & Vegetables</option>
+                                        <option value="wheat">Wheat / grains</option>
+                                        <option value="specialty">Specialty crops and vegetables</option>
                                     </select>
                                 </div>
                             </div>
-
                             <div class="calc-results">
                                 <div class="result-box primary-result">
                                     <span class="res-title">Illustrative annual figure</span>
-                                    <span class="res-amount text-gradient" id="totalSavings">$14,850 / yr</span>
+                                    <span class="res-amount" id="totalSavings">$9,251 / yr</span>
                                 </div>
                                 <div class="result-breakdown">
                                     <div class="res-item">
-                                        <span>Fertilizer & Water Optimization:</span>
-                                        <strong id="waterSavings">$6,250</strong>
+                                        <span>Fertilizer and water (55%)</span>
+                                        <strong id="waterSavings">$3,438</strong>
                                     </div>
                                     <div class="res-item">
-                                        <span>Disease & Loss Prevention:</span>
-                                        <strong id="lossSavings">$5,600</strong>
+                                        <span>Disease and loss (45%)</span>
+                                        <strong id="lossSavings">$2,813</strong>
                                     </div>
                                     <div class="res-item">
-                                        <span>Livestock Feed Efficiency:</span>
+                                        <span>Livestock feed ($40 / head)</span>
                                         <strong id="feedSavings">$3,000</strong>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <p class="calc-formula">
+                            Formula: acres × a crop factor (corn $25, soy $22, wheat $18, specialty $45), then split 55% / 45%. Cattle × $40. Rounded. Change the sliders to see the arithmetic, not a forecast for your operation.
+                        </p>
                     </div>
                 </div>
             </section>
 
-            <!-- Guides -->
             <section class="blog-section" id="blog">
                 <div class="container">
-                    <div class="section-header text-center">
+                    <div class="section-header">
                         <span class="section-tag">Guides</span>
                         <h2 class="section-title">Farm equipment topics we cover</h2>
-                        <p class="section-desc">Short primers on sensors, livestock heat, and crop disease. These are educational overviews, not field trials or lab results.</p>
+                        <p class="section-desc">Short primers on sensors, livestock heat, and crop disease. Educational overviews, not field trials or lab results.</p>
                     </div>
 
                     <div class="blog-grid">
-                        <article class="blog-card glass-card">
-                            <div class="blog-img-placeholder blog-img-1">
-                                <span class="category-tag">Buyer's Guide</span>
-                            </div>
+                        <article class="blog-card paper-card">
                             <div class="blog-body">
+                                <span class="category-tag">Buyer’s guide</span>
                                 <h3>Soil moisture sensors: what to look for</h3>
-                                <p>How depth, connectivity (LoRaWAN vs cellular), and battery life affect irrigation decisions. General buying criteria, not a ranked lab test.</p>
+                                <p>How depth, connectivity, and battery life affect irrigation decisions.</p>
                                 <div class="blog-footer">
                                     <span class="author">Agrivia editorial</span>
-                                    <a href="guides/soil-moisture-sensors.html" class="read-more-link">Read guide &rarr;</a>
+                                    <a href="guides/soil-moisture-sensors.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
-
-                        <article class="blog-card glass-card">
-                            <div class="blog-img-placeholder blog-img-2">
+                        <article class="blog-card paper-card">
+                            <div class="blog-body">
                                 <span class="category-tag">Field practice</span>
-                            </div>
-                            <div class="blog-body">
                                 <h3>Photo-based crop disease checks</h3>
-                                <p>Why early leaf photos can help you ask the right questions of an agronomist. Not a claim that Agrivia has measured a 30% yield gain.</p>
+                                <p>Why early leaf photos help you ask an agronomist better questions.</p>
                                 <div class="blog-footer">
                                     <span class="author">Agrivia editorial</span>
-                                    <a href="guides/crop-disease-photos.html" class="read-more-link">Read guide &rarr;</a>
+                                    <a href="guides/crop-disease-photos.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
-
-                        <article class="blog-card glass-card">
-                            <div class="blog-img-placeholder blog-img-3">
-                                <span class="category-tag">Livestock</span>
-                            </div>
+                        <article class="blog-card paper-card">
                             <div class="blog-body">
+                                <span class="category-tag">Livestock</span>
                                 <h3>Cattle heat-stress equipment types</h3>
-                                <p>Shade, water, and monitoring gear commonly used in heat. Overview of categories, not a product ranking from our herd.</p>
+                                <p>Shade, water, and monitoring gear commonly used in heat.</p>
                                 <div class="blog-footer">
                                     <span class="author">Agrivia editorial</span>
-                                    <a href="guides/cattle-heat-stress.html" class="read-more-link">Read guide &rarr;</a>
+                                    <a href="guides/cattle-heat-stress.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
-
-                        <article class="blog-card glass-card">
-                            <div class="blog-img-placeholder blog-img-4">
+                        <article class="blog-card paper-card">
+                            <div class="blog-body">
                                 <span class="category-tag">Irrigation</span>
-                            </div>
-                            <div class="blog-body">
                                 <h3>Irrigation controllers: timer, soil, and weather</h3>
-                                <p>How clock, soil-sensor, and ET controllers differ, and what to ask before you buy. Not a brand ranking.</p>
+                                <p>How the three control styles differ, and what to ask before you buy.</p>
                                 <div class="blog-footer">
                                     <span class="author">Agrivia editorial</span>
-                                    <a href="guides/irrigation-controllers.html" class="read-more-link">Read guide &rarr;</a>
+                                    <a href="guides/irrigation-controllers.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
-
-                        <article class="blog-card glass-card">
-                            <div class="blog-img-placeholder blog-img-5">
+                        <article class="blog-card paper-card">
+                            <div class="blog-body">
                                 <span class="category-tag">Livestock</span>
-                            </div>
-                            <div class="blog-body">
                                 <h3>Livestock waterers: capacity and freeze</h3>
-                                <p>Tanks vs automatic units, refill rate, and winter. Category overview, not a product ranking.</p>
+                                <p>Tanks versus automatic units, refill rate, and winter.</p>
                                 <div class="blog-footer">
                                     <span class="author">Agrivia editorial</span>
-                                    <a href="guides/livestock-waterers.html" class="read-more-link">Read guide &rarr;</a>
+                                    <a href="guides/livestock-waterers.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
-
-                        <article class="blog-card glass-card">
-                            <div class="blog-img-placeholder blog-img-6">
-                                <span class="category-tag">Fencing</span>
-                            </div>
+                        <article class="blog-card paper-card">
                             <div class="blog-body">
+                                <span class="category-tag">Fencing</span>
                                 <h3>Electric fence chargers: joules and grounding</h3>
-                                <p>Output energy, solar vs plug-in, and why grounding decides whether the fence feels live.</p>
+                                <p>Output energy, solar versus plug-in, and why grounding decides whether the fence feels live.</p>
                                 <div class="blog-footer">
                                     <span class="author">Agrivia editorial</span>
-                                    <a href="guides/electric-fence-chargers.html" class="read-more-link">Read guide &rarr;</a>
+                                    <a href="guides/electric-fence-chargers.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
@@ -432,20 +283,14 @@
                 </div>
             </section>
 
-            <!-- Download Section -->
             <section class="download-section" id="download-section">
                 <div class="container">
-                    <div class="download-card glass-card text-center">
+                    <div class="download-card paper-card text-center">
                         <h2>The Agrivia app is in development</h2>
-                        <p>iOS and Android listings are not live. There is no App Store or Google Play page to open yet. Email us if you want a note when the app is available.</p>
-
+                        <p>iOS and Android listings are not live. Email us if you want a note when the app is available.</p>
                         <div class="hero-cta-group center-cta">
-                            <a href="mailto:support@agrivia.ai?subject=Agrivia%20app%20updates" class="btn btn-emerald btn-lg">
-                                <span>Email for app updates</span>
-                            </a>
-                            <a href="guides/index.html" class="btn btn-outline btn-lg">
-                                <span>Read guides</span>
-                            </a>
+                            <a href="mailto:support@agrivia.ai?subject=Agrivia%20app%20updates" class="btn btn-primary">Email for app updates</a>
+                            <a href="guides/index.html" class="btn btn-outline">Read guides</a>
                         </div>
                     </div>
                 </div>
@@ -460,8 +305,7 @@
                     <h1 class="page-title">Ask Agrivia</h1>
                     <p class="page-subtitle">Same advisory API as the iOS and Android apps. Answers are guidance, not a diagnosis. Confirm treatment with a local agronomist.</p>
                 </div>
-
-                <div class="chat-shell glass-card">
+                <div class="chat-shell paper-card">
                     <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
                         <div class="chat-empty" id="chatEmpty">
                             <p id="chatGreeting">Ask a farm question. The greeting and answers come from the Agrivia API when it is reachable.</p>
@@ -471,187 +315,9 @@
                     <form class="chat-form" id="chatForm">
                         <label class="visually-hidden" for="chatInput">Farm question</label>
                         <textarea id="chatInput" name="query" class="form-input chat-input" rows="2" maxlength="2000" placeholder="Example: How do I reduce heat stress in a cattle pen?" required></textarea>
-                        <button type="submit" class="btn btn-emerald" id="chatSendBtn">Ask</button>
+                        <button type="submit" class="btn btn-primary" id="chatSendBtn">Ask</button>
                     </form>
                     <p class="chat-disclaimer">Guidance only, not a diagnosis. Confirm treatment with a local agronomist. Website chat is rate-limited so the farm API stays available for the app.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 2: ABOUT US -->
-        <section id="view-about" class="page-view">
-            <div class="container section-padding">
-                <div class="page-header text-center">
-                    <span class="badge-tag">Our Mission</span>
-                    <h1 class="page-title">About Agrivia</h1>
-                    <p class="page-subtitle">We publish farm equipment guides and are building a farm operations app. The app is not in the public app stores yet.</p>
-                </div>
-
-                <div class="about-grid">
-                    <div class="glass-card about-card">
-                        <h3>Who we are</h3>
-                        <p>Agrivia is operated from the United States. This website is the public home for our guides and product updates. We are a small team building software for growers and ranchers. We do not claim a large research staff or published field-trial results on this site.</p>
-                    </div>
-
-                    <div class="glass-card about-card">
-                        <h3>What we are building</h3>
-                        <p>The planned app includes crop timelines, livestock logs, weather-risk alerts, and an agronomy assistant. Those features are in development. Hosting for this website uses AWS S3 and Cloudflare for HTTPS.</p>
-                    </div>
-                </div>
-
-                <div class="team-values glass-card text-center margin-top-lg">
-                    <h2>How we work</h2>
-                    <div class="values-grid">
-                        <div class="val-item">
-                            <span class="val-icon">🌱</span>
-                            <h4>Clear language</h4>
-                            <p>We describe the product as it is today, including when something is still in development.</p>
-                        </div>
-                        <div class="val-item">
-                            <span class="val-icon">🔒</span>
-                            <h4>Privacy</h4>
-                            <p>If you email us, we use that address to reply. We do not sell your contact details.</p>
-                        </div>
-                        <div class="val-item">
-                            <span class="val-icon">⚡</span>
-                            <h4>Guides first</h4>
-                            <p>This site exists so people can read equipment primers while the app is being built.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-privacy" class="page-view">
-            <div class="container section-padding">
-                <div class="legal-document glass-card">
-                    <h1>Privacy Policy</h1>
-                    <p class="effective-date">Last updated: August 29, 2026</p>
-
-                    <p>Agrivia.ai ("Agrivia", "we") is the website at <strong>https://agrivia.ai</strong>. This policy covers that site. A mobile app is in development and is not publicly listed yet.</p>
-
-                    <h2>1. Information we collect</h2>
-                    <p>If you email us, we receive whatever you send (name, address, message). The contact form opens your email app; we do not store form submissions on this website.</p>
-                    <ul>
-                        <li><strong>Email you send us:</strong> used only to reply.</li>
-                        <li><strong>Cookies:</strong> we may store a local preference that you dismissed the cookie notice. We do not currently run Google Analytics or affiliate-network tracking pixels on this site.</li>
-                    </ul>
-
-                    <h2>2. Affiliate links</h2>
-                    <p>We may add affiliate links in the future after a network accepts this website. We do not currently participate in Skimlinks, Amazon Associates, CJ, Impact, or Awin. When we do, this policy will be updated and those networks may set their own cookies.</p>
-
-                    <h2>3. How we use data</h2>
-                    <ul>
-                        <li>To answer support and partnership email.</li>
-                        <li>To operate this static website.</li>
-                        <li>To meet legal requests if required.</li>
-                    </ul>
-
-                    <h2>4. Your rights</h2>
-                    <p>To ask what we hold or request deletion of email correspondence, write to <strong>support@agrivia.ai</strong>.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 4: TERMS OF SERVICE -->
-        <section id="view-terms" class="page-view">
-            <div class="container section-padding">
-                <div class="legal-document glass-card">
-                    <h1>Terms of Service</h1>
-                    <p class="effective-date">Effective Date: August 21, 2026</p>
-
-                    <p>By using <strong>https://agrivia.ai</strong> you agree to these terms. The Agrivia mobile app is not publicly listed yet; these terms cover the website.</p>
-
-                    <h2>1. Guides and sample advisor text</h2>
-                    <p>Guides and on-site sample Q&amp;A are for general information only. They are not agronomic, veterinary, or legal advice. Confirm treatments with a qualified local advisor before you act.</p>
-
-                    <h2>2. Affiliate links</h2>
-                    <p>We may add affiliate links after a network approves this site. We do not currently run Skimlinks or other affiliate tracking. When we do, we may earn a commission if you buy through those links, at no extra cost to you.</p>
-
-                    <h2>3. Intellectual property</h2>
-                    <p>Content and branding on agrivia.ai belong to Agrivia unless noted otherwise.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 5: AFFILIATE DISCLOSURE (FTC / SKIMLINKS COMPLIANCE) -->
-        <section id="view-affiliate-disclosure" class="page-view">
-            <div class="container section-padding">
-                <div class="legal-document glass-card">
-                    <h1>Affiliate &amp; editorial disclosure</h1>
-                    <p class="effective-date">Updated August 29, 2026</p>
-
-                    <p>This statement describes how Agrivia.ai may earn money from product links. It follows FTC guidance on material connections. We are <strong>not</strong> currently a Skimlinks, Amazon Associates, CJ, Impact, Awin, FlexOffers, or Admitad publisher.</p>
-
-                    <h2>Today</h2>
-                    <p>This website does not run affiliate tracking scripts or paid product placements. Guides are educational overviews, not paid rankings and not results from our own field trials.</p>
-
-                    <h2>If we join a network later</h2>
-                    <p>If Awin, FlexOffers, Admitad, Impact, or another program accepts this site, some links may become affiliate links. If you buy through those links we may earn a commission. That does not change the price you pay.</p>
-
-                    <h2>Independence</h2>
-                    <p>Merchants will not be able to pay us for a guaranteed ranking. Questions: <strong>support@agrivia.ai</strong>.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 6: CONTACT US -->
-        <section id="view-contact" class="page-view">
-            <div class="container section-padding">
-                <div class="contact-wrapper grid-2col">
-                    <div class="contact-info glass-card">
-                        <span class="badge-tag">Get in Touch</span>
-                        <h2>Contact Agrivia</h2>
-                        <p>Questions about the site, guides, or the app in development? Email us. Messages are not stored on this page; they open your email app.</p>
-
-                        <div class="info-list">
-                            <div class="info-item">
-                                <div class="info-icon">📧</div>
-                                <div>
-                                    <strong>Support &amp; general</strong>
-                                    <p><a href="mailto:support@agrivia.ai" class="text-emerald">support@agrivia.ai</a></p>
-                                </div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-icon">💼</div>
-                                <div>
-                                    <strong>Partnerships</strong>
-                                    <p><a href="mailto:partnerships@agrivia.ai" class="text-emerald">partnerships@agrivia.ai</a></p>
-                                </div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-icon">📍</div>
-                                <div>
-                                    <strong>Location</strong>
-                                    <p>United States</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="contact-form-card glass-card">
-                        <h3>Write to us</h3>
-                        <p class="form-help" style="margin-top:0;margin-bottom:1rem;">Click a button below. If your computer has no Mail app, use Gmail in the browser, or copy the address on the left.</p>
-                        <div class="form-group">
-                            <label for="contactSubject">Subject</label>
-                            <select id="contactSubject" class="form-select" onchange="updateContactMailtoLinks()">
-                                <option value="General inquiry">General inquiry</option>
-                                <option value="App updates">App updates (not in stores yet)</option>
-                                <option value="Affiliate / partnerships">Affiliate / partnerships</option>
-                                <option value="Website feedback">Website feedback</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="contactMessage">Message (optional)</label>
-                            <textarea id="contactMessage" rows="5" class="form-input" oninput="updateContactMailtoLinks()"></textarea>
-                        </div>
-                        <a id="contactMailtoLink" class="btn btn-emerald btn-block" href="mailto:support@agrivia.ai">
-                            <span>Email support@agrivia.ai</span>
-                        </a>
-                        <a id="contactGmailLink" class="btn btn-outline btn-block" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=support@agrivia.ai" target="_blank" rel="noopener noreferrer" style="margin-top:0.75rem;">
-                            <span>Open in Gmail (browser)</span>
-                        </a>
-                    </div>
                 </div>
             </div>
         </section>
@@ -660,35 +326,30 @@
 
     <div class="cookie-banner" id="cookieBanner">
         <div class="cookie-content">
-            <p>We store a local preference if you dismiss this notice. We do not currently run affiliate or analytics tracking scripts. See our <a href="#privacy" onclick="navigateTo('privacy')">Privacy Policy</a> and <a href="#affiliate-disclosure" onclick="navigateTo('affiliate-disclosure')">disclosure</a>.</p>
+            <p>We store a local preference if you dismiss this notice. We do not currently run affiliate or analytics tracking scripts. See our <a href="privacy.html">Privacy Policy</a> and <a href="affiliate-disclosure.html">disclosure</a>.</p>
             <div class="cookie-btns">
-                <button class="btn btn-emerald btn-sm" onclick="acceptCookies()">OK</button>
+                <button class="btn btn-primary btn-sm" onclick="acceptCookies()">OK</button>
             </div>
         </div>
     </div>
 
-    <!-- Site Footer -->
     <footer class="site-footer">
         <div class="container footer-grid">
             <div class="footer-col brand-col">
                 <div class="logo-text">Agrivia<span class="logo-badge">.ai</span></div>
                 <p class="footer-tagline">Farm equipment guides. A farm operations app is in development and is not in the public app stores yet.</p>
-                <p class="footer-affiliate-note">
-                    We may add affiliate links after a network accepts this site. We do not currently run affiliate tracking.
-                </p>
+                <p class="footer-affiliate-note">We may add affiliate links after a network accepts this site. We do not currently run affiliate tracking.</p>
             </div>
-
             <div class="footer-col">
-                <h4>Platform</h4>
+                <h4>On this site</h4>
                 <ul class="footer-links">
-                    <li><a href="#features" onclick="navigateTo('home', 'features')">Planned app features</a></li>
-                    <li><a href="#ai-advisor" onclick="navigateTo('ai-advisor')">AI Farm Advisor</a></li>
+                    <li><a href="#features" onclick="navigateTo('home', 'features')">What we are building</a></li>
+                    <li><a href="#ai-advisor" onclick="navigateTo('ai-advisor')">Farm advisor</a></li>
                     <li><a href="#calculator" onclick="navigateTo('home', 'calculator')">Example calculator</a></li>
                 </ul>
             </div>
-
             <div class="footer-col">
-                <h4>Publisher Guides</h4>
+                <h4>Guides</h4>
                 <ul class="footer-links">
                     <li><a href="guides/soil-moisture-sensors.html">Soil moisture sensors</a></li>
                     <li><a href="guides/crop-disease-photos.html">Crop disease photos</a></li>
@@ -696,19 +357,17 @@
                     <li><a href="guides/index.html">All guides</a></li>
                 </ul>
             </div>
-
             <div class="footer-col">
-                <h4>Company & Legal</h4>
+                <h4>Company</h4>
                 <ul class="footer-links">
-                    <li><a href="#about" onclick="navigateTo('about')">About Agrivia</a></li>
-                    <li><a href="#privacy" onclick="navigateTo('privacy')">Privacy Policy</a></li>
-                    <li><a href="#terms" onclick="navigateTo('terms')">Terms of Service</a></li>
-                    <li><a href="#affiliate-disclosure" onclick="navigateTo('affiliate-disclosure')">Affiliate Disclosure</a></li>
-                    <li><a href="#contact" onclick="navigateTo('contact')">Contact Support</a></li>
+                    <li><a href="about.html">About Agrivia</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms of Service</a></li>
+                    <li><a href="affiliate-disclosure.html">Affiliate Disclosure</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                 </ul>
             </div>
         </div>
-
         <div class="footer-bottom">
             <div class="container bottom-flex">
                 <p>&copy; 2026 Agrivia. All rights reserved. <strong>agrivia.ai</strong></p>
@@ -716,7 +375,6 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
     <script src="js/config.js"></script>
     <script src="js/chat-api.js"></script>
     <script src="js/chat-ui.js"></script>
