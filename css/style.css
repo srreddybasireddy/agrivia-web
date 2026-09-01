@@ -1012,3 +1012,249 @@ input[type="range"] {
         transition: none !important;
     }
 }
+
+/* ==========================================================================
+   Editorial Guide & Technical Buyer's Guide Components
+   ========================================================================== */
+
+.guide-article {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 2.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    line-height: 1.75;
+}
+
+.guide-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+}
+
+.guide-kicker {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary-mint);
+    margin-bottom: 0.5rem;
+}
+
+.guide-article h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin-bottom: 1rem;
+    line-height: 1.25;
+}
+
+.guide-meta-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.guide-meta-bar strong {
+    color: var(--text-main);
+}
+
+.guide-disclosure {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+}
+
+.verdict-box {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-left: 4px solid var(--primary-emerald);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.verdict-box h3 {
+    font-size: 1.15rem;
+    color: var(--primary-mint);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.verdict-box ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.verdict-box ul li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.6rem;
+    color: var(--text-main);
+}
+
+.verdict-box ul li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--primary-emerald);
+    font-weight: bold;
+}
+
+.verdict-box ul li:last-child {
+    margin-bottom: 0;
+}
+
+/* Spec Data Tables */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin: 2rem 0;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: rgba(11, 15, 23, 0.6);
+}
+
+.spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    text-align: left;
+}
+
+.spec-table th,
+.spec-table td {
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.spec-table th {
+    background: rgba(255, 255, 255, 0.05);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: #FFFFFF;
+    white-space: nowrap;
+}
+
+.spec-table tr:last-child td {
+    border-bottom: none;
+}
+
+.spec-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.spec-table td strong {
+    color: #FFFFFF;
+}
+
+/* Pros and Cons Matrix */
+.pros-cons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.pro-box, .con-box {
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+}
+
+.pro-box h4 {
+    color: var(--primary-mint);
+    margin-bottom: 0.75rem;
+}
+
+.con-box h4 {
+    color: #F87171;
+    margin-bottom: 0.75rem;
+}
+
+.pro-box ul, .con-box ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.pro-box li, .con-box li {
+    padding-left: 1.4rem;
+    position: relative;
+    margin-bottom: 0.5rem;
+    font-size: 0.92rem;
+}
+
+.pro-box li::before {
+    content: "+";
+    position: absolute;
+    left: 0;
+    color: var(--primary-emerald);
+    font-weight: bold;
+}
+
+.con-box li::before {
+    content: "-";
+    position: absolute;
+    left: 0;
+    color: #F87171;
+    font-weight: bold;
+}
+
+/* FAQ Accordion / Cards */
+.faq-section {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+}
+
+.faq-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.faq-item h4 {
+    font-size: 1.05rem;
+    color: #FFFFFF;
+    margin-bottom: 0.5rem;
+}
+
+.faq-item p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+/* Step Card */
+.step-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.step-card h4 {
+    font-size: 1.05rem;
+    color: var(--primary-mint);
+    margin-bottom: 0.4rem;
+}
+
+@media (max-width: 768px) {
+    .guide-article {
+        padding: 1.5rem 1rem;
+    }
+    .pros-cons-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -175,17 +175,29 @@
             }
         });
 
+        const defaultHobbyChips = [
+            "Drip kit for raised beds",
+            "Chicken coop solar predator fence",
+            "Prevent tomato leaf blight",
+            "Freeze-proof poultry waterer"
+        ];
+
         api.getWelcomeGreeting(deviceUuid, category, new Date().getHours())
             .then((welcome) => {
                 if (welcome.greeting && greetingEl) {
                     setText(greetingEl, welcome.greeting);
                 }
-                renderChips(chips, welcome.suggestions || [], (label) => {
+                const suggestions = (welcome.suggestions && welcome.suggestions.length > 0)
+                    ? welcome.suggestions
+                    : defaultHobbyChips;
+                renderChips(chips, suggestions, (label) => {
                     sendQuery(label);
                 });
             })
             .catch(() => {
-                // Empty-state copy in HTML stays; no mock greeting.
+                renderChips(chips, defaultHobbyChips, (label) => {
+                    sendQuery(label);
+                });
             });
     }
 

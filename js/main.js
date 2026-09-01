@@ -99,7 +99,7 @@ function toggleMobileMenu() {
     }
 }
 
-// Farm Savings ROI Calculator Logic
+// Farm & Homestead Savings ROI Calculator Logic
 function updateROICalculation() {
     const acreageInput = document.getElementById('acreageInput');
     const cattleInput = document.getElementById('cattleInput');
@@ -109,21 +109,23 @@ function updateROICalculation() {
 
     const acres = parseInt(acreageInput.value, 10);
     const cattle = parseInt(cattleInput.value, 10);
-    const crop = cropTypeSelect ? cropTypeSelect.value : 'corn';
+    const crop = cropTypeSelect ? cropTypeSelect.value : 'specialty';
 
-    // Update label displays
-    document.getElementById('acreageVal').textContent = `${acres.toLocaleString()} Acres`;
-    document.getElementById('cattleVal').textContent = `${cattle.toLocaleString()} Cattle`;
+    // Update label displays for hobby farming & homesteads
+    const beds = acres * 5;
+    const acreageLabel = acres === 1 ? `1 Acre (or ~${beds} Raised Beds)` : `${acres} Acres (or ~${beds} Raised Beds)`;
+    document.getElementById('acreageVal').textContent = acreageLabel;
+    document.getElementById('cattleVal').textContent = `${cattle.toLocaleString()} Chickens / Small Animals`;
 
     // Multipliers based on crop sensitivity
-    let cropMult = 25.0; // $ per acre savings
-    if (crop === 'soybeans') cropMult = 22.0;
-    if (crop === 'wheat') cropMult = 18.0;
-    if (crop === 'specialty') cropMult = 45.0;
+    let cropMult = 450.0; // $ fresh harvest value per acre / bed group
+    if (crop === 'corn') cropMult = 320.0;
+    if (crop === 'soybeans') cropMult = 240.0;
+    if (crop === 'wheat') cropMult = 280.0;
 
-    const waterCalc = Math.round(acres * cropMult * 0.55);
-    const lossCalc = Math.round(acres * cropMult * 0.45);
-    const feedCalc = Math.round(cattle * 40.0);
+    const waterCalc = Math.round(acres * cropMult * 0.60);
+    const lossCalc = Math.round(cattle * 30.0);
+    const feedCalc = Math.round(acres * 150.0);
 
     const total = waterCalc + lossCalc + feedCalc;
 

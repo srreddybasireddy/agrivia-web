@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farm equipment guides | Agrivia</title>
-    <meta name="description" content="Independent primers on soil sensors, irrigation, livestock water, fencing, and crop photos. Educational overviews, not field trials.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <title>Independent Farm Equipment Guides & Precision Ag Reviews | Agrivia</title>
+    <meta name="description" content="Comprehensive, independent buyer's guides on soil moisture sensors, electric fence energizers, irrigation automation, cattle cooling, and livestock waterers.">
     <link rel="stylesheet" href="../css/style.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Agrivia Agricultural Equipment & Operational Guides",
+      "url": "https://agrivia.ai/guides/index.html",
+      "description": "Independent technical guides and equipment comparison matrices for modern precision farming and ranch management."
+    }
+    </script>
 </head>
-<body class="paper-theme">
+<body class="dark-theme">
     <header class="site-header">
         <div class="header-container">
             <a href="../index.html" class="logo-link">
@@ -18,10 +24,9 @@
             </a>
             <nav class="main-nav" id="mainNav">
                 <a href="../index.html" class="nav-item">Home</a>
-                <a href="../index.html#ai-advisor" class="nav-item">Advisor</a>
+                <a href="../index.html#ai-advisor" class="nav-item">AI Advisor</a>
                 <a href="index.html" class="nav-item active">Guides</a>
-                <a href="../about.html" class="nav-item">About</a>
-                <a href="../contact.html" class="nav-item">Contact</a>
+                <a href="../index.html#contact" class="nav-item">Contact</a>
             </nav>
             <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation Menu" onclick="toggleMobileMenu()">
                 <span class="bar"></span><span class="bar"></span><span class="bar"></span>
@@ -32,51 +37,89 @@
     <main class="section-padding">
         <div class="container">
             <div class="section-header text-center">
-                <span class="section-tag">Guides</span>
-                <h1 class="section-title">Farm equipment primers</h1>
-                <p class="section-desc">Buying-criteria overviews. These are not ranked tests, lab results, or affiliate product listings.</p>
+                <span class="section-tag">Editorial Hub</span>
+                <h1 class="section-title">Farm Equipment & Agronomy Guides</h1>
+                <p class="section-desc">Independent technical overviews, engineering calculations, and comparison matrices for commercial growers and livestock managers.</p>
             </div>
-            <div class="blog-grid">
+
+            <!-- Editorial Mission Callout -->
+            <div class="verdict-box margin-bottom-lg" style="max-width: 920px; margin-left: auto; margin-right: auto;">
+                <h3>🛡️ Our Editorial Standard</h3>
+                <p style="margin-bottom: 0; color: var(--text-muted); font-size: 0.95rem;">
+                    Agrivia publishes independent technical evaluations. We evaluate equipment based on sensor accuracy, physical durability, weatherproofing, telemetry standards (SDI-12, LoRaWAN), and manufacturer warranty terms. We may earn affiliate commissions when you purchase through our vetted merchant links at no extra cost to you.
+                </p>
+            </div>
+
+            <div class="blog-grid margin-top-lg">
                 <article class="blog-card glass-card">
                     <div class="blog-body">
-                        <h3>Soil moisture sensors</h3>
-                        <p>Depth, connectivity, power, and what to ask a vendor before you buy.</p>
-                        <a class="read-more-link" href="soil-moisture-sensors.html">Read guide &rarr;</a>
+                        <span class="category-tag">Water & Soil</span>
+                        <h3>Soil Moisture Sensors</h3>
+                        <p>Complete breakdown of Capacitance FDR vs TDR vs matric potential probes, soil texture math, and LoRaWAN telemetry.</p>
+                        <div class="blog-footer">
+                            <span class="author">⏱️ 9 Min Read</span>
+                            <a class="read-more-link" href="soil-moisture-sensors.html">Read Guide &rarr;</a>
+                        </div>
                     </div>
                 </article>
+
                 <article class="blog-card glass-card">
                     <div class="blog-body">
-                        <h3>Photo-based crop disease checks</h3>
-                        <p>How to photograph leaves so an agronomist can actually use the pictures.</p>
-                        <a class="read-more-link" href="crop-disease-photos.html">Read guide &rarr;</a>
+                        <span class="category-tag">Infrastructure</span>
+                        <h3>Electric Fence Chargers</h3>
+                        <p>Output Joules vs Stored Joules calculations, 3-rod grounding physics, and winter solar battery sizing standards.</p>
+                        <div class="blog-footer">
+                            <span class="author">⏱️ 8 Min Read</span>
+                            <a class="read-more-link" href="electric-fence-chargers.html">Read Guide &rarr;</a>
+                        </div>
                     </div>
                 </article>
+
                 <article class="blog-card glass-card">
                     <div class="blog-body">
-                        <h3>Cattle heat-stress equipment</h3>
-                        <p>Shade, water, and monitoring categories used in hot weather.</p>
-                        <a class="read-more-link" href="cattle-heat-stress.html">Read guide &rarr;</a>
+                        <span class="category-tag">Livestock</span>
+                        <h3>Cattle Heat Stress Equipment</h3>
+                        <p>THI danger index thresholds, 80% shade cloth geometry, coarse-droplet soaking, and high-velocity ventilation.</p>
+                        <div class="blog-footer">
+                            <span class="author">⏱️ 8 Min Read</span>
+                            <a class="read-more-link" href="cattle-heat-stress.html">Read Guide &rarr;</a>
+                        </div>
                     </div>
                 </article>
+
                 <article class="blog-card glass-card">
                     <div class="blog-body">
-                        <h3>Irrigation controllers</h3>
-                        <p>Timer, soil, and weather-based control — and the questions that matter.</p>
-                        <a class="read-more-link" href="irrigation-controllers.html">Read guide &rarr;</a>
+                        <span class="category-tag">Water & Soil</span>
+                        <h3>Irrigation Controllers</h3>
+                        <p>Penman-Monteith ET algorithms, soil-sensor closed-loop valve automation, and center pivot telemetry panels.</p>
+                        <div class="blog-footer">
+                            <span class="author">⏱️ 9 Min Read</span>
+                            <a class="read-more-link" href="irrigation-controllers.html">Read Guide &rarr;</a>
+                        </div>
                     </div>
                 </article>
+
                 <article class="blog-card glass-card">
                     <div class="blog-body">
-                        <h3>Livestock waterers</h3>
-                        <p>Capacity, freeze protection, and automatic vs tank setups.</p>
-                        <a class="read-more-link" href="livestock-waterers.html">Read guide &rarr;</a>
+                        <span class="category-tag">Livestock</span>
+                        <h3>Livestock Waterers</h3>
+                        <p>Peak herd flow rate calculations, sub-zero energy-free thermal ball drinkers, and frost-tube geothermal installation.</p>
+                        <div class="blog-footer">
+                            <span class="author">⏱️ 8 Min Read</span>
+                            <a class="read-more-link" href="livestock-waterers.html">Read Guide &rarr;</a>
+                        </div>
                     </div>
                 </article>
+
                 <article class="blog-card glass-card">
                     <div class="blog-body">
-                        <h3>Electric fence chargers</h3>
-                        <p>Joules, solar vs plug-in, and why grounding decides whether a fence works.</p>
-                        <a class="read-more-link" href="electric-fence-chargers.html">Read guide &rarr;</a>
+                        <span class="category-tag">Agronomy Scouting</span>
+                        <h3>Crop Disease Photo Diagnostics</h3>
+                        <p>Standard operating procedures for macro leaf photography, diffuse lighting, and GPS tagging for AI disease scanning.</p>
+                        <div class="blog-footer">
+                            <span class="author">⏱️ 8 Min Read</span>
+                            <a class="read-more-link" href="crop-disease-photos.html">Read Guide &rarr;</a>
+                        </div>
                     </div>
                 </article>
             </div>
@@ -85,7 +128,7 @@
 
     <footer class="site-footer">
         <div class="container footer-bottom">
-            <p>&copy; 2026 Agrivia. Guides are educational. We do not currently run affiliate tracking.</p>
+            <p>&copy; 2026 Agrivia. Independent agricultural guides. <a href="../index.html#privacy">Privacy Policy</a> • <a href="../index.html#affiliate-disclosure">Affiliate Disclosure</a></p>
         </div>
     </footer>
     <script src="../js/main.js"></script>
