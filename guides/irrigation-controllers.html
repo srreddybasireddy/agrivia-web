@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Irrigation controllers: timer, soil, and weather | Agrivia</title>
-    <meta name="description" content="How timer, soil-sensor, and weather-based irrigation controllers differ. Buying questions, not a brand ranking.">
+    <meta name="description" content="How clock, soil, and ET irrigation controllers differ: zones, rain skip, offline use, and service. Buying questions, not a brand ranking.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
@@ -22,41 +22,75 @@
                 <a href="../about.html" class="nav-item">About</a>
                 <a href="../contact.html" class="nav-item">Contact</a>
             </nav>
-            <button class="mobile-menu-toggle" aria-label="Toggle Navigation Menu" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
         </div>
     </header>
     <main class="section-padding">
-        <article class="guide-article glass-card">
+        <article class="guide-article">
             <p class="guide-kicker">Irrigation</p>
             <h1>Irrigation controllers: timer, soil, and weather</h1>
-            <p class="guide-meta">Agrivia editorial · August 29, 2026 · Criteria overview</p>
+            <p class="guide-meta">Agrivia editorial · August 31, 2026 · Criteria overview, not a bench test</p>
 
-            <p>A controller decides when water runs. The useful split is how it decides: a clock, a soil reading, a weather station, or a mix. Agrivia has not bench-tested brands on this page.</p>
+            <p>A controller only decides when water runs. It does not fix a worn nozzle, a stuck valve, or a block you never walk. The useful split is how it decides: a clock, a soil reading, a weather estimate, or a mix. Agrivia has not ranked brands on this page.</p>
+
+            <h2>Write the job before you shop</h2>
+            <p>List zones, gallons per minute at the source, and whether you have a master valve, a pump start, or a pivot panel you are not allowed to replace. A 6-station box for a homestead is a different product from a 48-station agricultural decoder system. If you cannot add stations later, you will buy twice.</p>
+            <p>Also decide who will change the schedule in July: you, an irrigator, or nobody. Cloud apps fail when that person will not open them. A physical dial you can see in the pump house still has a place.</p>
 
             <h2>Timer (clock) control</h2>
-            <p>Simple and familiar. You set days, start times, and run minutes. It does not know if last night&rsquo;s rain already filled the profile. Fine for a small block you walk daily; wasteful if you forget to skip after a storm.</p>
+            <p>You set days, start times, and run minutes. It is honest: it does exactly what you last told it. It does not know last night’s rain filled the profile. That is fine on a small block you walk daily and painful on a set you forget after a storm.</p>
+            <p>Clock control is the right first buy when labor is on site, when you are still learning how long a set actually takes, or when sensors would sit in the wrong soil. You can always add a rain switch or a soil skip later. Starting with a “smart” box you do not understand usually means the clock program stays on forever.</p>
 
             <h2>Soil-based control</h2>
-            <p>A probe or tensiometer starts or skips a cycle when the root zone crosses a threshold. This only works if the sensor sits in a representative spot — not a leaky fitting and not the driest ridge. Pair this with the questions in our <a href="soil-moisture-sensors.html">soil moisture sensor</a> guide.</p>
+            <p>A probe or tensiometer starts, skips, or shortens a cycle when the root zone crosses a threshold. This only works if the sensor is in a representative spot. A probe next to a leaky fitting will keep the field dry. A probe on the driest ridge will water the whole block for one corner.</p>
+            <p>Thresholds are not universal. Sandy loam and clay do not share a VWC trip point. Plan to watch the first two or three irrigations with a shovel in your hand. If you will not do that, buy a clock. See the placement and unit questions in our <a href="soil-moisture-sensors.html">soil moisture sensor</a> guide before you wire a probe to a controller.</p>
 
             <h2>Weather-based (ET) control</h2>
-            <p>These use evapotranspiration estimates from a local station or a network. They need a reasonable crop coefficient and a working rain skip. They do not replace a walk-through when a nozzle plugs or a valve sticks.</p>
+            <p>These use evapotranspiration from a station on the farm or from a network. They need a crop coefficient that is in the right ballpark and a working rain skip. They shine on landscape-style zones and on farms that already keep a decent weather record. They fail when the station sits in a parking lot, when the crop coefficient is a default turf number, or when a plugged nozzle is treated as “the model said skip.”</p>
+            <p>ET does not see a stuck valve. Walk the system. A flow sensor and a master-valve shutoff catch more wrecks than a prettier weather graph.</p>
+
+            <h2>Hybrid setups</h2>
+            <p>Many working farms use a clock as the authority and let soil or rain only skip. That is conservative and easy to explain to the person who opens the panel. Full closed-loop control (the probe starts the set without a human) wants a trusted site, a failsafe max runtime, and someone who notices when the radio dies “wet.”</p>
+
+            <h2>Hardware that matters more than the app</h2>
+            <p>Ask about station count, decoder versus conventional wire, and whether you can add a flow meter later. A rain switch is cheap insurance on clock systems. Frost lockout matters if you charge lines in shoulder season. Pump-start relays should match how the pump is allowed to cycle; short-cycling a well is more expensive than the controller.</p>
+            <p>Enclosure rating, surge protection, and a door you can lock are dull and they decide whether the box survives the first electrical storm. If the farm already has lightning problems, budget for protection on both power and field wire.</p>
+
+            <h2>Offline and service</h2>
+            <p>Ask whether every schedule can run if the phone app, Wi-Fi, or vendor cloud is down. If the answer is no, you are renting irrigation. Ask who in your county will pull a valve, find a cut wire, and not disappear after the sale. A controller with no local service is a weekend project you did not want.</p>
+
+            <h2>Labor, water rights, and neighbors</h2>
+            <p>A controller that runs at 2 a.m. can be the right agronomy and the wrong neighbor if your pump is loud or your canal turn is daytime only. Write the legal and social constraints next to the zone list: night pumping allowed or not, rotation days, a ditch rider who will lock you out if you overrun. No app overrides a water right.</p>
+            <p>If hired labor changes weekly, label the panel in the language they read and keep a paper copy of the current program in the pump house. Cloud-only history is useless when the person standing there has no login. The best controller is the one the person on duty can pause without calling you.</p>
+
+            <h2>What people overpay for</h2>
+            <p>Voice assistants, weekly “insights” emails, and branded weather art. Pay for zones, fail-safes, and a box someone nearby understands. You do not need to replace a working clock this year if the real problem is worn sprinklers.</p>
+
+            <h2>When a new controller is the wrong purchase</h2>
+            <p>Fix obvious leaks, mismatched nozzles, and a pump that cannot hold pressure first. A smarter schedule on a broken system just automates waste. Also wait if you cannot name who will change the program after planting.</p>
 
             <h2>Questions to ask</h2>
             <ul>
-                <li>How many stations or zones, and can you add later?</li>
-                <li>Does it support rain skip, frost lockout, or flow-alarm shutoff?</li>
-                <li>Can you run it if the phone app or cloud account is down?</li>
-                <li>Who services the valves and wiring in your area?</li>
+                <li>How many stations or decoders now, and what is the upgrade path?</li>
+                <li>Does it support rain skip, frost lockout, flow-alarm shutoff, and pump start?</li>
+                <li>Can every program run with the cloud account closed?</li>
+                <li>How do I set a maximum runtime so a failed sensor cannot flood the block?</li>
+                <li>Who services valves and wire within a reasonable drive?</li>
+                <li>What surge protection is in the panel, and what is excluded from warranty after a strike?</li>
             </ul>
 
-            <p>Match the controller to water source, labor, and how often you can visit the field. Confirm schedules with your own soil and crop, not a default program.</p>
+            <p>Match the controller to water source, labor, and how often you can visit the field. Confirm schedules with your soil and crop, not a default program from the box.</p>
             <div class="guide-next">
                 <a class="btn btn-outline" href="index.html">All guides</a>
-                <a class="btn btn-emerald" href="soil-moisture-sensors.html">Soil moisture sensors</a>
+                <a class="btn btn-primary" href="soil-moisture-sensors.html">Soil moisture sensors</a>
             </div>
         </article>
     </main>
+    <footer class="site-footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Agrivia. Guides are educational. We do not currently run affiliate tracking.</p>
+        </div>
+    </footer>
     <script src="../js/main.js"></script>
 </body>
 </html>

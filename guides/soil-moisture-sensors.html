@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soil moisture sensors: what to look for | Agrivia</title>
-    <meta name="description" content="Buying-criteria primer on soil moisture sensors: depth, connectivity, power, and calibration. Not a ranked lab test.">
+    <meta name="description" content="Buying primer on soil moisture sensors: probe type, depth, units, radio, power, calibration, and when a shovel is enough. Not a brand ranking.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
@@ -22,42 +22,72 @@
                 <a href="../about.html" class="nav-item">About</a>
                 <a href="../contact.html" class="nav-item">Contact</a>
             </nav>
-            <button class="mobile-menu-toggle" aria-label="Toggle Navigation Menu" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
         </div>
     </header>
-
     <main class="section-padding">
-        <article class="guide-article glass-card">
+        <article class="guide-article">
             <p class="guide-kicker">Buyer&rsquo;s guide</p>
             <h1>Soil moisture sensors: what to look for</h1>
-            <p class="guide-meta">Agrivia editorial · August 29, 2026 · Educational overview, not a field trial</p>
+            <p class="guide-meta">Agrivia editorial · August 31, 2026 · Buying criteria, not a lab ranking</p>
 
-            <p>A soil moisture sensor reports how wet the root zone is so you can irrigate with less guesswork. This page is a buying-criteria primer. Agrivia has not ranked brands in a lab and does not run affiliate tracking on this article.</p>
+            <p>A soil moisture sensor is useful when it answers one question you already have: is the root zone wet enough to skip this set, or dry enough to run water? It is not a yield guarantee. Agrivia has not bench-tested brands for this page and does not run affiliate tracking on it.</p>
 
-            <h2>Match the sensor to the crop and soil</h2>
-            <p>Shallow vegetables, orchards, and row crops do not need the same measurement depth. Ask what depths the probe reports (for example 6, 12, and 24 inches) and whether you get volumetric water content or only a 0–100 score. Sandy soils drain faster than clay; a single shallow reading can miss a dry layer below the surface.</p>
+            <h2>Decide what you are trying to control</h2>
+            <p>Start with the irrigation decision, not the catalog. A vegetable bed you walk every morning may need only a feel test and a shovel. A pivot you cannot visit daily may justify a probe you can read from the shop. If nobody will look at the numbers, the radio and the dashboard are wasted.</p>
+            <p>Write down the crop, typical rooting depth, soil texture, and how you apply water (drip, sprinkler, furrow, flood). Those four facts decide depth, placement, and how often the unit must report. A probe built for a turf green will not tell you much about a 24-inch cotton root zone.</p>
+
+            <h2>What the number actually is</h2>
+            <p>Vendors quote moisture in different languages. Volumetric water content (VWC) is a percent of soil volume that is water. Matric potential (often from a tensiometer) is how hard roots must pull. A 0–100 “soil moisture index” is usually a vendor scale. It can still be useful if you learn your own thresholds, but you cannot compare it to a neighbor’s reading or to a research paper.</p>
+            <p>Ask which of those you are buying. If the dashboard only shows a green/yellow/red tile, ask whether you can export the raw series. Closed scores make it hard to check a sensor that has drifted or a site that was installed in a wet rill.</p>
+
+            <h2>Probe types and the tradeoff</h2>
+            <p>Capacitance and frequency-domain probes are common, relatively cheap, and fast to install. They are sensitive to soil type, salinity, and air gaps along the tines. They need a snug hole and, in many soils, a site-specific calibration if you care about absolute VWC rather than a trend.</p>
+            <p>Time-domain (TDR-style) probes are often more stable across textures when installed well. They cost more and still fail if you leave voids beside the rods. Tensiometers measure pull, which tracks plant stress more directly in some soils, but they need maintenance, can lose their water column, and struggle in very dry or very sandy profiles.</p>
+            <p>Gypsum blocks and granular-matrix sensors are inexpensive trend tools. They lag, they age, and they are a poor choice if you need a number you can defend to a water district. None of these types is “best.” Match the maintenance you will actually do.</p>
+
+            <h2>Depth and placement</h2>
+            <p>Shallow vegetables, orchards, and deep-rooted row crops do not share a depth. A single 4-inch reading can look wet while the crop is mining a dry layer below. Multi-depth probes (for example 6, 12, and 24 inches) cost more and tell you whether water is moving past the roots.</p>
+            <p>Place the sensor in a representative part of the block: not the leaky fitting, not the compacted headland, not the ridge that always dries first unless that ridge is the decision you care about. On drip, the wetted bulb is small; a probe a foot off the line can sit in dry soil all season. On a pivot, avoid the tower tracks.</p>
+            <p>One probe per 80-acre circle is a sample, not a map. If soil type changes across the field, one number will lie about half of it. It is usually better to instrument two honest sites than to buy ten radios you will never visit.</p>
 
             <h2>How the data leaves the field</h2>
-            <p>Common paths are LoRaWAN, cellular, Wi‑Fi, or a logger you walk out to download. Cellular is simple if you have coverage and accept a data plan. LoRaWAN can cover a large farm if you already have a gateway. Confirm who owns the data export — CSV or API — before you buy a closed dashboard.</p>
+            <p>Cellular is simple if you have coverage and accept a data plan. Ask what happens when the SIM lapses and whether you can read the probe locally. LoRaWAN can cover a large farm cheaply if you already own a gateway and someone who can keep it online. Wi-Fi is fine next to a shop and useless in the back forty. A logger you download by hand is ugly and reliable when radios fail.</p>
+            <p>Confirm export: CSV at minimum, API if you already keep records elsewhere. Ask who owns historical data if you stop paying the subscription. A sensor that becomes a brick without a login is a rental, not a tool.</p>
 
-            <h2>Power and winter</h2>
-            <p>Battery and solar life depend on how often the unit transmits. Ask for expected life at your reporting interval, and whether the probe stays in the ground through freeze. Some capacitance probes are pulled before winter; others are rated for it.</p>
+            <h2>Power, winter, and animals</h2>
+            <p>Battery life is a function of how often the unit wakes the radio, not the number on the summer brochure. Ask for expected life at your interval in the coldest month. Solar helps only if the panel stays clean and above the canopy or snow.</p>
+            <p>Some capacitance probes are pulled before freeze; others are rated to stay in. Livestock and tillage will find a mast. Plan a marker, a flexible whip, or a buried cable run you can live with after a disc pass.</p>
+
+            <h2>What people overpay for</h2>
+            <p>Color maps, “AI irrigation,” and phone badges do not wet the root zone. If the vendor cannot explain placement and calibration in plain language, the software will not save the install. You also do not need a new controller on day one. Many farms read a probe and still start the set by hand until they trust the site. Pair this page with our <a href="irrigation-controllers.html">irrigation controller</a> primer when you are ready to close the loop.</p>
+
+            <h2>When not to buy a sensor yet</h2>
+            <p>Skip the purchase if you cannot name the irrigation decision, if the block is so variable that one site is meaningless, or if you will not walk the hole after the first two irrigations. A shovel, a feel test, and a notebook still beat an unread dashboard.</p>
 
             <h2>Questions to ask a vendor</h2>
             <ul>
-                <li>What soil depths does it report, and in what units?</li>
-                <li>Can you export raw readings, not only a vendor score?</li>
-                <li>What is the expected battery or solar life at your send interval?</li>
-                <li>Who installs it, and how do you calibrate for your soil type?</li>
+                <li>What does the reading represent — VWC, potential, or a vendor index?</li>
+                <li>Which depths are reported, and can I add or move them later?</li>
+                <li>How do you install it in my texture so there is no air gap?</li>
+                <li>What calibration do you recommend, and can I export raw values?</li>
+                <li>What radio, what plan cost, and can I read it if the cloud is down?</li>
+                <li>Expected battery or solar life at my send interval in winter?</li>
+                <li>Who services it within a day’s drive, and what is the return policy on a dead radio?</li>
             </ul>
 
-            <p>Confirm any irrigation change with your own records and local advice. A sensor is a tool, not a prescription.</p>
+            <p>Confirm any schedule change against your own crop and a local advisor. A sensor is a witness, not a prescription.</p>
             <div class="guide-next">
                 <a class="btn btn-outline" href="index.html">All guides</a>
-                <a class="btn btn-emerald" href="irrigation-controllers.html">Irrigation controllers</a>
+                <a class="btn btn-primary" href="irrigation-controllers.html">Irrigation controllers</a>
             </div>
         </article>
     </main>
+    <footer class="site-footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Agrivia. Guides are educational. We do not currently run affiliate tracking.</p>
+        </div>
+    </footer>
     <script src="../js/main.js"></script>
 </body>
 </html>
