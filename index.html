@@ -3,45 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Primary Meta Tags -->
-    <title>Agrivia | Hobby Farming, Homesteading & Backyard Growing Guides</title>
-    <meta name="title" content="Agrivia | Hobby Farming, Homesteading & Backyard Growing Guides">
-    <meta name="description" content="Independent equipment guides and AI agronomy tools for hobby farmers, homesteaders, and backyard growers. Compare drip kits, solar fencing, poultry waterers, and soil sensors.">
-    <meta name="keywords" content="hobby farming, homesteading, backyard growing, raised beds, solar fence chargers, chicken coop predator fencing, drip irrigation kits, farm advisor">
+    <title>Agrivia | Guides for hobby farms, homesteads, gardens, and livestock</title>
+    <meta name="description" content="Independent equipment primers for raised beds, cattle, goats, sheep, and backyard flocks. Agrivia’s farm app is in development and is not in the app stores yet.">
     <meta name="author" content="Agrivia">
     <meta name="robots" content="index, follow">
-
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://agrivia.ai/">
-    <meta property="og:title" content="Agrivia | Hobby Farming & Backyard Growing Guides">
-    <meta property="og:description" content="Independent equipment buying guides, solar fencing sizing, drip irrigation setups, and AI advice for hobby farmers and homesteaders.">
+    <meta property="og:title" content="Agrivia | Hobby farm, homestead, and livestock equipment guides">
+    <meta property="og:description" content="Buying-criteria primers on soil, fencing, waterers, heat, and irrigation for gardens and small herds. The Agrivia app is not in the stores yet.">
     <meta property="og:image" content="assets/images/hero-mockup.jpg">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://agrivia.ai/">
-    <meta property="twitter:title" content="Agrivia | Hobby Farming & Backyard Growing Guides">
-    <meta property="twitter:description" content="Independent equipment buying guides, solar fencing sizing, drip irrigation setups, and AI advice for hobby farmers and homesteaders.">
-    <meta property="twitter:image" content="assets/images/hero-mockup.jpg">
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Stylesheet -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-
-    <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "Agrivia",
       "url": "https://agrivia.ai",
-      "description": "Equipment buyer's guides, calculators, and AI agronomy advice for hobby farmers, homesteaders, and backyard growers.",
+      "description": "Independent equipment guides for hobby farmers, homesteaders, backyard growers, and people keeping cattle, goats, sheep, or poultry. A farm app is in development.",
       "publisher": {
         "@type": "Organization",
         "name": "Agrivia",
@@ -51,27 +32,23 @@
     }
     </script>
 </head>
-<body class="dark-theme">
+<body class="paper-theme">
 
-    <!-- Navigation Header -->
     <header class="site-header" id="siteHeader">
         <div class="header-container">
             <a href="#home" class="logo-link" onclick="navigateTo('home')">
                 <span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span>
             </a>
-
             <nav class="main-nav" id="mainNav">
                 <a href="#home" class="nav-item active" id="nav-home" onclick="navigateTo('home')">Home</a>
                 <a href="guides/index.html" class="nav-item" id="nav-blog">Guides</a>
-                <a href="#ai-advisor" class="nav-item" id="nav-ai-advisor" onclick="navigateTo('ai-advisor')">AI Advisor</a>
+                <a href="#ai-advisor" class="nav-item" id="nav-ai-advisor" onclick="navigateTo('ai-advisor')">Advisor</a>
                 <a href="#calculator" class="nav-item" id="nav-calculator" onclick="navigateTo('home', 'calculator')">Calculator</a>
                 <a href="about.html" class="nav-item" id="nav-about">About</a>
                 <a href="contact.html" class="nav-item" id="nav-contact">Contact</a>
             </nav>
-
             <div class="header-actions">
-                <a href="guides/index.html" class="btn btn-primary btn-sm">Hobby Farm Guides</a>
-                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation Menu" onclick="toggleMobileMenu()">
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation" onclick="toggleMobileMenu()">
                     <span class="bar"></span>
                     <span class="bar"></span>
                     <span class="bar"></span>
@@ -81,316 +58,300 @@
     </header>
 
     <main id="appContainer">
-
-        <!-- VIEW 1: HOME PAGE -->
         <section id="view-home" class="page-view active">
 
-            <!-- Hero Section -->
             <div class="hero-section">
                 <div class="container hero-grid">
                     <div class="hero-content">
-                        <p class="hero-badge">Hobby Farming · Homesteading · Backyard Growing</p>
-                        <h1 class="hero-title">Smart tools &amp; equipment guides for hobby farmers</h1>
+                        <p class="hero-badge">Hobby farms · Homesteads · Gardens · Livestock</p>
+                        <h1 class="hero-title">Guides for gardens, cattle, and the rest of a small place</h1>
                         <p class="hero-subtitle">
-                            Agrivia publishes independent, practical buying guides on drip irrigation, solar predator fencing, freeze-proof waterers, and soil health—whether you manage 5 raised beds, a backyard flock, or a 5-acre homestead.
+                            Agrivia publishes independent primers for raised beds and for animals — cattle, goats, sheep, pigs, horses, and poultry. Soil, fencing, water, heat, and irrigation at homestead scale. We are also building a farm operations app. That app is not listed in the App Store or Google Play yet.
                         </p>
                         <div class="hero-cta-group">
-                            <a href="guides/index.html" class="btn btn-primary btn-lg">Explore Equipment Guides</a>
-                            <a href="#ai-advisor" class="btn btn-outline btn-lg" onclick="navigateTo('ai-advisor')">Ask the Hobby Farm Advisor</a>
+                            <a href="guides/index.html" class="btn btn-primary btn-lg">Read guides</a>
+                            <a href="#ai-advisor" class="btn btn-outline btn-lg" onclick="navigateTo('ai-advisor')">Ask the advisor</a>
                         </div>
                     </div>
                     <div class="hero-visual">
-                        <img src="assets/images/hero-mockup.jpg" alt="Agrivia hobby farm and homesteading dashboard" class="hero-img-mockup" id="heroMockupImg">
+                        <img src="assets/images/hero-mockup.jpg" alt="Preview of the Agrivia app in development. Not a live store listing." class="hero-img-mockup" id="heroMockupImg">
                     </div>
                 </div>
             </div>
 
-            <!-- Features Grid -->
             <section class="features-section" id="features">
                 <div class="container">
                     <div class="section-header">
-                        <span class="section-tag">Growing Modules</span>
-                        <h2 class="section-title">Everything You Need to Run a Thriving Hobby Farm</h2>
-                        <p class="section-desc">Practical engineering guides and smart automation tailored for homesteaders, small acreage operators, and backyard growers.</p>
+                        <span class="section-tag">Who this is for</span>
+                        <h2 class="section-title">Gardens and animals on the same place</h2>
+                        <p class="section-desc">The guides assume a backyard plot, a few acres, a small herd or flock — not a commercial pivot or a 500-head feedlot.</p>
                     </div>
                     <ul class="building-list">
                         <li>
-                            <strong>Raised Bed &amp; Small Plot Irrigation</strong>
-                            Gravity drip kits, smart hose timers, and soil moisture sensors to prevent over-watering.
+                            <strong>Raised beds and small plots</strong>
+                            Soil pens, hose timers, and drip that will not drown tomatoes.
                         </li>
                         <li>
-                            <strong>Poultry &amp; Small Livestock Care</strong>
-                            Predator-proof solar fencing for chicken runs, goat paddocks, and sub-zero heated waterers.
+                            <strong>Cattle, goats, sheep, and poultry</strong>
+                            Chargers, shade, tanks, and freeze-proof water for a homestead herd or flock.
                         </li>
                         <li>
-                            <strong>Backyard Soil Health &amp; Diagnostics</strong>
-                            Soil pH/moisture pens, organic amendments, and photo diagnostics for common plant diseases.
+                            <strong>Leaf and pest photos</strong>
+                            How to shoot a leaf so an extension office can actually use it.
                         </li>
                         <li>
-                            <strong>24/7 AI Hobby Farm Advisor</strong>
-                            Instant answers for tomato blights, chicken coop sizing, winterizing equipment, and pasture management.
+                            <strong>Advisor on this site</strong>
+                            The same farm chat API the apps use. Guidance only, not a diagnosis.
                         </li>
                     </ul>
                 </div>
             </section>
 
-            <!-- AI Advisor Preview Section -->
             <section class="ai-demo-section" id="ai-advisor-preview">
                 <div class="container">
                     <div class="ai-demo-card paper-card">
                         <div class="grid-2col">
                             <div class="demo-info">
-                                <span class="badge-tag">AI Assistant</span>
-                                <h2>Your 24/7 Virtual Hobby Farm Agronomist</h2>
-                                <p>Get instantaneous answers on setting up drip lines, predator-proofing chicken coops, balancing soil nutrients, and diagnosing yellowing garden leaves.</p>
-                                <a href="#ai-advisor" class="btn btn-primary" onclick="navigateTo('ai-advisor')">Open the Advisor</a>
+                                <span class="badge-tag">Advisor</span>
+                                <h2>Ask about beds, cattle, goats, and coops</h2>
+                                <p>Questions go to Agrivia’s existing advisory API. This website uses the General category and a browser-only ID. It does not load a farm profile or GPS. Replies are guidance, not a vet or extension visit.</p>
+                                <a href="#ai-advisor" class="btn btn-primary" onclick="navigateTo('ai-advisor')">Open the advisor</a>
                             </div>
                             <div class="demo-image-col">
-                                <img src="assets/images/ai-advisor.jpg" alt="Agrivia hobby farm chat advisor preview" class="demo-screenshot-img">
+                                <img src="assets/images/ai-advisor.jpg" alt="Agrivia advisor chat preview" class="demo-screenshot-img">
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ROI / Sizing Calculator Section -->
             <section class="calculator-section" id="calculator">
                 <div class="container">
                     <div class="section-header">
-                        <span class="section-tag">Homestead Sizing</span>
-                        <h2 class="section-title">Hobby Farm &amp; Garden Harvest Estimator</h2>
-                        <p class="section-desc">Estimate annual harvest value, water savings with drip lines, and flock feed efficiency for your property size.</p>
+                        <span class="section-tag">Worksheet</span>
+                        <h2 class="section-title">Garden and livestock example calculator</h2>
+                        <p class="section-desc">Simple arithmetic for beds plus cattle, goats, sheep, pigs, horses, or poultry. It is not your harvest, not a guarantee, and not Agrivia customer results.</p>
                     </div>
-
                     <div class="calculator-card paper-card">
                         <div class="calc-grid">
                             <div class="calc-controls">
                                 <div class="form-group">
                                     <div class="label-row">
-                                        <label for="acreageInput">Property / Garden Area</label>
-                                        <span class="calc-val" id="acreageVal">2 Acres (or 10 Raised Beds)</span>
+                                        <label for="acreageInput">Raised beds (or equivalent plots)</label>
+                                        <span class="calc-val" id="acreageVal">6 beds</span>
                                     </div>
-                                    <input type="range" id="acreageInput" min="1" max="50" value="2" step="1" oninput="updateROICalculation()">
+                                    <input type="range" id="acreageInput" min="0" max="40" value="6" step="1" oninput="updateROICalculation()">
                                 </div>
                                 <div class="form-group">
                                     <div class="label-row">
-                                        <label for="cattleInput">Chickens / Small Livestock (Head Count)</label>
-                                        <span class="calc-val" id="cattleVal">15 Animals</span>
+                                        <label for="cattleInput">Livestock (cattle, goats, sheep, pigs, horses, or poultry)</label>
+                                        <span class="calc-val" id="cattleVal">6 head</span>
                                     </div>
-                                    <input type="range" id="cattleInput" min="0" max="100" value="15" step="5" oninput="updateROICalculation()">
+                                    <input type="range" id="cattleInput" min="0" max="80" value="6" step="1" oninput="updateROICalculation()">
                                 </div>
                                 <div class="form-group">
-                                    <label for="cropTypeSelect">Primary Growing Focus</label>
+                                    <label for="cropTypeSelect">What you run</label>
                                     <select id="cropTypeSelect" class="form-select" onchange="updateROICalculation()">
-                                        <option value="specialty">Backyard Vegetables &amp; Heirloom Produce</option>
-                                        <option value="corn">Small Orchard &amp; Berry Patches</option>
-                                        <option value="soybeans">Pasture Grazing (Goats, Sheep, Alpacas)</option>
-                                        <option value="wheat">Multi-Crop Homestead Garden</option>
+                                        <option value="specialty">Garden plus a few animals</option>
+                                        <option value="wheat">Mixed homestead (beds, cattle, poultry)</option>
+                                        <option value="soybeans">Pasture: cattle, goats, or sheep</option>
+                                        <option value="corn">Berries or a few fruit trees</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="calc-results">
                                 <div class="result-box primary-result">
-                                    <span class="res-title">Estimated Annual Fresh Value &amp; Savings</span>
-                                    <span class="res-amount" id="totalSavings">$1,850 / yr</span>
+                                    <span class="res-title">Illustrative annual figure</span>
+                                    <span class="res-amount" id="totalSavings">$672 / yr</span>
                                 </div>
                                 <div class="result-breakdown">
                                     <div class="res-item">
-                                        <span>Fresh Garden Produce Value:</span>
-                                        <strong id="waterSavings">$1,100</strong>
+                                        <span>Garden produce (per bed)</span>
+                                        <strong id="waterSavings">$360</strong>
                                     </div>
                                     <div class="res-item">
-                                        <span>Egg &amp; Small Herd Productivity:</span>
-                                        <strong id="lossSavings">$450</strong>
+                                        <span>Livestock water and feed ($40 / head)</span>
+                                        <strong id="lossSavings">$240</strong>
                                     </div>
                                     <div class="res-item">
-                                        <span>Automated Drip Water Savings:</span>
-                                        <strong id="feedSavings">$300</strong>
+                                        <span>Drip vs hose ($12 / bed)</span>
+                                        <strong id="feedSavings">$72</strong>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <p class="calc-formula">
-                            Estimates based on fresh produce harvest benchmarks ($450/acre or $110/raised bed) + small flock egg/feed efficiency ($30/head) + drip irrigation utility reduction.
+                            Formula: beds × a crop factor (garden $60, mixed homestead $50, berries $40, pasture $25) + livestock head × $40 + beds × $12 for drip. Rounded. Head count is cattle, goats, sheep, pigs, horses, or birds — pick what you keep. This is arithmetic, not a forecast for your place.
                         </p>
                     </div>
                 </div>
             </section>
 
-            <!-- Technical Buyer's Guides Grid -->
             <section class="blog-section" id="blog">
                 <div class="container">
                     <div class="section-header">
-                        <span class="section-tag">Featured Guides</span>
-                        <h2 class="section-title">Hobby Farm &amp; Homesteading Equipment Guides</h2>
-                        <p class="section-desc">Independent buyer's guides with comparison tables, wiring diagrams, and sizing advice for homesteaders.</p>
+                        <span class="section-tag">Guides</span>
+                        <h2 class="section-title">Start with these six primers</h2>
+                        <p class="section-desc">Buying criteria for gardens and for cattle, goats, sheep, and poultry. Educational overviews, not lab rankings.</p>
                     </div>
-
                     <div class="blog-grid">
                         <article class="blog-card paper-card">
                             <div class="blog-body">
-                                <span class="category-tag">Soil &amp; Water</span>
-                                <h3>Soil Moisture Sensors &amp; Garden Pens</h3>
-                                <p>From $20 handheld probes to multi-depth telemetry—how to never overwater your vegetables.</p>
+                                <span class="category-tag">Soil</span>
+                                <h3>Soil pens and moisture sensors</h3>
+                                <p>Handheld probes versus a probe you leave in a bed, and when a finger test is enough.</p>
                                 <div class="blog-footer">
-                                    <span class="author">⏱️ 9 Min Read</span>
-                                    <a href="guides/soil-moisture-sensors.html" class="read-more-link">Read Guide &rarr;</a>
+                                    <span class="author">Agrivia editorial</span>
+                                    <a href="guides/soil-moisture-sensors.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
                         <article class="blog-card paper-card">
                             <div class="blog-body">
-                                <span class="category-tag">Flock &amp; Herd Protection</span>
-                                <h3>Electric Fence Chargers for Homesteads</h3>
-                                <p>Solar energizers and netting to keep foxes, coyotes, and raccoons out of your chicken coops and paddocks.</p>
+                                <span class="category-tag">Fencing</span>
+                                <h3>Chargers for cattle, goats, and poultry</h3>
+                                <p>Joules, solar vs plug-in, and grounding so a paddock or chicken run holds a pulse.</p>
                                 <div class="blog-footer">
-                                    <span class="author">⏱️ 8 Min Read</span>
-                                    <a href="guides/electric-fence-chargers.html" class="read-more-link">Read Guide &rarr;</a>
+                                    <span class="author">Agrivia editorial</span>
+                                    <a href="guides/electric-fence-chargers.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
                         <article class="blog-card paper-card">
                             <div class="blog-body">
-                                <span class="category-tag">Animal Welfare</span>
-                                <h3>Livestock &amp; Flock Heat Stress Mitigation</h3>
-                                <p>80% shade cloth setups, coop ventilation, and low-pressure soakers for hot summer months.</p>
+                                <span class="category-tag">Animals</span>
+                                <h3>Heat, shade, cattle, and flocks</h3>
+                                <p>Cloth shade, water space, and coop air before misters.</p>
                                 <div class="blog-footer">
-                                    <span class="author">⏱️ 8 Min Read</span>
-                                    <a href="guides/cattle-heat-stress.html" class="read-more-link">Read Guide &rarr;</a>
+                                    <span class="author">Agrivia editorial</span>
+                                    <a href="guides/cattle-heat-stress.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
                         <article class="blog-card paper-card">
                             <div class="blog-body">
-                                <span class="category-tag">Automation</span>
-                                <h3>Drip Irrigation &amp; Smart Hose Timers</h3>
-                                <p>Automate raised beds and small orchards with smart weather-based Wi-Fi/Bluetooth hose timers.</p>
+                                <span class="category-tag">Water</span>
+                                <h3>Hose timers and drip for raised beds</h3>
+                                <p>Clock timers, soil skip, and weather skip — without a pivot panel.</p>
                                 <div class="blog-footer">
-                                    <span class="author">⏱️ 9 Min Read</span>
-                                    <a href="guides/irrigation-controllers.html" class="read-more-link">Read Guide &rarr;</a>
+                                    <span class="author">Agrivia editorial</span>
+                                    <a href="guides/irrigation-controllers.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
                         <article class="blog-card paper-card">
                             <div class="blog-body">
-                                <span class="category-tag">Winterization</span>
-                                <h3>Freeze-Proof Poultry &amp; Animal Waterers</h3>
-                                <p>Thermal drinkers and heated base plates to keep water flowing in sub-zero winter weather without high electric bills.</p>
+                                <span class="category-tag">Winter</span>
+                                <h3>Tanks and freeze-proof waterers</h3>
+                                <p>Cattle tanks, poultry drinkers, refill rate, and what fails when the power drops.</p>
                                 <div class="blog-footer">
-                                    <span class="author">⏱️ 8 Min Read</span>
-                                    <a href="guides/livestock-waterers.html" class="read-more-link">Read Guide &rarr;</a>
+                                    <span class="author">Agrivia editorial</span>
+                                    <a href="guides/livestock-waterers.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
                         <article class="blog-card paper-card">
                             <div class="blog-body">
-                                <span class="category-tag">Plant Health</span>
-                                <h3>Crop Disease &amp; Pest Photo Diagnostics</h3>
-                                <p>How to take clear macro leaf photos for automated AI disease scanning and agronomist review.</p>
+                                <span class="category-tag">Plants</span>
+                                <h3>Photographing a sick leaf</h3>
+                                <p>Light, scale, and notes so extension (or chat) can see what you see.</p>
                                 <div class="blog-footer">
-                                    <span class="author">⏱️ 8 Min Read</span>
-                                    <a href="guides/crop-disease-photos.html" class="read-more-link">Read Guide &rarr;</a>
+                                    <span class="author">Agrivia editorial</span>
+                                    <a href="guides/crop-disease-photos.html" class="read-more-link">Read guide</a>
                                 </div>
                             </div>
                         </article>
                     </div>
-                    <p class="text-center" style="margin-top:2.5rem;"><a href="guides/index.html" class="btn btn-outline btn-lg">View All Homestead Guides &amp; Reviews</a></p>
+                    <p class="text-center" style="margin-top:2rem;"><a href="guides/index.html" class="btn btn-outline">All guides</a></p>
                 </div>
             </section>
 
-            <!-- Newsletter / Updates Section -->
             <section class="download-section" id="download-section">
                 <div class="container">
                     <div class="download-card paper-card text-center">
-                        <h2>Join 10,000+ Hobby Farmers &amp; Homesteaders</h2>
-                        <p>Receive seasonal planting calendars, predator-proofing tips, and equipment reviews delivered straight to your inbox.</p>
+                        <h2>The Agrivia app is in development</h2>
+                        <p>There is no store listing yet. Email if you want a note when new guides go up, or when the app is publicly listed.</p>
                         <div class="hero-cta-group center-cta">
-                            <a href="mailto:support@agrivia.ai?subject=Subscribe%20to%20Hobby%20Farming%20Updates" class="btn btn-primary">Subscribe for Free</a>
-                            <a href="guides/index.html" class="btn btn-outline">Read Guides</a>
+                            <a href="mailto:support@agrivia.ai?subject=Agrivia%20guide%20and%20app%20notes" class="btn btn-primary">Email for notes</a>
+                            <a href="guides/index.html" class="btn btn-outline">Read guides</a>
                         </div>
                     </div>
                 </div>
             </section>
-
         </section>
 
-        <!-- VIEW 2: AI ADVISOR VIEW -->
         <section id="view-ai-advisor" class="page-view">
             <div class="container section-padding">
                 <div class="page-header text-center">
-                    <span class="badge-tag">Hobby Farm Advisor</span>
-                    <h1 class="page-title">Ask the Agrivia Growing Advisor</h1>
-                    <p class="page-subtitle">Instant guidance on raised bed irrigation, predator proofing, poultry care, and organic pest control.</p>
+                    <span class="badge-tag">Advisor</span>
+                    <h1 class="page-title">Ask Agrivia</h1>
+                    <p class="page-subtitle">Same advisory API as the apps. Try questions about raised beds, a sick tomato leaf, cattle shade, or poultry netting. Guidance only — confirm with local extension or a vet.</p>
                 </div>
                 <div class="chat-shell paper-card">
                     <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
                         <div class="chat-empty" id="chatEmpty">
-                            <p id="chatGreeting">Ask any hobby farming or gardening question. For example: "What solar charger do I need for a 1-acre goat paddock?" or "How do I set up drip irrigation for 4 raised beds?"</p>
+                            <p id="chatGreeting">Ask a garden or livestock question. The greeting and answers come from the Agrivia API when it is reachable.</p>
                         </div>
                     </div>
                     <div class="chat-chips" id="chatChips"></div>
                     <form class="chat-form" id="chatForm">
-                        <label class="visually-hidden" for="chatInput">Hobby farm question</label>
-                        <textarea id="chatInput" name="query" class="form-input chat-input" rows="2" maxlength="2000" placeholder="Example: How do I stop raccoons from breaking into my chicken run?" required></textarea>
+                        <label class="visually-hidden" for="chatInput">Garden or livestock question</label>
+                        <textarea id="chatInput" name="query" class="form-input chat-input" rows="2" maxlength="2000" placeholder="Example: How much shade do six cattle need in a drylot?" required></textarea>
                         <button type="submit" class="btn btn-primary" id="chatSendBtn">Ask</button>
                     </form>
-                    <p class="chat-disclaimer">Guidance only, not a veterinary or agricultural prescription. Confirm treatments with local extension experts.</p>
+                    <p class="chat-disclaimer">Guidance only, not a diagnosis. Confirm treatment locally. Website chat is rate-limited so the farm API stays available for the app.</p>
                 </div>
             </div>
         </section>
-
     </main>
 
     <div class="cookie-banner" id="cookieBanner">
         <div class="cookie-content">
-            <p>We use cookies to ensure optimal functionality on our website. See our <a href="privacy.html">Privacy Policy</a> and <a href="affiliate-disclosure.html">Affiliate Disclosure</a>.</p>
+            <p>We store a local preference if you dismiss this notice. We do not currently run affiliate or analytics tracking. See our <a href="privacy.html">Privacy Policy</a>.</p>
             <div class="cookie-btns">
-                <button class="btn btn-primary btn-sm" onclick="acceptCookies()">Accept</button>
+                <button class="btn btn-primary btn-sm" onclick="acceptCookies()">OK</button>
             </div>
         </div>
     </div>
 
-    <!-- Site Footer -->
     <footer class="site-footer">
         <div class="container footer-grid">
             <div class="footer-col brand-col">
                 <div class="logo-text">Agrivia<span class="logo-badge">.ai</span></div>
-                <p class="footer-tagline">Independent equipment buying guides, predator fencing sizing, drip irrigation setups, and AI advice for hobby farmers and homesteaders.</p>
-                <p class="footer-affiliate-note">We independently evaluate agricultural equipment. When you buy through our links, we may earn an affiliate commission at no extra cost to you.</p>
+                <p class="footer-tagline">Guides for hobby farms, homesteads, backyard gardens, and people keeping cattle, goats, sheep, or poultry. A farm operations app is in development and is not in the public app stores yet.</p>
+                <p class="footer-affiliate-note">We may add affiliate links after a network accepts this site. We do not currently run affiliate tracking.</p>
             </div>
             <div class="footer-col">
-                <h4>Platform</h4>
+                <h4>On this site</h4>
                 <ul class="footer-links">
-                    <li><a href="#features" onclick="navigateTo('home', 'features')">Growing Modules</a></li>
-                    <li><a href="#ai-advisor" onclick="navigateTo('ai-advisor')">AI Hobby Advisor</a></li>
-                    <li><a href="#calculator" onclick="navigateTo('home', 'calculator')">Harvest Estimator</a></li>
+                    <li><a href="#ai-advisor" onclick="navigateTo('ai-advisor')">Advisor</a></li>
+                    <li><a href="#calculator" onclick="navigateTo('home', 'calculator')">Example calculator</a></li>
+                    <li><a href="guides/index.html">All guides</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Homestead Guides</h4>
+                <h4>Guides</h4>
                 <ul class="footer-links">
-                    <li><a href="guides/soil-moisture-sensors.html">Soil Moisture &amp; Pens</a></li>
-                    <li><a href="guides/electric-fence-chargers.html">Solar Predator Fencing</a></li>
-                    <li><a href="guides/cattle-heat-stress.html">Animal Heat Mitigation</a></li>
-                    <li><a href="guides/irrigation-controllers.html">Drip Hose Timers</a></li>
-                    <li><a href="guides/livestock-waterers.html">Freeze-Proof Drinkers</a></li>
-                    <li><a href="guides/index.html">All Buying Guides</a></li>
+                    <li><a href="guides/soil-moisture-sensors.html">Soil pens</a></li>
+                    <li><a href="guides/irrigation-controllers.html">Hose timers</a></li>
+                    <li><a href="guides/electric-fence-chargers.html">Livestock fencing</a></li>
+                    <li><a href="guides/livestock-waterers.html">Tanks and waterers</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Company &amp; Legal</h4>
+                <h4>Company</h4>
                 <ul class="footer-links">
-                    <li><a href="about.html">About Agrivia</a></li>
-                    <li><a href="privacy.html">Privacy Policy</a></li>
-                    <li><a href="terms.html">Terms of Service</a></li>
-                    <li><a href="affiliate-disclosure.html">Affiliate Disclosure</a></li>
-                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="privacy.html">Privacy</a></li>
+                    <li><a href="terms.html">Terms</a></li>
+                    <li><a href="affiliate-disclosure.html">Disclosure</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
             <div class="container bottom-flex">
-                <p>&copy; 2026 Agrivia. All rights reserved. <strong>agrivia.ai</strong></p>
+                <p>&copy; 2026 Agrivia. <strong>agrivia.ai</strong></p>
             </div>
         </div>
     </footer>

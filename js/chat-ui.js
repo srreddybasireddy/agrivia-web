@@ -176,10 +176,10 @@
         });
 
         const defaultHobbyChips = [
+            "Shade for six cattle in a drylot",
             "Drip kit for raised beds",
-            "Chicken coop solar predator fence",
-            "Prevent tomato leaf blight",
-            "Freeze-proof poultry waterer"
+            "Electric fence for goats and poultry",
+            "Freeze-proof cattle tank"
         ];
 
         api.getWelcomeGreeting(deviceUuid, category, new Date().getHours())

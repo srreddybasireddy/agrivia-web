@@ -1,3 +1,0 @@
-# Agrivia.ai Authorized Digital Sellers (ads.txt)
-# Replace pub-XXXXXXXXXXXXXXXX with your real AdSense Publisher ID upon approval
-google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

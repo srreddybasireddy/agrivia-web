@@ -107,25 +107,21 @@ function updateROICalculation() {
 
     if (!acreageInput || !cattleInput) return;
 
-    const acres = parseInt(acreageInput.value, 10);
-    const cattle = parseInt(cattleInput.value, 10);
+    const beds = parseInt(acreageInput.value, 10);
+    const head = parseInt(cattleInput.value, 10);
     const crop = cropTypeSelect ? cropTypeSelect.value : 'specialty';
 
-    // Update label displays for hobby farming & homesteads
-    const beds = acres * 5;
-    const acreageLabel = acres === 1 ? `1 Acre (or ~${beds} Raised Beds)` : `${acres} Acres (or ~${beds} Raised Beds)`;
-    document.getElementById('acreageVal').textContent = acreageLabel;
-    document.getElementById('cattleVal').textContent = `${cattle.toLocaleString()} Chickens / Small Animals`;
+    document.getElementById('acreageVal').textContent = beds === 1 ? '1 bed' : `${beds} beds`;
+    document.getElementById('cattleVal').textContent = head === 1 ? '1 head' : `${head} head`;
 
-    // Multipliers based on crop sensitivity
-    let cropMult = 450.0; // $ fresh harvest value per acre / bed group
-    if (crop === 'corn') cropMult = 320.0;
-    if (crop === 'soybeans') cropMult = 240.0;
-    if (crop === 'wheat') cropMult = 280.0;
+    let cropMult = 60;
+    if (crop === 'corn') cropMult = 40;
+    if (crop === 'soybeans') cropMult = 25;
+    if (crop === 'wheat') cropMult = 50;
 
-    const waterCalc = Math.round(acres * cropMult * 0.60);
-    const lossCalc = Math.round(cattle * 30.0);
-    const feedCalc = Math.round(acres * 150.0);
+    const waterCalc = Math.round(beds * cropMult);
+    const lossCalc = Math.round(head * 40);
+    const feedCalc = Math.round(beds * 12);
 
     const total = waterCalc + lossCalc + feedCalc;
 
