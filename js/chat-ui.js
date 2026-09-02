@@ -136,6 +136,7 @@
                 const answerText = result.answer.trim();
                 if (!answerText) {
                     appendNode(createStatus("No answer came back. Try a more specific farm question.", "empty"));
+                    showDefaultChips();
                     return;
                 }
                 const assistant = createMessage("assistant", answerText);
@@ -144,11 +145,7 @@
                 }
                 appendNode(assistant);
 
-                const followUps = result.suggestionChips.slice();
-                if (result.nextQuestionPrompt) {
-                    followUps.unshift(result.nextQuestionPrompt);
-                }
-                renderChips(chips, followUps, (label) => {
+                renderChips(chips, chipsAfterAnswer(query, result), (label) => {
                     sendQuery(label);
                 });
             } catch (err) {
@@ -157,6 +154,7 @@
                     ? "The advisor took too long. Try again."
                     : (err && err.message) || "The advisor could not answer that request.";
                 appendNode(createStatus(message, "error"));
+                showDefaultChips();
             } finally {
                 setBusy(false);
                 input.focus();
@@ -181,6 +179,64 @@
             "Electric fence for goats and poultry",
             "Freeze-proof cattle tank"
         ];
+
+        const afterAnswerChips = [
+            "What farm tasks should I focus on this week?",
+            "Give me seasonal tips for my region",
+        ];
+
+        function topicFollowUps(query, answer) {
+            const haystack = `${query} ${answer}`.toLowerCase();
+            if (/cow|cattle|calf|herd/.test(haystack)) {
+                return [
+                    "How much shade do they need in a drylot?",
+                    "What should change in their winter feed?",
+                ];
+            }
+            if (/goat|sheep/.test(haystack)) {
+                return [
+                    "What fencing works for goats on a small place?",
+                    "How do I keep water from freezing?",
+                ];
+            }
+            if (/chicken|poultry|hen|egg|coop/.test(haystack)) {
+                return [
+                    "How do I keep coop water from freezing?",
+                    "What should I check in the run this week?",
+                ];
+            }
+            if (/tomato|garden|raised bed|leaf|drip/.test(haystack)) {
+                return [
+                    "How often should I water raised beds this week?",
+                    "What should I photograph on a sick leaf?",
+                ];
+            }
+            return [];
+        }
+
+        function chipsAfterAnswer(query, result) {
+            const followUps = [];
+            const seen = {};
+            function add(label) {
+                const chip = (label || "").trim();
+                if (!chip || seen[chip]) {
+                    return;
+                }
+                seen[chip] = true;
+                followUps.push(chip);
+            }
+            (result.suggestionChips || []).forEach(add);
+            topicFollowUps(query, result.answer).forEach(add);
+            afterAnswerChips.forEach(add);
+            defaultHobbyChips.forEach(add);
+            return followUps.slice(0, 4);
+        }
+
+        function showDefaultChips() {
+            renderChips(chips, defaultHobbyChips, (label) => {
+                sendQuery(label);
+            });
+        }
 
         api.getWelcomeGreeting(deviceUuid, category, new Date().getHours())
             .then((welcome) => {

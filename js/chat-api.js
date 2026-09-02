@@ -102,13 +102,24 @@
         const nextFromNested = data.nextQuestion
             ? readableString(data.nextQuestion.prompt)
             : null;
+        const rootChips = Array.isArray(data.suggestionChips)
+            ? data.suggestionChips.filter((chip) => typeof chip === "string" && chip.trim())
+            : [];
+        const nestedChips = data.nextQuestion && Array.isArray(data.nextQuestion.suggestionChips)
+            ? data.nextQuestion.suggestionChips.filter((chip) => typeof chip === "string" && chip.trim())
+            : [];
+        const suggestionChips = [];
+        rootChips.concat(nestedChips).forEach((chip) => {
+            const label = chip.trim();
+            if (label && !suggestionChips.includes(label)) {
+                suggestionChips.push(label);
+            }
+        });
 
         return {
             answer: typeof data.answer === "string" ? data.answer : "",
             qaId: readableString(data.qaId),
-            suggestionChips: Array.isArray(data.suggestionChips)
-                ? data.suggestionChips.filter((chip) => typeof chip === "string" && chip.trim())
-                : [],
+            suggestionChips: suggestionChips,
             isProfileComplete: Boolean(data.isProfileComplete),
             nextQuestionPrompt: nextFromRoot || nextFromNested,
         };

@@ -1,3 +1,7 @@
-# Agrivia.ai Authorized Digital Sellers (ads.txt)
-# Replace pub-XXXXXXXXXXXXXXXX with your real Google AdSense Publisher ID upon application
-google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+# agrivia.ai ads.txt
+# Authorized Digital Sellers (IAB).
+# Google AdSense will be listed here after this site receives a real publisher ID.
+# Do not publish placeholder IDs such as pub-XXXXXXXXXXXXXXXX.
+#
+# After AdSense shows your ID, replace this file with exactly:
+# google.com, pub-YOUR_16_DIGIT_ID, DIRECT, f08c47fec0942fa0
