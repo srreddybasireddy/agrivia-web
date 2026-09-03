@@ -9,7 +9,18 @@
  * so this Worker talks HTTPS to nginx. Do not orange-cloud api (mobile app).
  */
 
-const ALLOWED = new Set(["/chat", "/chat/rate", "/welcome_greeting"]);
+const ALLOWED_CHAT = new Set(["/chat", "/chat/rate", "/welcome_greeting"]);
+const ALLOWED_FARM_EXACT = new Set([
+    "/auth/config",
+    "/auth/google",
+    "/auth/me",
+    "/auth/logout",
+    "/register",
+    "/users",
+    "/generic_assets",
+    "/cattle",
+    "/crops",
+]);
 const MAX_QUERY_LENGTH = 2000;
 const PER_IP_WINDOW_MS = 2000;
 const GLOBAL_WINDOW_MS = 1000;
@@ -52,6 +63,36 @@ async function isRateLimited(cache, key, windowMs, maxHits) {
         })
     );
     return false;
+}
+
+function isFarmPath(path) {
+    if (ALLOWED_FARM_EXACT.has(path)) {
+        return true;
+    }
+    return (
+        /^\/users\/[0-9a-f-]+\/profile$/i.test(path)
+        || /^\/generic_assets\/[0-9a-f-]+\//i.test(path)
+        || /^\/cattle\/[0-9a-f-]+$/i.test(path)
+        || /^\/crops\/[0-9a-f-]+$/i.test(path)
+    );
+}
+
+async function proxyFarm(request, env, path) {
+    const incoming = new URL(request.url);
+    const headers = { Accept: "application/json" };
+    const authorization = request.headers.get("Authorization");
+    if (authorization) {
+        headers.Authorization = authorization;
+    }
+    const init = {
+        method: request.method,
+        headers: headers,
+    };
+    if (request.method !== "GET" && request.method !== "HEAD") {
+        headers["Content-Type"] = request.headers.get("Content-Type") || "application/json";
+        init.body = await request.text();
+    }
+    return passOrigin(await fetchOrigin(env, `${path}${incoming.search}`, init));
 }
 
 async function enforceLimits(request) {
@@ -178,13 +219,17 @@ export default {
             return new Response(null, { status: 204 });
         }
 
-        if (!ALLOWED.has(path)) {
+        const isChat = ALLOWED_CHAT.has(path);
+        const farm = isFarmPath(path);
+        if (!isChat && !farm) {
             return json(404, { error: "Not found." });
         }
 
-        const limited = await enforceLimits(request);
-        if (limited) {
-            return limited;
+        if (isChat) {
+            const limited = await enforceLimits(request);
+            if (limited) {
+                return limited;
+            }
         }
 
         try {
@@ -196,6 +241,9 @@ export default {
             }
             if (path === "/welcome_greeting" && request.method === "GET") {
                 return await proxyWelcome(request, env);
+            }
+            if (farm) {
+                return await proxyFarm(request, env, path);
             }
             return json(405, { error: "Method not allowed." });
         } catch (err) {

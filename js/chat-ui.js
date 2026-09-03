@@ -93,9 +93,16 @@
             return;
         }
 
-        const deviceUuid = api.getOrCreateDeviceUuid();
         const category = config.category;
         let isSending = false;
+
+        function currentDeviceUuid() {
+            const auth = global.AgriviaAuth;
+            if (auth && auth.isSignedIn() && auth.getFarmUuid()) {
+                return auth.getFarmUuid();
+            }
+            return api.getOrCreateDeviceUuid();
+        }
 
         function setBusy(busy) {
             isSending = busy;
@@ -131,6 +138,7 @@
             setBusy(true);
 
             try {
+                const deviceUuid = currentDeviceUuid();
                 const result = await api.getAdvisoryResponse(deviceUuid, category, query);
                 pending.remove();
                 const answerText = result.answer.trim();
@@ -238,7 +246,7 @@
             });
         }
 
-        api.getWelcomeGreeting(deviceUuid, category, new Date().getHours())
+        api.getWelcomeGreeting(currentDeviceUuid(), category, new Date().getHours())
             .then((welcome) => {
                 if (welcome.greeting && greetingEl) {
                     setText(greetingEl, welcome.greeting);

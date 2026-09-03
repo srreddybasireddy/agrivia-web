@@ -77,7 +77,7 @@ function handleHashRouting() {
         return;
     }
 
-    const validViews = ['home', 'ai-advisor'];
+    const validViews = ['home', 'ai-advisor', 'farm'];
 
     if (HOME_SECTIONS[hash]) {
         navigateTo('home', HOME_SECTIONS[hash]);

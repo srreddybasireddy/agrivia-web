@@ -49,10 +49,21 @@
                 <a href="guides/index.html" class="nav-item" id="nav-blog">Guides</a>
                 <a href="#ai-advisor" class="nav-item" id="nav-ai-advisor" onclick="navigateTo('ai-advisor')">Advisor</a>
                 <a href="#calculator" class="nav-item" id="nav-calculator" onclick="navigateTo('home', 'calculator')">Calculator</a>
+                <a href="#farm" class="nav-item" id="nav-farm" hidden onclick="navigateTo('farm')">Farm</a>
                 <a href="about.html" class="nav-item" id="nav-about">About</a>
                 <a href="contact.html" class="nav-item" id="nav-contact">Contact</a>
             </nav>
             <div class="header-actions">
+                <div class="auth-slot" id="authSlot">
+                    <div id="authGuest">
+                        <div id="googleSignInBtn" class="google-signin-mount"></div>
+                        <p class="auth-unavailable" id="authUnavailable" hidden>Sign in is not configured yet. Chat still works.</p>
+                    </div>
+                    <div id="authSignedIn" hidden>
+                        <span class="auth-email" id="authEmailLabel"></span>
+                        <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
+                    </div>
+                </div>
                 <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation" onclick="toggleMobileMenu()">
                     <span class="bar"></span>
                     <span class="bar"></span>
@@ -304,7 +315,54 @@
                         <textarea id="chatInput" name="query" class="form-input chat-input" rows="2" maxlength="2000" placeholder="Example: How much shade do six cattle need in a drylot?" required></textarea>
                         <button type="submit" class="btn btn-primary" id="chatSendBtn">Ask</button>
                     </form>
-                    <p class="chat-disclaimer">Guidance only, not a diagnosis. Confirm treatment locally. Website chat is rate-limited so the farm API stays available for the app.</p>
+                    <p class="chat-disclaimer">Guidance only, not a diagnosis. Confirm treatment locally. Chat works without an account. Sign in if you want the advisor to save a farm profile. Website chat is rate-limited so the farm API stays available for the app.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-farm" class="page-view">
+            <div class="container section-padding">
+                <div class="page-header text-center">
+                    <span class="badge-tag">Farm</span>
+                    <h1 class="page-title">Your farm profile</h1>
+                    <p class="page-subtitle">Optional. Guests can still use Advisor. After Google sign-in, profile and assets are stored on the same API as the apps.</p>
+                </div>
+                <div class="paper-card farm-guest" id="farmGuest">
+                    <p>Sign in with Google in the header to save a profile, animals, and beds. Advisor does not require this.</p>
+                </div>
+                <div id="farmSigned" hidden>
+                    <form class="paper-card farm-card" id="farmProfileForm">
+                        <h2>Profile</h2>
+                        <p class="farm-status" id="farmStatus"></p>
+                        <p class="farm-aggregates" id="farmAggregates"></p>
+                        <label class="farm-label" for="farmUserName">Name</label>
+                        <input class="form-input" id="farmUserName" name="userName" maxlength="100" autocomplete="name">
+                        <label class="farm-label" for="farmEmail">Email</label>
+                        <input class="form-input" id="farmEmail" name="email" type="email" maxlength="255" autocomplete="email">
+                        <label class="farm-label" for="farmPhone">Mobile</label>
+                        <input class="form-input" id="farmPhone" name="phone" maxlength="20" autocomplete="tel">
+                        <label class="farm-label" for="farmZip">ZIP</label>
+                        <input class="form-input" id="farmZip" name="zip" maxlength="20" autocomplete="postal-code">
+                        <label class="farm-label" for="farmAddress">Place / address</label>
+                        <input class="form-input" id="farmAddress" name="address" maxlength="255" autocomplete="street-address">
+                        <button type="submit" class="btn btn-primary">Save profile</button>
+                    </form>
+                    <form class="paper-card farm-card" id="farmAssetForm">
+                        <h2>Add an asset</h2>
+                        <p class="farm-status" id="farmAssetStatus"></p>
+                        <label class="farm-label" for="farmAssetKind">Kind</label>
+                        <select class="form-input" id="farmAssetKind">
+                            <option value="Garden">Garden / raised beds</option>
+                            <option value="Cattle">Cattle</option>
+                            <option value="Crops">Crops</option>
+                            <option value="Poultry &amp; Eggs">Poultry</option>
+                            <option value="Birds &amp; Bees">Birds and bees</option>
+                            <option value="Fish &amp; Shrimp">Fish and shrimp</option>
+                        </select>
+                        <label class="farm-label" for="farmAssetTitle">Name</label>
+                        <input class="form-input" id="farmAssetTitle" maxlength="150" placeholder="e.g. six drylot cows, tomato bed">
+                        <button type="submit" class="btn btn-primary">Save asset</button>
+                    </form>
                 </div>
             </div>
         </section>
@@ -363,6 +421,9 @@
 
     <script src="js/config.js"></script>
     <script src="js/chat-api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/farm-api.js"></script>
+    <script src="js/farm-ui.js"></script>
     <script src="js/chat-ui.js"></script>
     <script src="js/main.js"></script>
 </body>

@@ -52,7 +52,10 @@
                 <li><strong>Website chat:</strong> the browser stores an anonymous device ID in localStorage and sends
                     your questions to our farm advisory API (<strong>api.agrivia.ai</strong>) through a Cloudflare
                     Worker on <strong>agrivia.ai/api</strong>. We use that ID to keep a conversation thread. Do not send
-                    passwords or financial account numbers in chat.</li>
+                    passwords or financial account numbers in chat. Chat does not require a Google account.</li>
+                <li><strong>Optional Google sign-in:</strong> if you sign in, Google sends us an ID token. We store a
+                    Google account id, email, and a farm profile (name, phone, ZIP, address, animals and beds you add)
+                    on the Agrivia API. Signing in is optional. We do not receive your Google password.</li>
             </ul>
             <p>We do not currently run Google Analytics or affiliate-network tracking pixels on this site.</p>
 
