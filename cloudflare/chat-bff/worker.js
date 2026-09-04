@@ -65,12 +65,38 @@ async function isRateLimited(cache, key, windowMs, maxHits) {
     return false;
 }
 
+// API allowlist only — the website does not show this as a picker.
+const ALLOWED_CATEGORIES = new Set([
+    "General",
+    "Crops",
+    "Cattle",
+    "Garden",
+    "Poultry & Eggs",
+    "Birds & Bees",
+    "Fish & Shrimp",
+]);
+
+function normalizeCategory(value) {
+    if (typeof value !== "string") {
+        return "General";
+    }
+    const trimmed = value.trim();
+    for (const known of ALLOWED_CATEGORIES) {
+        if (known.toLowerCase() === trimmed.toLowerCase()) {
+            return known;
+        }
+    }
+    return "General";
+}
+
 function isFarmPath(path) {
     if (ALLOWED_FARM_EXACT.has(path)) {
         return true;
     }
     return (
         /^\/users\/[0-9a-f-]+\/profile$/i.test(path)
+        || /^\/users\/[0-9a-f-]+\/pending-details$/i.test(path)
+        || /^\/users\/[0-9a-f-]+\/asset-profile-answer$/i.test(path)
         || /^\/generic_assets\/[0-9a-f-]+\//i.test(path)
         || /^\/cattle\/[0-9a-f-]+$/i.test(path)
         || /^\/crops\/[0-9a-f-]+$/i.test(path)
@@ -148,7 +174,7 @@ async function proxyChat(request, env) {
         },
         body: JSON.stringify({
             deviceUuid: deviceUuid,
-            category: "General",
+            category: normalizeCategory(payload.category),
             query: query.slice(0, MAX_QUERY_LENGTH),
             summarize: false,
         }),
@@ -196,7 +222,7 @@ async function proxyWelcome(request, env) {
 
     const params = new URLSearchParams({
         device_uuid: deviceUuid,
-        category: "General",
+        category: normalizeCategory(incoming.searchParams.get("category")),
     });
     const hour = incoming.searchParams.get("local_hour");
     if (hour !== null && hour !== "") {

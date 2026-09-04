@@ -15,6 +15,11 @@
         }
     }
 
+    function isSignedIn() {
+        const auth = global.AgriviaAuth;
+        return Boolean(auth && auth.isSignedIn() && auth.getFarmUuid());
+    }
+
     function createMessage(role, text) {
         const wrap = document.createElement("div");
         wrap.className = `chat-message chat-message-${role}`;
@@ -31,6 +36,71 @@
         wrap.className = `chat-status chat-status-${kind}`;
         wrap.textContent = text;
         return wrap;
+    }
+
+    function formatAcres(acres) {
+        if (!acres || acres <= 0) {
+            return "";
+        }
+        return acres === 1 ? "1 acre" : `${acres} acres`;
+    }
+
+    function formatDate(value) {
+        if (!value) {
+            return "";
+        }
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+            return "";
+        }
+        return date.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+    }
+
+    function createAssetCard(asset) {
+        const card = document.createElement("aside");
+        card.className = "chat-asset-card";
+
+        const kicker = document.createElement("p");
+        kicker.className = "chat-asset-kicker";
+        kicker.textContent = "Saved to your farm";
+        card.appendChild(kicker);
+
+        const title = document.createElement("p");
+        title.className = "chat-asset-title";
+        title.textContent = asset.title;
+        card.appendChild(title);
+
+        const parts = [asset.kind];
+        const acres = formatAcres(asset.acres);
+        if (acres) {
+            parts.push(acres);
+        }
+        if (asset.subtitle) {
+            parts.push(asset.subtitle);
+        }
+        const planted = formatDate(asset.plantedDate);
+        if (planted) {
+            parts.push(`Planted ${planted}`);
+        }
+        const meta = document.createElement("p");
+        meta.className = "chat-asset-meta";
+        meta.textContent = parts.join(" · ");
+        card.appendChild(meta);
+        return card;
+    }
+
+    function createFarmUpdatedCard() {
+        const card = document.createElement("aside");
+        card.className = "chat-asset-card";
+        const kicker = document.createElement("p");
+        kicker.className = "chat-asset-kicker";
+        kicker.textContent = "Farm updated";
+        card.appendChild(kicker);
+        const body = document.createElement("p");
+        body.className = "chat-asset-meta";
+        body.textContent = "Open Farm to see the latest totals.";
+        card.appendChild(body);
+        return card;
     }
 
     function renderChips(container, chips, onPick) {
@@ -89,11 +159,13 @@
         const empty = el("chatEmpty");
         const chips = el("chatChips");
         const greetingEl = el("chatGreeting");
+        const categoryRow = el("chatCategories");
+        const saveHint = el("chatSaveHint");
         if (!form || !input || !messages) {
             return;
         }
 
-        const category = config.category;
+        let selectedCategory = config.category || "General";
         let isSending = false;
 
         function currentDeviceUuid() {
@@ -102,6 +174,40 @@
                 return auth.getFarmUuid();
             }
             return api.getOrCreateDeviceUuid();
+        }
+
+        function isKnownCategory(name) {
+            const allowed = config.chatCategories || [];
+            return allowed.indexOf(name) !== -1 && name !== "General";
+        }
+
+        function inferChatCategory(text) {
+            const haystack = (text || "").toLowerCase();
+            if (!haystack) {
+                return "";
+            }
+            const rules = [
+                { category: "Fish & Shrimp", pattern: /\b(fish|shrimp|prawn|tilapia|catfish|pond|aquaculture)\b/ },
+                { category: "Birds & Bees", pattern: /\b(bee|bees|hive|honey|apiary)\b/ },
+                { category: "Poultry & Eggs", pattern: /\b(chicken|chickens|hen|hens|rooster|poultry|egg|eggs|coop|broiler|layer)\b/ },
+                { category: "Cattle", pattern: /\b(cattle|cow|cows|calf|calves|herd|steer|heifer|bull|goat|goats|sheep|lamb|pig|pigs|hog|horse|horses|livestock)\b/ },
+                { category: "Crops", pattern: /\b(acre|acres|crop|crops|harvest|soybean|wheat|cotton|corn field)\b/ },
+                { category: "Garden", pattern: /\b(garden|gardens|tomato|tomatoes|pepper|lettuce|kale)\b|raised beds?|drip kit/ },
+            ];
+            for (let i = 0; i < rules.length; i += 1) {
+                if (rules[i].pattern.test(haystack)) {
+                    return rules[i].category;
+                }
+            }
+            return "";
+        }
+
+        function categoryForQuery(query) {
+            const inferred = inferChatCategory(query);
+            if (inferred) {
+                selectedCategory = inferred;
+            }
+            return selectedCategory || config.category || "General";
         }
 
         function setBusy(busy) {
@@ -124,6 +230,68 @@
             messages.scrollTop = messages.scrollHeight;
         }
 
+        function renderActiveCategory() {
+            if (!categoryRow) {
+                return;
+            }
+            categoryRow.replaceChildren();
+            const active = isKnownCategory(selectedCategory) ? selectedCategory : "";
+            if (!active) {
+                categoryRow.hidden = true;
+                return;
+            }
+            categoryRow.hidden = false;
+            const label = document.createElement("span");
+            label.className = "chat-categories-label";
+            label.textContent = "Topic";
+            const badge = document.createElement("span");
+            badge.className = "chat-category-badge";
+            badge.textContent = active;
+            categoryRow.appendChild(label);
+            categoryRow.appendChild(badge);
+        }
+
+        function setChatCategory(name) {
+            if (isKnownCategory(name)) {
+                selectedCategory = name;
+            } else {
+                selectedCategory = config.category || "General";
+            }
+            renderActiveCategory();
+        }
+
+        function syncGuestHint() {
+            if (saveHint) {
+                saveHint.hidden = isSignedIn();
+            }
+        }
+
+        async function showFarmFeedback(before) {
+            const farmUi = global.AgriviaFarmUi;
+            if (!isSignedIn() || !farmUi) {
+                return;
+            }
+            if (!before) {
+                await farmUi.refresh();
+                return;
+            }
+            let diff = await farmUi.refreshAndDiff(before);
+            if (!diff.added.length && !diff.totalsChanged) {
+                await new Promise((resolve) => setTimeout(resolve, 1200));
+                diff = await farmUi.refreshAndDiff(before);
+            }
+            if (diff.added.length) {
+                setChatCategory(diff.added[0].kind);
+                diff.added.slice(0, 3).forEach((asset) => {
+                    appendNode(createAssetCard(asset));
+                });
+                return;
+            }
+            if (diff.totalsChanged) {
+                appendNode(createFarmUpdatedCard());
+            }
+        }
+
         async function sendQuery(rawQuery) {
             const query = (rawQuery || "").trim().slice(0, config.maxQueryLength);
             if (!query || isSending) {
@@ -137,8 +305,13 @@
             appendNode(pending);
             setBusy(true);
 
+            const farmUi = global.AgriviaFarmUi;
+            const before = isSignedIn() && farmUi ? farmUi.getSnapshot() : null;
+
             try {
                 const deviceUuid = currentDeviceUuid();
+                const category = categoryForQuery(query);
+                renderActiveCategory();
                 const result = await api.getAdvisoryResponse(deviceUuid, category, query);
                 pending.remove();
                 const answerText = result.answer.trim();
@@ -152,6 +325,11 @@
                     addRatingRow(assistant, result.qaId, deviceUuid);
                 }
                 appendNode(assistant);
+                try {
+                    await showFarmFeedback(before);
+                } catch (err) {
+                    // Chat already succeeded; farm refresh is best-effort.
+                }
 
                 renderChips(chips, chipsAfterAnswer(query, result), (label) => {
                     sendQuery(label);
@@ -233,10 +411,14 @@
                 seen[chip] = true;
                 followUps.push(chip);
             }
+            add(result.nextQuestionPrompt);
             (result.suggestionChips || []).forEach(add);
+            const hasApiChips = followUps.length > 0;
             topicFollowUps(query, result.answer).forEach(add);
-            afterAnswerChips.forEach(add);
-            defaultHobbyChips.forEach(add);
+            if (!hasApiChips) {
+                afterAnswerChips.forEach(add);
+                defaultHobbyChips.forEach(add);
+            }
             return followUps.slice(0, 4);
         }
 
@@ -246,7 +428,20 @@
             });
         }
 
-        api.getWelcomeGreeting(currentDeviceUuid(), category, new Date().getHours())
+        renderActiveCategory();
+        syncGuestHint();
+        global.addEventListener("agrivia-auth-changed", () => {
+            if (!isSignedIn()) {
+                setChatCategory("");
+            }
+            syncGuestHint();
+        });
+        global.addEventListener("agrivia-chat-category", (event) => {
+            const name = event && event.detail && event.detail.category;
+            setChatCategory(name);
+        });
+
+        api.getWelcomeGreeting(currentDeviceUuid(), config.category || "General", new Date().getHours())
             .then((welcome) => {
                 if (welcome.greeting && greetingEl) {
                     setText(greetingEl, welcome.greeting);

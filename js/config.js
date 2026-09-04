@@ -12,6 +12,22 @@
     global.AgriviaConfig = {
         apiBasePath: useWorker ? "/api" : "https://api.agrivia.ai/api",
         category: "General",
+        // Same names the farm API accepts. Advisor infers one from chat; do not show this as a picker.
+        chatCategories: [
+            "General",
+            "Crops",
+            "Cattle",
+            "Garden",
+            "Poultry & Eggs",
+            "Birds & Bees",
+            "Fish & Shrimp",
+        ],
+        genericAssetCategories: [
+            "Garden",
+            "Poultry & Eggs",
+            "Birds & Bees",
+            "Fish & Shrimp",
+        ],
         deviceUuidStorageKey: "agrivia_web_device_uuid",
         chatTimeoutMs: 60000,
         welcomeTimeoutMs: 15000,

@@ -60,6 +60,7 @@
                         <p class="auth-unavailable" id="authUnavailable" hidden>Sign in is not configured yet. Chat still works.</p>
                     </div>
                     <div id="authSignedIn" hidden>
+                        <span class="farm-header-pill" id="farmHeaderPill" hidden></span>
                         <span class="auth-email" id="authEmailLabel"></span>
                         <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
                     </div>
@@ -130,7 +131,7 @@
                             <div class="demo-info">
                                 <span class="badge-tag">Advisor</span>
                                 <h2>Ask about beds, cattle, goats, and coops</h2>
-                                <p>Questions go to Agrivia’s existing advisory API. This website uses the General category and a browser-only ID. It does not load a farm profile or GPS. Replies are guidance, not a vet or extension visit.</p>
+                                <p>Questions go to Agrivia’s existing advisory API. Guests chat with a browser-only ID. After you sign in, Advisor can save crops and animals to the same farm profile the apps use. Replies are guidance, not a vet or extension visit.</p>
                                 <a href="#ai-advisor" class="btn btn-primary" onclick="navigateTo('ai-advisor')">Open the advisor</a>
                             </div>
                             <div class="demo-image-col">
@@ -304,6 +305,8 @@
                     <p class="page-subtitle">Same advisory API as the apps. Try questions about raised beds, a sick tomato leaf, cattle shade, or poultry netting. Guidance only — confirm with local extension or a vet.</p>
                 </div>
                 <div class="chat-shell paper-card">
+                    <div class="chat-categories" id="chatCategories" hidden></div>
+                    <p class="chat-save-hint" id="chatSaveHint" hidden>Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
                     <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
                         <div class="chat-empty" id="chatEmpty">
                             <p id="chatGreeting">Ask a garden or livestock question. The greeting and answers come from the Agrivia API when it is reachable.</p>
@@ -324,17 +327,20 @@
             <div class="container section-padding">
                 <div class="page-header text-center">
                     <span class="badge-tag">Farm</span>
-                    <h1 class="page-title">Your farm profile</h1>
-                    <p class="page-subtitle">Optional. Guests can still use Advisor. After Google sign-in, profile and assets are stored on the same API as the apps.</p>
+                    <h1 class="page-title">Your farm</h1>
+                    <p class="page-subtitle">Optional. Guests can still use Advisor. After Google sign-in, this page shows assets the advisor saved, plus a profile you can edit.</p>
                 </div>
                 <div class="paper-card farm-guest" id="farmGuest">
                     <p>Sign in with Google in the header to save a profile, animals, and beds. Advisor does not require this.</p>
                 </div>
                 <div id="farmSigned" hidden>
+                    <div class="farm-kpi" id="farmKpiBanner"></div>
+                    <p class="farm-next" id="farmNextQuestion" hidden></p>
+                    <div class="farm-asset-grid" id="farmAssetGrid"></div>
+                    <p class="farm-empty" id="farmEmpty" hidden>Nothing saved yet. Ask Advisor about what you keep, or add one below.</p>
                     <form class="paper-card farm-card" id="farmProfileForm">
                         <h2>Profile</h2>
                         <p class="farm-status" id="farmStatus"></p>
-                        <p class="farm-aggregates" id="farmAggregates"></p>
                         <label class="farm-label" for="farmUserName">Name</label>
                         <input class="form-input" id="farmUserName" name="userName" maxlength="100" autocomplete="name">
                         <label class="farm-label" for="farmEmail">Email</label>

@@ -1371,6 +1371,25 @@ input[type="range"] {
     gap: 0.6rem;
 }
 
+#authSignedIn:not([hidden]) {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.farm-header-pill {
+    font-size: 0.78rem;
+    color: var(--leaf-deep);
+    background: #E8EDE4;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    max-width: 16rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .auth-email {
     font-size: 0.85rem;
     color: var(--ink-3);
@@ -1416,6 +1435,147 @@ input[type="range"] {
     color: var(--ink-2);
 }
 
+.farm-kpi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    justify-content: center;
+    max-width: 52rem;
+    margin: 0 auto 1.25rem;
+}
+
+.farm-kpi-chip {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    background: var(--raised);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    color: var(--ink-2);
+}
+
+.farm-kpi-chip strong {
+    color: var(--ink);
+    font-size: 1.05rem;
+}
+
+.farm-next {
+    max-width: 52rem;
+    margin: 0 auto 1.1rem;
+    text-align: center;
+    color: var(--ink-2);
+    font-size: 0.95rem;
+}
+
+.farm-empty {
+    max-width: 36rem;
+    margin: 0 auto 1.5rem;
+    text-align: center;
+    color: var(--ink-3);
+}
+
+.farm-asset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+    gap: 1rem;
+    max-width: 52rem;
+    margin: 0 auto 1.75rem;
+}
+
+.farm-asset-card {
+    background: var(--raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    cursor: pointer;
+}
+
+.farm-asset-card:focus {
+    outline: 2px solid var(--leaf);
+    outline-offset: 2px;
+}
+
+.farm-asset-kind {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--leaf);
+}
+
+.farm-asset-card h3 {
+    font-size: 1.1rem;
+}
+
+.farm-asset-meta,
+.farm-asset-roi {
+    font-size: 0.88rem;
+    color: var(--ink-2);
+}
+
+.farm-asset-alert {
+    font-size: 0.85rem;
+    color: var(--danger);
+}
+
+.chat-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+}
+
+.chat-categories-label {
+    font-size: 0.8rem;
+    color: var(--ink-3);
+    margin-right: 0.2rem;
+}
+
+.chat-category-badge {
+    font-size: 0.85rem;
+    color: var(--leaf-deep);
+    background: #E8EDE4;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+}
+
+.chat-save-hint {
+    font-size: 0.88rem;
+    color: var(--ink-3);
+}
+
+.chat-asset-card {
+    align-self: flex-start;
+    max-width: 90%;
+    background: #E8EDE4;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1.05rem;
+}
+
+.chat-asset-kicker {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--leaf);
+}
+
+.chat-asset-title {
+    color: var(--ink);
+    font-weight: 600;
+    margin-top: 0.15rem;
+}
+
+.chat-asset-meta {
+    font-size: 0.88rem;
+    color: var(--ink-2);
+}
+
 @media (max-width: 768px) {
     .guide-article {
         padding: 1.5rem 1rem;
@@ -1423,7 +1583,8 @@ input[type="range"] {
     .pros-cons-grid {
         grid-template-columns: 1fr;
     }
-    .auth-email {
+    .auth-email,
+    .farm-header-pill {
         display: none;
     }
 }
