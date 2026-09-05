@@ -115,6 +115,24 @@
         });
     }
 
+    function consumePendingAsk() {
+        const params = new URLSearchParams(window.location.search);
+        const ask = (params.get("ask") || "").trim();
+        if (!ask) {
+            return "";
+        }
+        params.delete("ask");
+        const next = params.toString();
+        const hash = window.location.hash || "#ai-advisor";
+        const url = next
+            ? `${window.location.pathname}?${next}${hash}`
+            : `${window.location.pathname}${hash}`;
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, "", url);
+        }
+        return ask;
+    }
+
     function addRatingRow(parent, qaId, deviceUuid) {
         const row = document.createElement("div");
         row.className = "chat-rating";
@@ -435,6 +453,16 @@
             });
         }
 
+        if (chips) {
+            chips.addEventListener("click", (event) => {
+                const chip = event.target.closest("[data-query]");
+                if (!chip || isSending) {
+                    return;
+                }
+                sendQuery(chip.getAttribute("data-query"));
+            });
+        }
+
         renderActiveCategory();
         syncGuestHint();
         global.addEventListener("agrivia-auth-changed", () => {
@@ -447,6 +475,17 @@
             const name = event && event.detail && event.detail.category;
             setChatCategory(name);
         });
+
+        const pendingAsk = consumePendingAsk();
+        if (pendingAsk) {
+            if (typeof global.navigateTo === "function") {
+                global.navigateTo("ai-advisor");
+            } else {
+                window.location.hash = "ai-advisor";
+            }
+            sendQuery(pendingAsk);
+            return;
+        }
 
         api.getWelcomeGreeting(currentDeviceUuid(), config.category || "General", new Date().getHours())
             .then((welcome) => {

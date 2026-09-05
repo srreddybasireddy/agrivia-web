@@ -124,6 +124,23 @@ textarea:focus-visible {
     border: 0;
 }
 
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -3rem;
+    z-index: 2001;
+    background: var(--leaf-deep);
+    color: #FFFDF8;
+    padding: 0.55rem 0.9rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    top: 0.75rem;
+    color: #FFFDF8;
+}
+
 /* Buttons */
 .btn {
     display: inline-flex;
@@ -253,7 +270,7 @@ textarea:focus-visible {
 .main-nav {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.35rem;
 }
 
 .nav-item {
@@ -299,7 +316,7 @@ textarea:focus-visible {
 
 /* Hero */
 .hero-section {
-    padding: 4.5rem 0 3.5rem;
+    padding: 3.5rem 0 2.75rem;
 }
 
 .hero-bg-glow { display: none; }
@@ -326,16 +343,18 @@ textarea:focus-visible {
 .pulse-dot { display: none; }
 
 .hero-title {
-    font-size: clamp(2.1rem, 4vw, 3rem);
+    font-size: clamp(2.15rem, 4.2vw, 3.1rem);
     font-weight: 650;
-    margin-bottom: 1rem;
+    margin-bottom: 0.85rem;
+    max-width: 16ch;
 }
 
 .hero-subtitle {
-    font-size: 1.125rem;
-    line-height: 1.65;
-    margin-bottom: 1.75rem;
-    max-width: 38rem;
+    font-size: 1.15rem;
+    line-height: 1.55;
+    margin-bottom: 1.4rem;
+    max-width: 34rem;
+    color: var(--ink-2);
 }
 
 .hero-cta-group {
@@ -356,15 +375,120 @@ textarea:focus-visible {
     margin: 0 auto;
 }
 
+.hero-starters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.15rem;
+}
+
+.hero-starters-label {
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-right: 0.15rem;
+}
+
+.hero-trust,
+.trust-line,
+.hero-caption {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--ink-3);
+}
+
+.hero-trust {
+    margin-top: 1rem;
+    max-width: 36rem;
+}
+
+.hero-caption {
+    margin-top: 0.65rem;
+    text-align: center;
+}
+
+.trust-line {
+    margin: 0.65rem 0 1rem;
+}
+
+.demo-starters {
+    margin: 0 0 1.15rem;
+}
+
 .glass-float-card { display: none; }
 
 /* Sections */
 .features-section,
+.start-path-section,
 .ai-demo-section,
 .calculator-section,
 .blog-section,
 .download-section {
-    padding: 4.5rem 0;
+    padding: 3.75rem 0;
+}
+
+.path-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.15rem;
+}
+
+.path-card {
+    padding: 1.35rem 1.4rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.path-card:hover {
+    border-color: var(--leaf);
+}
+
+.path-num {
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ochre);
+}
+
+.path-card h3 {
+    font-size: 1.2rem;
+}
+
+.path-card p {
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.guide-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: -0.5rem 0 1.5rem;
+}
+
+.filter-chip {
+    background: var(--raised);
+    border: 1px solid var(--rule);
+    color: var(--ink-2);
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-family: var(--font-main);
+    cursor: pointer;
+    min-height: 36px;
+}
+
+.filter-chip:hover,
+.filter-chip[aria-pressed="true"] {
+    border-color: var(--leaf);
+    color: var(--leaf-deep);
+    background: #E8EDE4;
 }
 
 .section-header { margin-bottom: 2.25rem; }
@@ -380,6 +504,15 @@ textarea:focus-visible {
 }
 
 .section-header.text-center .section-desc { margin: 0 auto; }
+
+.guides-advisor-cta {
+    margin-top: 0.85rem;
+    font-size: 0.98rem;
+}
+
+.guide-filters {
+    justify-content: center;
+}
 
 .building-list {
     list-style: none;
@@ -495,9 +628,16 @@ input[type="range"] {
 
 .res-amount {
     font-family: var(--font-heading);
-    font-size: 2.1rem;
+    font-size: 1.85rem;
     font-weight: 650;
-    color: var(--ink);
+    color: var(--ink-2);
+}
+
+.res-note {
+    margin-top: 0.45rem;
+    font-size: 0.82rem;
+    color: var(--ink-3);
+    line-height: 1.4;
 }
 
 .result-breakdown { margin-top: 1.15rem; }
@@ -527,7 +667,35 @@ input[type="range"] {
     gap: 1.25rem;
 }
 
-.blog-card { overflow: hidden; }
+.blog-card {
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+}
+
+.blog-card:hover {
+    border-color: var(--leaf);
+}
+
+.blog-card-hit {
+    display: block;
+    padding: 1.35rem 1.4rem 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+}
+
+.blog-card-hit h3 {
+    color: var(--ink);
+}
+
+.blog-card-hit p {
+    color: var(--ink-2);
+}
+
+.blog-card-hit .read-more-link {
+    display: inline-block;
+    margin-top: 0.35rem;
+}
 
 .blog-img-placeholder {
     display: none;
@@ -699,6 +867,8 @@ input[type="range"] {
 }
 
 .query-chip {
+    display: inline-flex;
+    align-items: center;
     background: var(--paper);
     border: 1px solid var(--rule);
     color: var(--ink);
@@ -708,6 +878,8 @@ input[type="range"] {
     cursor: pointer;
     font-family: var(--font-main);
     line-height: 1.35;
+    text-decoration: none;
+    min-height: 36px;
 }
 
 .query-chip.active,
@@ -739,6 +911,37 @@ input[type="range"] {
 .chat-disclaimer {
     font-size: 0.8rem;
     color: var(--ink-3);
+}
+
+.chat-empty {
+    text-align: left;
+    padding: 0.35rem 0 0.15rem;
+}
+
+.chat-empty-kicker {
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ochre);
+    margin-bottom: 0.35rem;
+}
+
+.chat-empty-hint {
+    margin-top: 0.45rem;
+    font-size: 0.9rem;
+    color: var(--ink-3);
+}
+
+.farm-guest-lead {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--ink);
+    margin-bottom: 0.45rem;
+}
+
+.farm-guest .hero-cta-group {
+    margin-top: 1.1rem;
 }
 
 /* Guides / legal / about */
@@ -1020,7 +1223,11 @@ input[type="range"] {
         grid-template-columns: 1fr;
     }
 
-    .hero-title { font-size: 2.2rem; }
+    .hero-title {
+        font-size: 2.2rem;
+        max-width: none;
+    }
+    .path-grid { grid-template-columns: 1fr; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 

@@ -4,9 +4,11 @@
 
 const HOME_SECTIONS = {
     features: 'features',
+    start: 'start',
     calculator: 'calculator',
     blog: 'blog',
     download: 'download-section',
+    'ai-advisor-preview': 'ai-advisor-preview',
 };
 
 const STANDALONE_PAGES = {
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initFarmCalculatorPrefill();
         updateROICalculation();
     }
+    initGuideFilters();
     checkCookieConsent();
     updateContactMailtoLinks();
 });
@@ -68,6 +71,8 @@ function navigateTo(viewId, targetElementId = null) {
     // Close mobile nav if open
     const mainNav = document.getElementById('mainNav');
     if (mainNav) mainNav.classList.remove('mobile-open');
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
 }
 
 function handleHashRouting() {
@@ -75,6 +80,11 @@ function handleHashRouting() {
 
     if (STANDALONE_PAGES[hash]) {
         window.location.replace(STANDALONE_PAGES[hash]);
+        return;
+    }
+
+    if (hash === 'guides' || hash === 'blog') {
+        window.location.replace('guides/index.html');
         return;
     }
 
@@ -95,9 +105,47 @@ function handleHashRouting() {
 // Mobile Menu Toggle
 function toggleMobileMenu() {
     const mainNav = document.getElementById('mainNav');
+    const menuBtn = document.getElementById('mobileMenuBtn');
     if (mainNav) {
-        mainNav.classList.toggle('mobile-open');
+        const open = !mainNav.classList.contains('mobile-open');
+        mainNav.classList.toggle('mobile-open', open);
+        if (menuBtn) {
+            menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        }
     }
+}
+
+function initGuideFilters() {
+    const bar = document.getElementById('guideFilters');
+    if (!bar) {
+        return;
+    }
+    const buttons = Array.from(bar.querySelectorAll('[data-filter]'));
+    const cards = Array.from(document.querySelectorAll('[data-guide-category]'));
+    if (!buttons.length || !cards.length) {
+        return;
+    }
+
+    function applyFilter(category) {
+        buttons.forEach((btn) => {
+            const on = btn.getAttribute('data-filter') === category;
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        cards.forEach((card) => {
+            const match = category === 'all' || card.getAttribute('data-guide-category') === category;
+            card.hidden = !match;
+        });
+    }
+
+    bar.addEventListener('click', (event) => {
+        const btn = event.target.closest('[data-filter]');
+        if (!btn) {
+            return;
+        }
+        applyFilter(btn.getAttribute('data-filter'));
+    });
+    applyFilter('all');
 }
 
 // Farm & Homestead Savings ROI Calculator Logic
