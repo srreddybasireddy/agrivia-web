@@ -333,20 +333,24 @@ textarea:focus-visible {
     align-items: center;
     gap: 0.4rem;
     color: var(--ochre);
-    font-size: 0.8rem;
+    background: rgba(166, 124, 45, 0.12);
+    border: 1px solid rgba(166, 124, 45, 0.28);
+    border-radius: 999px;
+    padding: 0.28rem 0.75rem;
+    font-size: 0.78rem;
     font-weight: 650;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
     margin-bottom: 1rem;
 }
 
 .pulse-dot { display: none; }
 
 .hero-title {
-    font-size: clamp(2.15rem, 4.2vw, 3.1rem);
+    font-size: clamp(2.35rem, 5vw, 3.45rem);
     font-weight: 650;
     margin-bottom: 0.85rem;
-    max-width: 16ch;
+    max-width: 14ch;
+    color: var(--leaf-deep);
 }
 
 .hero-subtitle {
@@ -1227,7 +1231,8 @@ input[type="range"] {
         font-size: 2.2rem;
         max-width: none;
     }
-    .path-grid { grid-template-columns: 1fr; }
+    .path-grid,
+    .popular-grid { grid-template-columns: 1fr; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 
@@ -1826,5 +1831,292 @@ input[type="range"] {
     .auth-email,
     .farm-header-pill {
         display: none;
+    }
+}
+
+/* ==========================================================================
+   Full first-run UX adoption — paper theme, mock-aligned hierarchy
+   ========================================================================== */
+
+.logo-mark {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: var(--leaf-deep);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.logo-mark::after {
+    content: "";
+    position: absolute;
+    inset: 28% 32% 24% 38%;
+    background: #E8EDE4;
+    border-radius: 0 70% 40% 70%;
+    transform: rotate(-28deg);
+}
+
+.btn-pill {
+    border-radius: 999px;
+    padding-left: 1.35rem;
+    padding-right: 1.35rem;
+}
+
+.btn-outline.btn-pill {
+    border-color: var(--leaf);
+    color: var(--leaf-deep);
+    background: var(--raised);
+}
+
+.main-nav .nav-item + .nav-item::before {
+    content: "·";
+    margin: 0 0.85rem 0 0.15rem;
+    color: var(--rule);
+    font-weight: 400;
+    pointer-events: none;
+}
+
+.popular-guides-section {
+    padding: 1.5rem 0 3.5rem;
+}
+
+.section-header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.section-more {
+    font-weight: 650;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.popular-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.15rem;
+}
+
+.popular-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.35rem 1.4rem 1.2rem;
+    text-decoration: none;
+    color: inherit;
+    min-height: 12.5rem;
+    position: relative;
+}
+
+.popular-card:hover {
+    border-color: var(--leaf);
+    color: inherit;
+}
+
+.popular-card h3 {
+    color: var(--leaf-deep);
+    font-size: 1.35rem;
+}
+
+.popular-card p {
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+.popular-arrow {
+    align-self: flex-end;
+    color: var(--ochre);
+    font-size: 1.15rem;
+}
+
+.popular-icon,
+.job-chip-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.45rem;
+    background: #E8EDE4;
+    display: inline-block;
+    position: relative;
+    margin-bottom: 0.35rem;
+}
+
+.popular-icon::after,
+.job-chip-icon::after {
+    content: "";
+    position: absolute;
+    inset: 28%;
+    background: var(--leaf-deep);
+}
+
+.popular-icon[data-icon="fence"]::after,
+.job-chip-icon[data-icon="fence"]::after {
+    inset: 22% 30%;
+    box-shadow: 0.28rem 0 0 var(--leaf-deep), -0.28rem 0 0 var(--leaf-deep);
+}
+
+.popular-icon[data-icon="water"]::after,
+.job-chip-icon[data-icon="water"]::after {
+    inset: 18% 34% 22%;
+    border-radius: 0 0 50% 50%;
+}
+
+.popular-icon[data-icon="soil"]::after,
+.job-chip-icon[data-icon="soil"]::after {
+    inset: 38% 22% 22%;
+    border-radius: 40% 40% 20% 20%;
+}
+
+.job-chip-icon[data-icon="heat"]::after {
+    inset: 22%;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--leaf-deep);
+    background: transparent;
+}
+
+.chat-shell-wide {
+    max-width: 48rem;
+}
+
+.chat-messages:empty {
+    display: none;
+    min-height: 0;
+}
+
+.chat-welcome {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.chat-welcome-mark {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--leaf-deep);
+    flex-shrink: 0;
+    position: relative;
+}
+
+.chat-welcome-mark::after {
+    content: "";
+    position: absolute;
+    inset: 28% 32% 24% 38%;
+    background: #E8EDE4;
+    border-radius: 0 70% 40% 70%;
+    transform: rotate(-28deg);
+}
+
+.chat-welcome-title {
+    font-size: clamp(1.6rem, 3vw, 2rem);
+    color: var(--leaf-deep);
+    margin: 0.15rem 0 0.4rem;
+}
+
+.job-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+}
+
+.job-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: var(--raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    font-family: var(--font-main);
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--ochre);
+    cursor: pointer;
+    text-align: left;
+    min-height: 52px;
+}
+
+.job-chip:hover {
+    border-color: var(--leaf);
+    color: var(--leaf-deep);
+}
+
+.job-chip .job-chip-icon {
+    margin-bottom: 0;
+}
+
+.guides-hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.75rem;
+}
+
+.guides-hero-title {
+    font-size: clamp(2.1rem, 4vw, 2.8rem);
+    color: var(--leaf-deep);
+    margin-bottom: 0.45rem;
+}
+
+.guides-hero-desc {
+    max-width: 36rem;
+    font-size: 1.08rem;
+}
+
+.featured-guide {
+    padding: 1.75rem 1.85rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--leaf);
+}
+
+.featured-kicker {
+    color: var(--ochre);
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.45rem;
+}
+
+.featured-guide h2 {
+    color: var(--leaf-deep);
+    font-size: clamp(1.5rem, 3vw, 1.9rem);
+    margin-bottom: 0.5rem;
+}
+
+.featured-guide p {
+    max-width: 40rem;
+    margin-bottom: 1.1rem;
+}
+
+.guide-card-strong h3 {
+    color: var(--leaf-deep);
+    font-size: 1.3rem;
+}
+
+.filter-chip[aria-pressed="true"] {
+    background: var(--leaf-deep);
+    border-color: var(--leaf-deep);
+    color: #FFFDF8;
+}
+
+@media (max-width: 768px) {
+    .main-nav .nav-item + .nav-item::before {
+        display: none;
+    }
+
+    .popular-grid,
+    .job-chips,
+    .guides-hero,
+    .section-header-row {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .chat-welcome {
+        flex-direction: column;
     }
 }

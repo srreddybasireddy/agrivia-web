@@ -133,7 +133,8 @@ function initGuideFilters() {
             btn.setAttribute('aria-pressed', on ? 'true' : 'false');
         });
         cards.forEach((card) => {
-            const match = category === 'all' || card.getAttribute('data-guide-category') === category;
+            const cats = (card.getAttribute('data-guide-category') || '').split(/\s+/);
+            const match = category === 'all' || cats.indexOf(category) !== -1;
             card.hidden = !match;
         });
     }

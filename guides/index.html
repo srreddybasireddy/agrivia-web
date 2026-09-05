@@ -19,35 +19,42 @@
 <body class="paper-theme">
     <header class="site-header">
         <div class="header-container">
-            <a href="../index.html" class="logo-link"><span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span></a>
+            <a href="../index.html" class="logo-link"><span class="logo-mark" aria-hidden="true"></span><span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span></a>
             <nav class="main-nav" id="mainNav" aria-label="Primary">
                 <a href="index.html" class="nav-item active">Guides</a>
                 <a href="../index.html#ai-advisor" class="nav-item">Advisor</a>
                 <a href="../index.html#farm" class="nav-item">Farm</a>
-                <a href="../about.html" class="nav-item">About</a>
             </nav>
             <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
         </div>
     </header>
     <main class="section-padding">
         <div class="container">
-            <div class="section-header text-center">
-                <span class="section-tag">Guides</span>
-                <h1 class="section-title">Six short primers for a small place</h1>
-                <p class="section-desc">Buying criteria for gardens and a homestead herd or flock. Educational overviews — not ranked tests and not a shop.</p>
-                <p class="guides-advisor-cta"><a href="../index.html#ai-advisor">Ask the advisor</a> if you would rather start with a question.</p>
+            <div class="guides-hero">
+                <div>
+                    <h1 class="guides-hero-title">Equipment guides</h1>
+                    <p class="guides-hero-desc">Honest, practical buying criteria to help you choose and set up the right gear for a small place.</p>
+                </div>
+                <a href="../index.html#ai-advisor" class="btn btn-primary btn-pill">Ask the advisor</a>
             </div>
+
+            <article class="featured-guide paper-card">
+                <p class="featured-kicker">Featured · Start here</p>
+                <h2>Soil pens and moisture sensors</h2>
+                <p>The first buying call on a backyard plot or a small paddock: whether a finger test is enough, or a pen in the bed earns its keep.</p>
+                <a class="btn btn-primary btn-pill" href="soil-moisture-sensors.html">Read guide</a>
+            </article>
+
             <div class="guide-filters" id="guideFilters" role="group" aria-label="Filter guides by topic">
                 <button type="button" class="filter-chip" data-filter="all" aria-pressed="true">All</button>
                 <button type="button" class="filter-chip" data-filter="soil" aria-pressed="false">Soil</button>
                 <button type="button" class="filter-chip" data-filter="water" aria-pressed="false">Water</button>
-                <button type="button" class="filter-chip" data-filter="fencing" aria-pressed="false">Fencing</button>
-                <button type="button" class="filter-chip" data-filter="winter" aria-pressed="false">Winter</button>
-                <button type="button" class="filter-chip" data-filter="animals" aria-pressed="false">Animals</button>
-                <button type="button" class="filter-chip" data-filter="plants" aria-pressed="false">Plants</button>
+                <button type="button" class="filter-chip" data-filter="fence" aria-pressed="false">Fence</button>
+                <button type="button" class="filter-chip" data-filter="livestock" aria-pressed="false">Livestock</button>
+                <button type="button" class="filter-chip" data-filter="garden" aria-pressed="false">Garden</button>
             </div>
-            <div class="blog-grid">
-                <article class="blog-card paper-card" data-guide-category="soil">
+            <div class="blog-grid guide-card-grid">
+                <article class="blog-card paper-card guide-card-strong" data-guide-category="soil">
                     <a class="blog-card-hit" href="soil-moisture-sensors.html">
                         <span class="category-tag">Soil</span>
                         <h3>Soil pens and moisture sensors</h3>
@@ -55,41 +62,41 @@
                         <span class="read-more-link">Read guide</span>
                     </a>
                 </article>
-                <article class="blog-card paper-card" data-guide-category="water">
+                <article class="blog-card paper-card guide-card-strong" data-guide-category="water garden">
                     <a class="blog-card-hit" href="irrigation-controllers.html">
-                        <span class="category-tag">Water</span>
+                        <span class="category-tag">Water · Garden</span>
                         <h3>Hose timers and drip for raised beds</h3>
                         <p>Clock, soil skip, and weather skip for a backyard — not a pivot. Filling a stock tank is a different job.</p>
                         <span class="read-more-link">Read guide</span>
                     </a>
                 </article>
-                <article class="blog-card paper-card" data-guide-category="fencing">
+                <article class="blog-card paper-card guide-card-strong" data-guide-category="fence livestock">
                     <a class="blog-card-hit" href="electric-fence-chargers.html">
-                        <span class="category-tag">Fencing</span>
+                        <span class="category-tag">Fence</span>
                         <h3>Chargers for cattle, goats, and poultry</h3>
                         <p>Joules, solar vs plug-in, and grounding so a paddock or chicken run holds a pulse.</p>
                         <span class="read-more-link">Read guide</span>
                     </a>
                 </article>
-                <article class="blog-card paper-card" data-guide-category="winter">
+                <article class="blog-card paper-card guide-card-strong" data-guide-category="water livestock">
                     <a class="blog-card-hit" href="livestock-waterers.html">
-                        <span class="category-tag">Winter</span>
+                        <span class="category-tag">Water · Livestock</span>
                         <h3>Tanks and freeze-proof waterers</h3>
                         <p>Cattle tanks, goat buckets, poultry drinkers, refill rate, and what fails when the power drops.</p>
                         <span class="read-more-link">Read guide</span>
                     </a>
                 </article>
-                <article class="blog-card paper-card" data-guide-category="animals">
+                <article class="blog-card paper-card guide-card-strong" data-guide-category="livestock">
                     <a class="blog-card-hit" href="cattle-heat-stress.html">
-                        <span class="category-tag">Animals</span>
+                        <span class="category-tag">Livestock</span>
                         <h3>Heat, shade, cattle, and flocks</h3>
                         <p>Cloth shade for a small herd, water space, and coop air before misters.</p>
                         <span class="read-more-link">Read guide</span>
                     </a>
                 </article>
-                <article class="blog-card paper-card" data-guide-category="plants">
+                <article class="blog-card paper-card guide-card-strong" data-guide-category="garden">
                     <a class="blog-card-hit" href="crop-disease-photos.html">
-                        <span class="category-tag">Plants</span>
+                        <span class="category-tag">Garden</span>
                         <h3>Photographing a sick leaf</h3>
                         <p>Light, scale, and notes for a garden leaf or a pasture plant — for extension, a vet, or a first-pass chat.</p>
                         <span class="read-more-link">Read guide</span>
@@ -100,7 +107,7 @@
     </main>
     <footer class="site-footer">
         <div class="container footer-bottom">
-            <p>&copy; 2026 Agrivia. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a> · <a href="../affiliate-disclosure.html">Disclosure</a> · <a href="../contact.html">Contact</a></p>
+            <p>&copy; 2026 Agrivia. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a> · <a href="../affiliate-disclosure.html">Disclosure</a> · <a href="../about.html">About</a> · <a href="../contact.html">Contact</a></p>
         </div>
     </footer>
     <script src="../js/main.js"></script>

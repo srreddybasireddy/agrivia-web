@@ -105,6 +105,7 @@
 
     function renderChips(container, chips, onPick) {
         container.replaceChildren();
+        container.hidden = false;
         chips.forEach((label) => {
             const button = document.createElement("button");
             button.type = "button";
@@ -176,6 +177,7 @@
         const messages = el("chatMessages");
         const empty = el("chatEmpty");
         const chips = el("chatChips");
+        const jobChips = el("chatJobChips");
         const greetingEl = el("chatGreeting");
         const categoryRow = el("chatCategories");
         const saveHint = el("chatSaveHint");
@@ -239,6 +241,12 @@
         function showEmpty(visible) {
             if (empty) {
                 empty.hidden = !visible;
+            }
+            if (jobChips) {
+                jobChips.hidden = !visible;
+            }
+            if (chips) {
+                chips.hidden = visible;
             }
         }
 
@@ -385,11 +393,15 @@
         });
 
         const defaultHobbyChips = [
-            "Shade for six cattle in a drylot",
-            "Drip kit for raised beds",
-            "Electric fence for goats and poultry",
-            "Freeze-proof cattle tank"
+            "My fence charger keeps losing power after rain. What should I check?",
+            "How do I keep a cattle tank from freezing?",
+            "My raised bed soil is too wet. What should I check?",
+            "How much shade do six cattle need in a drylot?"
         ];
+
+        function isGenericGreeting(text) {
+            return /assist you|agricultural needs|assistance service|how can i help/i.test(text || "");
+        }
 
         const afterAnswerChips = [
             "What farm tasks should I focus on this week?",
@@ -448,19 +460,26 @@
         }
 
         function showDefaultChips() {
-            renderChips(chips, defaultHobbyChips, (label) => {
-                sendQuery(label);
-            });
+            showEmpty(true);
+            if (chips) {
+                chips.replaceChildren();
+                chips.hidden = true;
+            }
+        }
+
+        function onChipClick(event) {
+            const chip = event.target.closest("[data-query]");
+            if (!chip || isSending) {
+                return;
+            }
+            sendQuery(chip.getAttribute("data-query"));
         }
 
         if (chips) {
-            chips.addEventListener("click", (event) => {
-                const chip = event.target.closest("[data-query]");
-                if (!chip || isSending) {
-                    return;
-                }
-                sendQuery(chip.getAttribute("data-query"));
-            });
+            chips.addEventListener("click", onChipClick);
+        }
+        if (jobChips) {
+            jobChips.addEventListener("click", onChipClick);
         }
 
         renderActiveCategory();
@@ -489,20 +508,13 @@
 
         api.getWelcomeGreeting(currentDeviceUuid(), config.category || "General", new Date().getHours())
             .then((welcome) => {
-                if (welcome.greeting && greetingEl) {
+                if (welcome.greeting && greetingEl && !isGenericGreeting(welcome.greeting)) {
                     setText(greetingEl, welcome.greeting);
                 }
-                const suggestions = (welcome.suggestions && welcome.suggestions.length > 0)
-                    ? welcome.suggestions
-                    : defaultHobbyChips;
-                renderChips(chips, suggestions, (label) => {
-                    sendQuery(label);
-                });
+                // Keep editorial job chips. Do not replace them with vague API suggestions.
             })
             .catch(() => {
-                renderChips(chips, defaultHobbyChips, (label) => {
-                    sendQuery(label);
-                });
+                // Job chips are already in the HTML.
             });
     }
 
