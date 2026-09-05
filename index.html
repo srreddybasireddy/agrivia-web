@@ -39,19 +39,17 @@
 </head>
 <body class="paper-theme">
 
+    <a class="skip-link" href="#appContainer">Skip to content</a>
     <header class="site-header" id="siteHeader">
         <div class="header-container">
             <a href="#home" class="logo-link" onclick="navigateTo('home')">
+                <span class="logo-mark" aria-hidden="true"></span>
                 <span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span>
             </a>
-            <nav class="main-nav" id="mainNav">
-                <a href="#home" class="nav-item active" id="nav-home" onclick="navigateTo('home')">Home</a>
-                <a href="guides/index.html" class="nav-item" id="nav-blog">Guides</a>
+            <nav class="main-nav" id="mainNav" aria-label="Primary">
+                <a href="guides/index.html" class="nav-item" id="nav-guides">Guides</a>
                 <a href="#ai-advisor" class="nav-item" id="nav-ai-advisor" onclick="navigateTo('ai-advisor')">Advisor</a>
-                <a href="#calculator" class="nav-item" id="nav-calculator" onclick="navigateTo('home', 'calculator')">Calculator</a>
                 <a href="#farm" class="nav-item" id="nav-farm" onclick="navigateTo('farm')">Farm</a>
-                <a href="about.html" class="nav-item" id="nav-about">About</a>
-                <a href="contact.html" class="nav-item" id="nav-contact">Contact</a>
             </nav>
             <div class="header-actions">
                 <div class="auth-slot" id="authSlot">
@@ -65,7 +63,7 @@
                         <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
                     </div>
                 </div>
-                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation" onclick="toggleMobileMenu()">
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false" onclick="toggleMobileMenu()">
                     <span class="bar"></span>
                     <span class="bar"></span>
                     <span class="bar"></span>
@@ -80,47 +78,55 @@
             <div class="hero-section">
                 <div class="container hero-grid">
                     <div class="hero-content">
-                        <p class="hero-badge">Hobby farms · Homesteads · Gardens · Livestock</p>
-                        <h1 class="hero-title">Guides for gardens, cattle, and the rest of a small place</h1>
+                        <p class="hero-badge">For hobby farms &amp; homesteads</p>
+                        <h1 class="hero-title">Know what to buy before you buy it</h1>
                         <p class="hero-subtitle">
-                            Independent primers for raised beds and for animals — cattle, goats, sheep, pigs, horses, and poultry. Soil, fencing, water, heat, and irrigation at homestead scale. Read the guides or ask the on-site advisor. Separate iOS and Android apps are being built and are not in the App Store or Google Play yet.
+                            Independent equipment guides and an on-site farm advisor — so you can decide with confidence on a small place.
                         </p>
                         <div class="hero-cta-group">
-                            <a href="guides/index.html" class="btn btn-primary btn-lg">Read guides</a>
-                            <a href="#ai-advisor" class="btn btn-outline btn-lg" onclick="navigateTo('ai-advisor')">Ask the advisor</a>
+                            <a href="#ai-advisor" class="btn btn-primary btn-lg btn-pill" onclick="navigateTo('ai-advisor')">Ask the advisor</a>
+                            <a href="guides/index.html" class="btn btn-outline btn-lg btn-pill">Browse guides</a>
                         </div>
                     </div>
                     <div class="hero-visual">
                         <img src="assets/images/hero-mockup.jpg" alt="Concept preview of a future Agrivia iOS and Android app. Not a screenshot from the App Store or Google Play." class="hero-img-mockup" id="heroMockupImg">
+                        <p class="hero-caption">Concept preview — not a live store listing.</p>
                     </div>
                 </div>
             </div>
 
-            <section class="features-section" id="features">
+            <section class="popular-guides-section" id="start">
                 <div class="container">
-                    <div class="section-header">
-                        <span class="section-tag">Who this is for</span>
-                        <h2 class="section-title">Gardens and animals on the same place</h2>
-                        <p class="section-desc">The guides assume a backyard plot, a few acres, a small herd or flock — not a commercial pivot or a 500-head feedlot.</p>
+                    <div class="section-header section-header-row">
+                        <div>
+                            <span class="section-tag">Popular guides</span>
+                            <h2 class="section-title">Start with a real job</h2>
+                        </div>
+                        <a href="guides/index.html" class="section-more">View all guides</a>
                     </div>
-                    <ul class="building-list">
-                        <li>
-                            <strong>Raised beds and small plots</strong>
-                            Soil pens, hose timers, and drip that will not drown tomatoes.
-                        </li>
-                        <li>
-                            <strong>Cattle, goats, sheep, and poultry</strong>
-                            Chargers, shade, tanks, and freeze-proof water for a homestead herd or flock.
-                        </li>
-                        <li>
-                            <strong>Leaf and pest photos</strong>
-                            How to shoot a leaf so an extension office can actually use it.
-                        </li>
-                        <li>
-                            <strong>Advisor on this site</strong>
-                            The same farm chat API the apps use. Guidance only, not a diagnosis.
-                        </li>
-                    </ul>
+                    <div class="popular-grid">
+                        <a class="popular-card paper-card" href="guides/electric-fence-chargers.html">
+                            <span class="popular-icon" data-icon="fence" aria-hidden="true"></span>
+                            <span class="category-tag">Fence</span>
+                            <h3>Fencing for goats</h3>
+                            <p>Keep them in. Predators out. Joules, solar vs plug-in, and grounding.</p>
+                            <span class="popular-arrow" aria-hidden="true">→</span>
+                        </a>
+                        <a class="popular-card paper-card" href="guides/livestock-waterers.html">
+                            <span class="popular-icon" data-icon="water" aria-hidden="true"></span>
+                            <span class="category-tag">Water</span>
+                            <h3>Waterers that work</h3>
+                            <p>Clean water in a freeze. Tanks, drinkers, and what fails when power drops.</p>
+                            <span class="popular-arrow" aria-hidden="true">→</span>
+                        </a>
+                        <a class="popular-card paper-card" href="guides/soil-moisture-sensors.html">
+                            <span class="popular-icon" data-icon="soil" aria-hidden="true"></span>
+                            <span class="category-tag">Soil</span>
+                            <h3>Building better soil</h3>
+                            <p>When a finger test is enough, and when a pen in the bed earns its keep.</p>
+                            <span class="popular-arrow" aria-hidden="true">→</span>
+                        </a>
+                    </div>
                 </div>
             </section>
 
@@ -131,8 +137,14 @@
                             <div class="demo-info">
                                 <span class="badge-tag">Advisor</span>
                                 <h2>Ask about beds, cattle, goats, and coops</h2>
-                                <p>Questions go to Agrivia’s existing advisory API. Guests chat with a browser-only ID. After you sign in, Advisor can save crops and animals to the same farm profile the apps use. Replies are guidance, not a vet or extension visit.</p>
-                                <a href="#ai-advisor" class="btn btn-primary" onclick="navigateTo('ai-advisor')">Open the advisor</a>
+                                <p>Same advisory API the apps use. Guests chat with a browser-only ID. Sign in later if you want crops and animals saved to a farm profile.</p>
+                                <p class="trust-line">Guidance only — not a vet or extension visit.</p>
+                                <div class="hero-starters demo-starters" aria-label="Ask a starter question">
+                                    <a class="query-chip" href="?ask=My%20fence%20charger%20keeps%20losing%20power%20after%20rain.%20What%20should%20I%20check%3F#ai-advisor">Fix fence charger</a>
+                                    <a class="query-chip" href="?ask=How%20do%20I%20keep%20a%20cattle%20tank%20from%20freezing%3F#ai-advisor">Freeze-proof waterer</a>
+                                    <a class="query-chip" href="?ask=How%20much%20shade%20do%20six%20cattle%20need%20in%20a%20drylot%3F#ai-advisor">Heat stress cattle</a>
+                                </div>
+                                <a href="#ai-advisor" class="btn btn-primary btn-pill" onclick="navigateTo('ai-advisor')">Open the advisor</a>
                             </div>
                             <div class="demo-image-col">
                                 <img src="assets/images/ai-advisor.jpg" alt="Agrivia advisor chat preview" class="demo-screenshot-img">
@@ -142,12 +154,73 @@
                 </div>
             </section>
 
+            <section class="blog-section" id="blog">
+                <div class="container">
+                    <div class="section-header">
+                        <span class="section-tag">Guides</span>
+                        <h2 class="section-title">All six primers</h2>
+                        <p class="section-desc">Buying criteria for gardens and for cattle, goats, sheep, and poultry. Educational overviews, not lab rankings.</p>
+                    </div>
+                    <div class="blog-grid">
+                        <article class="blog-card paper-card">
+                            <a class="blog-card-hit" href="guides/soil-moisture-sensors.html">
+                                <span class="category-tag">Soil</span>
+                                <h3>Soil pens and moisture sensors</h3>
+                                <p>Handheld probes versus a probe you leave in a bed, and when a finger test is enough.</p>
+                                <span class="read-more-link">Read guide</span>
+                            </a>
+                        </article>
+                        <article class="blog-card paper-card">
+                            <a class="blog-card-hit" href="guides/electric-fence-chargers.html">
+                                <span class="category-tag">Fencing</span>
+                                <h3>Chargers for cattle, goats, and poultry</h3>
+                                <p>Joules, solar vs plug-in, and grounding so a paddock or chicken run holds a pulse.</p>
+                                <span class="read-more-link">Read guide</span>
+                            </a>
+                        </article>
+                        <article class="blog-card paper-card">
+                            <a class="blog-card-hit" href="guides/cattle-heat-stress.html">
+                                <span class="category-tag">Animals</span>
+                                <h3>Heat, shade, cattle, and flocks</h3>
+                                <p>Cloth shade, water space, and coop air before misters.</p>
+                                <span class="read-more-link">Read guide</span>
+                            </a>
+                        </article>
+                        <article class="blog-card paper-card">
+                            <a class="blog-card-hit" href="guides/irrigation-controllers.html">
+                                <span class="category-tag">Water</span>
+                                <h3>Hose timers and drip for raised beds</h3>
+                                <p>Clock timers, soil skip, and weather skip — without a pivot panel.</p>
+                                <span class="read-more-link">Read guide</span>
+                            </a>
+                        </article>
+                        <article class="blog-card paper-card">
+                            <a class="blog-card-hit" href="guides/livestock-waterers.html">
+                                <span class="category-tag">Winter</span>
+                                <h3>Tanks and freeze-proof waterers</h3>
+                                <p>Cattle tanks, poultry drinkers, refill rate, and what fails when the power drops.</p>
+                                <span class="read-more-link">Read guide</span>
+                            </a>
+                        </article>
+                        <article class="blog-card paper-card">
+                            <a class="blog-card-hit" href="guides/crop-disease-photos.html">
+                                <span class="category-tag">Plants</span>
+                                <h3>Photographing a sick leaf</h3>
+                                <p>Light, scale, and notes so extension (or chat) can see what you see.</p>
+                                <span class="read-more-link">Read guide</span>
+                            </a>
+                        </article>
+                    </div>
+                    <p class="text-center" style="margin-top:2rem;"><a href="guides/index.html" class="btn btn-outline">All guides</a></p>
+                </div>
+            </section>
+
             <section class="calculator-section" id="calculator">
                 <div class="container">
                     <div class="section-header">
-                        <span class="section-tag">Worksheet</span>
-                        <h2 class="section-title">Garden and livestock example calculator</h2>
-                        <p class="section-desc">Simple arithmetic for beds plus cattle, goats, sheep, pigs, horses, or poultry. It is not your harvest, not a guarantee, and not Agrivia customer results.</p>
+                        <span class="section-tag">Illustrative worksheet</span>
+                        <h2 class="section-title">Example arithmetic for beds and livestock</h2>
+                        <p class="section-desc">A scratch pad for raised beds plus cattle, goats, sheep, pigs, horses, or poultry. It is not a forecast, not your harvest, and not Agrivia customer results.</p>
                     </div>
                     <div class="calculator-card paper-card">
                         <div class="calc-grid">
@@ -182,8 +255,9 @@
                             </div>
                             <div class="calc-results">
                                 <div class="result-box primary-result">
-                                    <span class="res-title">Illustrative annual figure</span>
+                                    <span class="res-title">Worksheet total</span>
                                     <span class="res-amount" id="totalSavings">$672 / yr</span>
+                                    <p class="res-note">Example math only — not a savings claim or ROI from other farms.</p>
                                 </div>
                                 <div class="result-breakdown">
                                     <div class="res-item">
@@ -208,85 +282,6 @@
                 </div>
             </section>
 
-            <section class="blog-section" id="blog">
-                <div class="container">
-                    <div class="section-header">
-                        <span class="section-tag">Guides</span>
-                        <h2 class="section-title">Start with these six primers</h2>
-                        <p class="section-desc">Buying criteria for gardens and for cattle, goats, sheep, and poultry. Educational overviews, not lab rankings.</p>
-                    </div>
-                    <div class="blog-grid">
-                        <article class="blog-card paper-card">
-                            <div class="blog-body">
-                                <span class="category-tag">Soil</span>
-                                <h3>Soil pens and moisture sensors</h3>
-                                <p>Handheld probes versus a probe you leave in a bed, and when a finger test is enough.</p>
-                                <div class="blog-footer">
-                                    <span class="author">Agrivia editorial</span>
-                                    <a href="guides/soil-moisture-sensors.html" class="read-more-link">Read guide</a>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="blog-card paper-card">
-                            <div class="blog-body">
-                                <span class="category-tag">Fencing</span>
-                                <h3>Chargers for cattle, goats, and poultry</h3>
-                                <p>Joules, solar vs plug-in, and grounding so a paddock or chicken run holds a pulse.</p>
-                                <div class="blog-footer">
-                                    <span class="author">Agrivia editorial</span>
-                                    <a href="guides/electric-fence-chargers.html" class="read-more-link">Read guide</a>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="blog-card paper-card">
-                            <div class="blog-body">
-                                <span class="category-tag">Animals</span>
-                                <h3>Heat, shade, cattle, and flocks</h3>
-                                <p>Cloth shade, water space, and coop air before misters.</p>
-                                <div class="blog-footer">
-                                    <span class="author">Agrivia editorial</span>
-                                    <a href="guides/cattle-heat-stress.html" class="read-more-link">Read guide</a>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="blog-card paper-card">
-                            <div class="blog-body">
-                                <span class="category-tag">Water</span>
-                                <h3>Hose timers and drip for raised beds</h3>
-                                <p>Clock timers, soil skip, and weather skip — without a pivot panel.</p>
-                                <div class="blog-footer">
-                                    <span class="author">Agrivia editorial</span>
-                                    <a href="guides/irrigation-controllers.html" class="read-more-link">Read guide</a>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="blog-card paper-card">
-                            <div class="blog-body">
-                                <span class="category-tag">Winter</span>
-                                <h3>Tanks and freeze-proof waterers</h3>
-                                <p>Cattle tanks, poultry drinkers, refill rate, and what fails when the power drops.</p>
-                                <div class="blog-footer">
-                                    <span class="author">Agrivia editorial</span>
-                                    <a href="guides/livestock-waterers.html" class="read-more-link">Read guide</a>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="blog-card paper-card">
-                            <div class="blog-body">
-                                <span class="category-tag">Plants</span>
-                                <h3>Photographing a sick leaf</h3>
-                                <p>Light, scale, and notes so extension (or chat) can see what you see.</p>
-                                <div class="blog-footer">
-                                    <span class="author">Agrivia editorial</span>
-                                    <a href="guides/crop-disease-photos.html" class="read-more-link">Read guide</a>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                    <p class="text-center" style="margin-top:2rem;"><a href="guides/index.html" class="btn btn-outline">All guides</a></p>
-                </div>
-            </section>
-
             <section class="download-section" id="download-section">
                 <div class="container">
                     <div class="download-card paper-card text-center">
@@ -303,26 +298,43 @@
 
         <section id="view-ai-advisor" class="page-view">
             <div class="container section-padding">
-                <div class="page-header text-center">
-                    <span class="badge-tag">Advisor</span>
-                    <h1 class="page-title">Ask Agrivia</h1>
-                    <p class="page-subtitle">Same advisory API as the apps. Try questions about raised beds, a sick tomato leaf, cattle shade, or poultry netting. Guidance only — confirm with local extension or a vet.</p>
-                </div>
-                <div class="chat-shell paper-card">
-                    <div class="chat-categories" id="chatCategories" hidden></div>
-                    <p class="chat-save-hint" id="chatSaveHint" hidden>Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
-                    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
-                        <div class="chat-empty" id="chatEmpty">
-                            <p id="chatGreeting">Ask a garden or livestock question. The greeting and answers come from the Agrivia API when it is reachable.</p>
+                <div class="chat-shell paper-card chat-shell-wide">
+                    <div class="chat-welcome" id="chatEmpty">
+                        <div class="chat-welcome-mark" aria-hidden="true"></div>
+                        <div class="chat-welcome-copy">
+                            <p class="chat-empty-kicker">Advisor</p>
+                            <h1 class="chat-welcome-title">What are you working on today?</h1>
+                            <p id="chatGreeting">Ask about a fence charger, a wet bed, a freeze-proof tank, or cattle in the heat. No account needed — sign in later to save a farm profile.</p>
                         </div>
                     </div>
-                    <div class="chat-chips" id="chatChips"></div>
+                    <div class="chat-categories" id="chatCategories" hidden></div>
+                    <p class="chat-save-hint" id="chatSaveHint" hidden>Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
+                    <div class="job-chips" id="chatJobChips">
+                        <button type="button" class="job-chip" data-query="My fence charger keeps losing power after rain. What should I check?">
+                            <span class="job-chip-icon" data-icon="fence" aria-hidden="true"></span>
+                            Fix fence charger
+                        </button>
+                        <button type="button" class="job-chip" data-query="How do I keep a cattle tank from freezing?">
+                            <span class="job-chip-icon" data-icon="water" aria-hidden="true"></span>
+                            Freeze-proof waterer
+                        </button>
+                        <button type="button" class="job-chip" data-query="My raised bed soil is too wet. What should I check?">
+                            <span class="job-chip-icon" data-icon="soil" aria-hidden="true"></span>
+                            Soil too wet
+                        </button>
+                        <button type="button" class="job-chip" data-query="How much shade do six cattle need in a drylot?">
+                            <span class="job-chip-icon" data-icon="heat" aria-hidden="true"></span>
+                            Heat stress cattle
+                        </button>
+                    </div>
+                    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
+                    <div class="chat-chips" id="chatChips" hidden></div>
                     <form class="chat-form" id="chatForm">
                         <label class="visually-hidden" for="chatInput">Garden or livestock question</label>
-                        <textarea id="chatInput" name="query" class="form-input chat-input" rows="2" maxlength="2000" placeholder="Example: How much shade do six cattle need in a drylot?" required></textarea>
-                        <button type="submit" class="btn btn-primary" id="chatSendBtn">Ask</button>
+                        <textarea id="chatInput" name="query" class="form-input chat-input" rows="2" maxlength="2000" placeholder="Ask anything about your farm, animals, crops, or equipment…" required></textarea>
+                        <button type="submit" class="btn btn-primary btn-pill" id="chatSendBtn">Send</button>
                     </form>
-                    <p class="chat-disclaimer">Guidance only, not a diagnosis. Confirm treatment locally. Chat works without an account. Sign in if you want the advisor to save a farm profile. Website chat is rate-limited so the farm API stays available for the app.</p>
+                    <p class="chat-disclaimer">Guidance only, not a vet diagnosis. Confirm treatment with local extension or a vet. <a href="about.html">How this site works</a></p>
                 </div>
             </div>
         </section>
@@ -332,17 +344,22 @@
                 <div class="page-header text-center">
                     <span class="badge-tag">Farm</span>
                     <h1 class="page-title">Your farm</h1>
-                    <p class="page-subtitle">Optional. Guests can still use Advisor. After Google sign-in, this page shows assets the advisor saved, plus a profile you can edit.</p>
+                    <p class="page-subtitle">A signed-in upgrade. Guests can still use Advisor. After Google sign-in, this page shows assets the advisor saved, plus a profile you can edit.</p>
                 </div>
                 <div class="paper-card farm-guest" id="farmGuest">
-                    <p>Chat still works without an account. Sign in with Google in the header to save this place — beds, animals, and what the advisor learns — on the same farm the apps use.</p>
+                    <p class="farm-guest-lead">Start with a question. Sign in when you want to keep the place.</p>
+                    <p>Chat works without an account. Google sign-in in the header saves beds, animals, and what the advisor learns — on the same farm the apps use.</p>
+                    <div class="hero-cta-group">
+                        <a href="#ai-advisor" class="btn btn-primary" onclick="navigateTo('ai-advisor')">Ask the advisor first</a>
+                        <a href="guides/index.html" class="btn btn-outline">Read a starter guide</a>
+                    </div>
                 </div>
                 <div id="farmSigned" hidden>
                     <div class="farm-kpi" id="farmKpiBanner"></div>
                     <div class="farm-care-banner" id="farmCareBanner" hidden></div>
                     <p class="farm-next" id="farmNextQuestion" hidden></p>
                     <div class="farm-asset-grid" id="farmAssetGrid"></div>
-                    <p class="farm-empty" id="farmEmpty" hidden>Nothing saved yet. Ask Advisor about what you keep, or add one below.</p>
+                    <p class="farm-empty" id="farmEmpty" hidden>Nothing saved yet. <a href="#ai-advisor" onclick="navigateTo('ai-advisor')">Ask Advisor</a> about what you keep, or add one below.</p>
                     <form class="paper-card farm-card" id="farmProfileForm">
                         <h2>Profile</h2>
                         <p class="farm-status" id="farmStatus"></p>

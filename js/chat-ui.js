@@ -105,6 +105,7 @@
 
     function renderChips(container, chips, onPick) {
         container.replaceChildren();
+        container.hidden = false;
         chips.forEach((label) => {
             const button = document.createElement("button");
             button.type = "button";
@@ -113,6 +114,24 @@
             button.addEventListener("click", () => onPick(label));
             container.appendChild(button);
         });
+    }
+
+    function consumePendingAsk() {
+        const params = new URLSearchParams(window.location.search);
+        const ask = (params.get("ask") || "").trim();
+        if (!ask) {
+            return "";
+        }
+        params.delete("ask");
+        const next = params.toString();
+        const hash = window.location.hash || "#ai-advisor";
+        const url = next
+            ? `${window.location.pathname}?${next}${hash}`
+            : `${window.location.pathname}${hash}`;
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, "", url);
+        }
+        return ask;
     }
 
     function addRatingRow(parent, qaId, deviceUuid) {
@@ -158,6 +177,7 @@
         const messages = el("chatMessages");
         const empty = el("chatEmpty");
         const chips = el("chatChips");
+        const jobChips = el("chatJobChips");
         const greetingEl = el("chatGreeting");
         const categoryRow = el("chatCategories");
         const saveHint = el("chatSaveHint");
@@ -221,6 +241,12 @@
         function showEmpty(visible) {
             if (empty) {
                 empty.hidden = !visible;
+            }
+            if (jobChips) {
+                jobChips.hidden = !visible;
+            }
+            if (chips) {
+                chips.hidden = visible;
             }
         }
 
@@ -367,20 +393,36 @@
         });
 
         const defaultHobbyChips = [
-            "Shade for six cattle in a drylot",
-            "Drip kit for raised beds",
-            "Electric fence for goats and poultry",
-            "Freeze-proof cattle tank"
+            "My fence charger keeps losing power after rain. What should I check?",
+            "How do I keep a cattle tank from freezing?",
+            "My raised bed soil is too wet. What should I check?",
+            "How much shade do six cattle need in a drylot?"
         ];
 
+        function isGenericGreeting(text) {
+            return /assist you|agricultural needs|assistance service|how can i help/i.test(text || "");
+        }
+
+        function isGenericChip(text) {
+            return /farm tasks should i focus|seasonal tips for my region|how can i help you/i.test(text || "");
+        }
+
         const afterAnswerChips = [
-            "What farm tasks should I focus on this week?",
-            "Give me seasonal tips for my region",
+            "What should I check on the fence charger next?",
+            "How do I keep a tank from freezing?",
+            "Is this bed too wet to water today?",
+            "How much shade do the cattle need?",
         ];
 
         function topicFollowUps(query, answer) {
             const haystack = `${query} ${answer}`.toLowerCase();
-            if (/cow|cattle|calf|herd/.test(haystack)) {
+            if (/charger|fence|joule|grounding/.test(haystack)) {
+                return [
+                    "How do I ground a charger on a small place?",
+                    "Solar or plug-in for a goat paddock?",
+                ];
+            }
+            if (/cow|cattle|calf|herd|heat stress|shade/.test(haystack)) {
                 return [
                     "How much shade do they need in a drylot?",
                     "What should change in their winter feed?",
@@ -398,10 +440,16 @@
                     "What should I check in the run this week?",
                 ];
             }
-            if (/tomato|garden|raised bed|leaf|drip/.test(haystack)) {
+            if (/wet|moisture|soil pen|raised bed|tomato|garden|leaf|drip/.test(haystack)) {
                 return [
                     "How often should I water raised beds this week?",
                     "What should I photograph on a sick leaf?",
+                ];
+            }
+            if (/tank|waterer|freez/.test(haystack)) {
+                return [
+                    "What fails when the power drops?",
+                    "Heated tank or freeze-proof drinker?",
                 ];
             }
             return [];
@@ -412,7 +460,7 @@
             const seen = {};
             function add(label) {
                 const chip = (label || "").trim();
-                if (!chip || seen[chip]) {
+                if (!chip || seen[chip] || isGenericChip(chip)) {
                     return;
                 }
                 seen[chip] = true;
@@ -420,19 +468,32 @@
             }
             add(result.nextQuestionPrompt);
             (result.suggestionChips || []).forEach(add);
-            const hasApiChips = followUps.length > 0;
             topicFollowUps(query, result.answer).forEach(add);
-            if (!hasApiChips) {
-                afterAnswerChips.forEach(add);
-                defaultHobbyChips.forEach(add);
-            }
+            afterAnswerChips.forEach(add);
             return followUps.slice(0, 4);
         }
 
         function showDefaultChips() {
-            renderChips(chips, defaultHobbyChips, (label) => {
-                sendQuery(label);
-            });
+            showEmpty(true);
+            if (chips) {
+                chips.replaceChildren();
+                chips.hidden = true;
+            }
+        }
+
+        function onChipClick(event) {
+            const chip = event.target.closest("[data-query]");
+            if (!chip || isSending) {
+                return;
+            }
+            sendQuery(chip.getAttribute("data-query"));
+        }
+
+        if (chips) {
+            chips.addEventListener("click", onChipClick);
+        }
+        if (jobChips) {
+            jobChips.addEventListener("click", onChipClick);
         }
 
         renderActiveCategory();
@@ -448,22 +509,26 @@
             setChatCategory(name);
         });
 
+        const pendingAsk = consumePendingAsk();
+        if (pendingAsk) {
+            if (typeof global.navigateTo === "function") {
+                global.navigateTo("ai-advisor");
+            } else {
+                window.location.hash = "ai-advisor";
+            }
+            sendQuery(pendingAsk);
+            return;
+        }
+
         api.getWelcomeGreeting(currentDeviceUuid(), config.category || "General", new Date().getHours())
             .then((welcome) => {
-                if (welcome.greeting && greetingEl) {
+                if (welcome.greeting && greetingEl && !isGenericGreeting(welcome.greeting)) {
                     setText(greetingEl, welcome.greeting);
                 }
-                const suggestions = (welcome.suggestions && welcome.suggestions.length > 0)
-                    ? welcome.suggestions
-                    : defaultHobbyChips;
-                renderChips(chips, suggestions, (label) => {
-                    sendQuery(label);
-                });
+                // Keep editorial job chips. Do not replace them with vague API suggestions.
             })
             .catch(() => {
-                renderChips(chips, defaultHobbyChips, (label) => {
-                    sendQuery(label);
-                });
+                // Job chips are already in the HTML.
             });
     }
 
