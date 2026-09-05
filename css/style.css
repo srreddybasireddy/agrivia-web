@@ -1469,6 +1469,39 @@ input[type="range"] {
     font-size: 0.95rem;
 }
 
+.farm-care-banner {
+    max-width: 52rem;
+    margin: 0 auto 1.25rem;
+    padding: 1rem 1.15rem;
+    background: var(--raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+}
+
+.farm-care-heading {
+    font-size: 0.9rem;
+    color: var(--danger);
+    margin-bottom: 0.45rem;
+}
+
+.farm-care-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    color: var(--ink-2);
+}
+
+.calc-use-farm {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    margin-bottom: 0.4rem;
+}
+
 .farm-empty {
     max-width: 36rem;
     margin: 0 auto 1.5rem;

@@ -331,7 +331,14 @@
                     // Chat already succeeded; farm refresh is best-effort.
                 }
 
-                renderChips(chips, chipsAfterAnswer(query, result), (label) => {
+                const followUps = chipsAfterAnswer(query, result);
+                const pendingChip = global.AgriviaFarmUi && global.AgriviaFarmUi.getPendingPrompt
+                    ? global.AgriviaFarmUi.getPendingPrompt()
+                    : "";
+                if (pendingChip && followUps.indexOf(pendingChip) === -1) {
+                    followUps.unshift(pendingChip);
+                }
+                renderChips(chips, followUps.slice(0, 4), (label) => {
                     sendQuery(label);
                 });
             } catch (err) {

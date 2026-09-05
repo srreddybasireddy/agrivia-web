@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('appContainer')) {
         handleHashRouting();
         window.addEventListener('hashchange', handleHashRouting);
+        initFarmCalculatorPrefill();
         updateROICalculation();
     }
     checkCookieConsent();
@@ -100,6 +101,145 @@ function toggleMobileMenu() {
 }
 
 // Farm & Homestead Savings ROI Calculator Logic
+const CALC_DEFAULT_BEDS = 6;
+const CALC_DEFAULT_HEAD = 6;
+let calcManualBeds = CALC_DEFAULT_BEDS;
+let calcManualHead = CALC_DEFAULT_HEAD;
+
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
+
+function isUsingFarmCounts() {
+    const box = document.getElementById('calcUseFarm');
+    return Boolean(box && box.checked);
+}
+
+function farmCalcCounts(snapshot) {
+    if (!snapshot || !snapshot.profile) {
+        return null;
+    }
+    const profile = snapshot.profile;
+    const head = clamp(
+        (profile.totalLivestock || 0) + (profile.totalPoultry || 0),
+        0,
+        80
+    );
+    const beds = clamp(
+        profile.totalGarden || profile.totalCrops || Math.round(profile.farmSizeAcres || 0),
+        0,
+        40
+    );
+    if (!head && !beds) {
+        return null;
+    }
+    const plants = (snapshot.assets || []).filter((asset) => (
+        asset.kind === 'Crops' || asset.kind === 'Garden'
+    ));
+    return { head: head, beds: beds, plants: plants };
+}
+
+function syncFarmCropOptions(plants) {
+    const select = document.getElementById('cropTypeSelect');
+    if (!select) {
+        return;
+    }
+    Array.from(select.querySelectorAll('option[data-farm-crop]')).forEach((opt) => opt.remove());
+    (plants || []).slice(0, 8).forEach((asset) => {
+        const option = document.createElement('option');
+        option.value = `farm:${asset.id}`;
+        option.dataset.farmCrop = 'true';
+        option.textContent = asset.title;
+        select.appendChild(option);
+    });
+}
+
+function applyFarmCountsToCalculator() {
+    const snapshot = window.AgriviaFarmUi && window.AgriviaFarmUi.getSnapshot
+        ? window.AgriviaFarmUi.getSnapshot()
+        : null;
+    const counts = farmCalcCounts(snapshot);
+    const acreageInput = document.getElementById('acreageInput');
+    const cattleInput = document.getElementById('cattleInput');
+    const select = document.getElementById('cropTypeSelect');
+    if (!counts || !acreageInput || !cattleInput) {
+        return;
+    }
+    acreageInput.value = String(counts.beds);
+    cattleInput.value = String(counts.head);
+    syncFarmCropOptions(counts.plants);
+    if (select && counts.plants.length) {
+        select.value = `farm:${counts.plants[0].id}`;
+    }
+    updateROICalculation();
+}
+
+function restoreManualCalculator() {
+    const acreageInput = document.getElementById('acreageInput');
+    const cattleInput = document.getElementById('cattleInput');
+    if (acreageInput) {
+        acreageInput.value = String(calcManualBeds);
+    }
+    if (cattleInput) {
+        cattleInput.value = String(calcManualHead);
+    }
+    syncFarmCropOptions([]);
+    const select = document.getElementById('cropTypeSelect');
+    if (select) {
+        select.value = 'specialty';
+    }
+    updateROICalculation();
+}
+
+function initFarmCalculatorPrefill() {
+    const wrap = document.getElementById('calcUseFarmWrap');
+    const box = document.getElementById('calcUseFarm');
+    const acreageInput = document.getElementById('acreageInput');
+    const cattleInput = document.getElementById('cattleInput');
+    if (!wrap || !box) {
+        return;
+    }
+
+    function syncVisibility() {
+        const signedIn = window.AgriviaAuth && window.AgriviaAuth.isSignedIn();
+        wrap.hidden = !signedIn;
+        if (!signedIn) {
+            box.checked = false;
+            restoreManualCalculator();
+        }
+    }
+
+    box.addEventListener('change', () => {
+        if (box.checked) {
+            applyFarmCountsToCalculator();
+        } else {
+            restoreManualCalculator();
+        }
+    });
+    if (acreageInput) {
+        acreageInput.addEventListener('input', () => {
+            if (!isUsingFarmCounts()) {
+                calcManualBeds = parseInt(acreageInput.value, 10) || 0;
+            }
+        });
+    }
+    if (cattleInput) {
+        cattleInput.addEventListener('input', () => {
+            if (!isUsingFarmCounts()) {
+                calcManualHead = parseInt(cattleInput.value, 10) || 0;
+            }
+        });
+    }
+    window.addEventListener('agrivia-auth-changed', syncVisibility);
+    window.addEventListener('agrivia-farm-changed', () => {
+        syncVisibility();
+        if (isUsingFarmCounts()) {
+            applyFarmCountsToCalculator();
+        }
+    });
+    syncVisibility();
+}
+
 function updateROICalculation() {
     const acreageInput = document.getElementById('acreageInput');
     const cattleInput = document.getElementById('cattleInput');

@@ -161,7 +161,40 @@
             subtitle: "",
             roiEstimate: readRoi(ops),
             healthAlerts: "",
+            careItems: cropTimelineCare(crop),
         };
+    }
+
+    function cropTimelineCare(crop) {
+        const title = readText(crop.name) || "Crop";
+        const timelines = Array.isArray(crop.timelines) ? crop.timelines : [];
+        const now = Date.now();
+        const windowMs = 7 * 24 * 60 * 60 * 1000;
+        const items = [];
+        timelines.forEach((row) => {
+            if (row.completed_date || row.completedDate) {
+                return;
+            }
+            const raw = row.scheduled_date || row.scheduledDate;
+            if (!raw) {
+                return;
+            }
+            const when = new Date(raw);
+            if (Number.isNaN(when.getTime())) {
+                return;
+            }
+            const time = when.getTime();
+            if (time < now - windowMs || time > now + windowMs) {
+                return;
+            }
+            const activity = readText(row.activity_type || row.activityType) || "Care";
+            items.push({
+                source: title,
+                kind: "Crops",
+                text: `${activity} · ${when.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`,
+            });
+        });
+        return items;
     }
 
     function mapGeneric(asset, kind) {
@@ -178,6 +211,7 @@
             subtitle: readText(asset.subtitle),
             roiEstimate: readRoi(extra),
             healthAlerts: "",
+            careItems: [],
         };
     }
 
@@ -200,6 +234,7 @@
                     subtitle: "",
                     roiEstimate: readRoi(operationalOf(row)),
                     healthAlerts: "",
+                    careItems: [],
                     count: 0,
                 });
             }
@@ -217,6 +252,13 @@
         });
         return Array.from(groups.values()).map((group) => {
             group.subtitle = group.count === 1 ? "1 head" : `${group.count} head`;
+            if (group.healthAlerts) {
+                group.careItems = [{
+                    source: group.title,
+                    kind: "Cattle",
+                    text: group.healthAlerts,
+                }];
+            }
             return group;
         });
     }
@@ -271,17 +313,19 @@
         const generic = GENERIC_CATEGORIES.flatMap((category, index) => {
             return settledValue(settled[4 + index], []).map((asset) => mapGeneric(asset, category));
         });
+        const assets = crops.concat(cattle, generic).filter((asset) => {
+            if (!asset.id && !asset.title) {
+                return false;
+            }
+            if (asset.kind === "Crops" || asset.kind === "Garden") {
+                return isPlausibleAssetTitle(asset.title);
+            }
+            return true;
+        });
         return {
             profile: normalizeProfile(profileRaw) || emptyProfile(),
-            assets: crops.concat(cattle, generic).filter((asset) => {
-                if (!asset.id && !asset.title) {
-                    return false;
-                }
-                if (asset.kind === "Crops" || asset.kind === "Garden") {
-                    return isPlausibleAssetTitle(asset.title);
-                }
-                return true;
-            }),
+            assets: assets,
+            careItems: assets.flatMap((asset) => asset.careItems || []),
             pending: pending,
             listErrors: settled.slice(1).some((result) => result.status === "rejected"),
         };

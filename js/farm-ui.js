@@ -45,7 +45,7 @@
         return items;
     }
 
-    function headerPillText(profile) {
+    function headerPillText(profile, careCount) {
         const parts = [];
         if (profile.totalCrops) {
             parts.push(`${profile.totalCrops} crop${profile.totalCrops === 1 ? "" : "s"}`);
@@ -64,6 +64,9 @@
         }
         if (profile.totalFishShrimp) {
             parts.push(`${profile.totalFishShrimp} fish`);
+        }
+        if (careCount > 0) {
+            parts.push(`${careCount} alert${careCount === 1 ? "" : "s"}`);
         }
         return parts.join(" · ");
     }
@@ -84,7 +87,7 @@
             label.textContent = auth.getEmail() || auth.getName() || "Signed in";
         }
         if (farmNav) {
-            farmNav.hidden = !signedIn;
+            farmNav.hidden = false;
         }
         if (!signedIn) {
             lastSnapshot = null;
@@ -93,14 +96,48 @@
         }
     }
 
-    function renderHeaderPill(profile) {
+    function renderHeaderPill(profile, careCount) {
         const pill = el("farmHeaderPill");
         if (!pill) {
             return;
         }
-        const text = headerPillText(profile);
+        const text = headerPillText(profile, careCount || 0);
         pill.textContent = text;
         setHidden(pill, !text);
+    }
+
+    function renderCareBanner(careItems) {
+        const banner = el("farmCareBanner");
+        if (!banner) {
+            return;
+        }
+        banner.replaceChildren();
+        const items = Array.isArray(careItems) ? careItems.slice(0, 6) : [];
+        if (!items.length) {
+            setHidden(banner, true);
+            return;
+        }
+        setHidden(banner, false);
+        const heading = document.createElement("p");
+        heading.className = "farm-care-heading";
+        heading.textContent = items.length === 1 ? "1 care item this week" : `${items.length} care items this week`;
+        banner.appendChild(heading);
+        const list = document.createElement("ul");
+        list.className = "farm-care-list";
+        items.forEach((item) => {
+            const row = document.createElement("li");
+            row.textContent = item.source ? `${item.source} · ${item.text}` : item.text;
+            list.appendChild(row);
+        });
+        banner.appendChild(list);
+    }
+
+    function pendingPromptFrom(snapshot) {
+        const pending = snapshot && snapshot.pending && snapshot.pending.nextQuestion;
+        if (!pending || typeof pending.prompt !== "string") {
+            return "";
+        }
+        return pending.prompt.trim();
     }
 
     function renderKpis(profile) {
@@ -253,6 +290,8 @@
         setHidden(signedPanel, !signedIn);
         if (!signedIn || !global.AgriviaFarmApi) {
             lastSnapshot = null;
+            renderCareBanner([]);
+            global.dispatchEvent(new CustomEvent("agrivia-farm-changed", { detail: { snapshot: null } }));
             return null;
         }
         if (status) {
@@ -263,9 +302,11 @@
             lastSnapshot = portfolio;
             fillProfileForm(portfolio.profile);
             renderKpis(portfolio.profile);
-            renderHeaderPill(portfolio.profile);
+            renderHeaderPill(portfolio.profile, (portfolio.careItems || []).length);
+            renderCareBanner(portfolio.careItems);
             renderAssets(portfolio.assets);
             renderNextQuestion(portfolio.pending);
+            global.dispatchEvent(new CustomEvent("agrivia-farm-changed", { detail: { snapshot: portfolio } }));
             if (status) {
                 status.textContent = portfolio.listErrors
                     ? "Profile loaded. Some asset lists could not be reached."
@@ -379,6 +420,9 @@
         refreshAndDiff: refreshAndDiff,
         getSnapshot: function () {
             return lastSnapshot;
+        },
+        getPendingPrompt: function () {
+            return pendingPromptFrom(lastSnapshot);
         },
     };
 })(window);

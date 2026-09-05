@@ -49,7 +49,7 @@
                 <a href="guides/index.html" class="nav-item" id="nav-blog">Guides</a>
                 <a href="#ai-advisor" class="nav-item" id="nav-ai-advisor" onclick="navigateTo('ai-advisor')">Advisor</a>
                 <a href="#calculator" class="nav-item" id="nav-calculator" onclick="navigateTo('home', 'calculator')">Calculator</a>
-                <a href="#farm" class="nav-item" id="nav-farm" hidden onclick="navigateTo('farm')">Farm</a>
+                <a href="#farm" class="nav-item" id="nav-farm" onclick="navigateTo('farm')">Farm</a>
                 <a href="about.html" class="nav-item" id="nav-about">About</a>
                 <a href="contact.html" class="nav-item" id="nav-contact">Contact</a>
             </nav>
@@ -152,6 +152,10 @@
                     <div class="calculator-card paper-card">
                         <div class="calc-grid">
                             <div class="calc-controls">
+                                <label class="calc-use-farm" id="calcUseFarmWrap" hidden>
+                                    <input type="checkbox" id="calcUseFarm">
+                                    Use counts from my farm
+                                </label>
                                 <div class="form-group">
                                     <div class="label-row">
                                         <label for="acreageInput">Raised beds (or equivalent plots)</label>
@@ -331,10 +335,11 @@
                     <p class="page-subtitle">Optional. Guests can still use Advisor. After Google sign-in, this page shows assets the advisor saved, plus a profile you can edit.</p>
                 </div>
                 <div class="paper-card farm-guest" id="farmGuest">
-                    <p>Sign in with Google in the header to save a profile, animals, and beds. Advisor does not require this.</p>
+                    <p>Chat still works without an account. Sign in with Google in the header to save this place — beds, animals, and what the advisor learns — on the same farm the apps use.</p>
                 </div>
                 <div id="farmSigned" hidden>
                     <div class="farm-kpi" id="farmKpiBanner"></div>
+                    <div class="farm-care-banner" id="farmCareBanner" hidden></div>
                     <p class="farm-next" id="farmNextQuestion" hidden></p>
                     <div class="farm-asset-grid" id="farmAssetGrid"></div>
                     <p class="farm-empty" id="farmEmpty" hidden>Nothing saved yet. Ask Advisor about what you keep, or add one below.</p>
@@ -394,6 +399,7 @@
                 <h4>On this site</h4>
                 <ul class="footer-links">
                     <li><a href="#ai-advisor" onclick="navigateTo('ai-advisor')">Advisor</a></li>
+                    <li><a href="#farm" onclick="navigateTo('farm')">Farm</a></li>
                     <li><a href="#calculator" onclick="navigateTo('home', 'calculator')">Example calculator</a></li>
                     <li><a href="guides/index.html">All guides</a></li>
                 </ul>
