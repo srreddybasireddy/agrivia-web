@@ -403,14 +403,26 @@
             return /assist you|agricultural needs|assistance service|how can i help/i.test(text || "");
         }
 
+        function isGenericChip(text) {
+            return /farm tasks should i focus|seasonal tips for my region|how can i help you/i.test(text || "");
+        }
+
         const afterAnswerChips = [
-            "What farm tasks should I focus on this week?",
-            "Give me seasonal tips for my region",
+            "What should I check on the fence charger next?",
+            "How do I keep a tank from freezing?",
+            "Is this bed too wet to water today?",
+            "How much shade do the cattle need?",
         ];
 
         function topicFollowUps(query, answer) {
             const haystack = `${query} ${answer}`.toLowerCase();
-            if (/cow|cattle|calf|herd/.test(haystack)) {
+            if (/charger|fence|joule|grounding/.test(haystack)) {
+                return [
+                    "How do I ground a charger on a small place?",
+                    "Solar or plug-in for a goat paddock?",
+                ];
+            }
+            if (/cow|cattle|calf|herd|heat stress|shade/.test(haystack)) {
                 return [
                     "How much shade do they need in a drylot?",
                     "What should change in their winter feed?",
@@ -428,10 +440,16 @@
                     "What should I check in the run this week?",
                 ];
             }
-            if (/tomato|garden|raised bed|leaf|drip/.test(haystack)) {
+            if (/wet|moisture|soil pen|raised bed|tomato|garden|leaf|drip/.test(haystack)) {
                 return [
                     "How often should I water raised beds this week?",
                     "What should I photograph on a sick leaf?",
+                ];
+            }
+            if (/tank|waterer|freez/.test(haystack)) {
+                return [
+                    "What fails when the power drops?",
+                    "Heated tank or freeze-proof drinker?",
                 ];
             }
             return [];
@@ -442,7 +460,7 @@
             const seen = {};
             function add(label) {
                 const chip = (label || "").trim();
-                if (!chip || seen[chip]) {
+                if (!chip || seen[chip] || isGenericChip(chip)) {
                     return;
                 }
                 seen[chip] = true;
@@ -450,12 +468,8 @@
             }
             add(result.nextQuestionPrompt);
             (result.suggestionChips || []).forEach(add);
-            const hasApiChips = followUps.length > 0;
             topicFollowUps(query, result.answer).forEach(add);
-            if (!hasApiChips) {
-                afterAnswerChips.forEach(add);
-                defaultHobbyChips.forEach(add);
-            }
+            afterAnswerChips.forEach(add);
             return followUps.slice(0, 4);
         }
 
