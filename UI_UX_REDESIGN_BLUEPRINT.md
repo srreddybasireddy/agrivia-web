@@ -60,6 +60,29 @@ The centerpiece of the user experience. Unhidden for all visitors, with interact
 
 ![Agrivia Farm Dashboard Mockup](/Users/subbaramreddybasireddy/.gemini/antigravity-ide/brain/4dcf01f3-ff6c-4090-b62c-718296aa9c6a/agrivia_farm_dashboard_mockup_1788620034906.jpg)
 
+---
+
+### Page 1.1: Unified Farm & Profile Master View (Solving the "Form Below Dashboard" Stack)
+
+Instead of stacking a long, sterile contact form underneath the assets, the redesigned page unites the **Farmer Profile** and **Active Farm Cockpit** into a clean, modern **Two-Column Command Center**:
+
+![Agrivia Unified Farm & Profile Redesign Mockup](/Users/subbaramreddybasireddy/.gemini/antigravity-ide/brain/4dcf01f3-ff6c-4090-b62c-718296aa9c6a/agrivia_farm_profile_redesign_mockup_1788664643395.jpg)
+
+#### The Layout Structure:
+1. **Left Column — Farmer Identity Card**:
+   * **Avatar & Name**: Google profile photo / initial badge, full name (`Subba Ram Reddy`).
+   * **Location Intelligence**: Displays city/state and automatically computes the USDA Plant Hardiness Zone (e.g., `Phoenix, AZ · Hardiness Zone 9b`).
+   * **Contact Info**: Verified email and phone number.
+   * **Compact "Edit Profile" Action**: Opens a sleek slide-over drawer or modal instead of monopolizing vertical screen space.
+2. **Right Column — Live Farm Cockpit**:
+   * **Header Banner**: Farm Name (`Oakwood Homestead`) with a live weather & frost alert widget for the user's location (`86°F Phoenix · Sunny, Low Frost Risk`) and a prominent `[+ Add Asset]` button.
+   * **Visual KPI Stat Cards**: 4 balanced metric cards with bespoke icons (`4 Garden Beds`, `0 Field Crops`, `0 Livestock`, `0 Alerts`).
+   * **Rich Active Asset Cards**:
+     * Visual photography / custom SVG illustration (e.g. *Organic Roma Tomatoes*, *Dwarf Cavendish Bananas*).
+     * Growth lifecycle progress gauge (e.g. *Flowering stage · 60% to harvest*).
+     * Dynamic health & watering status badges (`Good health`, `Next water: Today`).
+   * **One-Click Interaction**: Clicking any asset opens targeted AI questions specifically for that plant or animal.
+
 #### Key Components:
 1. **Farm Overview KPI Bar**:
    * Farmland Acreage (e.g. `12 Acres Active Farmland`)
