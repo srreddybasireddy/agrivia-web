@@ -2521,6 +2521,231 @@ input[type="range"] {
     color: var(--ink-3);
 }
 
+/* Signed-in Advisor with a saved farm: two-column rail + chat */
+.advisor-layout:not(.advisor-has-farm) .chat-shell-wide {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.advisor-layout.advisor-has-farm {
+    display: grid;
+    grid-template-columns: minmax(15rem, 17.25rem) minmax(0, 1fr);
+    gap: 1.15rem;
+    align-items: start;
+}
+
+.advisor-has-farm .chat-shell-wide {
+    max-width: none;
+}
+
+.advisor-farm-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 1.15rem 1.05rem 1.1rem;
+    position: sticky;
+    top: 5.25rem;
+}
+
+.advisor-farm-kicker {
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ochre);
+}
+
+.advisor-farm-place {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    color: var(--leaf-deep);
+    line-height: 1.35;
+}
+
+.advisor-farm-assets {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.advisor-asset-row {
+    display: grid;
+    grid-template-columns: 2.55rem minmax(0, 1fr) 0.7rem;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 0.65rem;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-main);
+    color: var(--ink);
+}
+
+.advisor-asset-row:hover,
+.advisor-asset-row.is-active {
+    border-color: var(--leaf);
+}
+
+.advisor-asset-row.is-active {
+    background: #E8EDE4;
+}
+
+.advisor-asset-row::after {
+    content: "";
+    width: 0.42rem;
+    height: 0.42rem;
+    border-right: 2px solid var(--ink-3);
+    border-bottom: 2px solid var(--ink-3);
+    transform: rotate(-45deg);
+    justify-self: end;
+}
+
+.advisor-asset-thumb,
+.advisor-asset-fallback {
+    width: 2.55rem;
+    height: 2.55rem;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #E8EDE4;
+}
+
+.advisor-asset-fallback {
+    display: block;
+    position: relative;
+}
+
+.advisor-asset-fallback::after {
+    content: "";
+    position: absolute;
+    inset: 28% 32% 24% 38%;
+    background: var(--leaf-deep);
+    border-radius: 0 70% 40% 70%;
+    transform: rotate(-28deg);
+}
+
+.advisor-asset-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.advisor-asset-copy strong {
+    font-size: 0.92rem;
+    font-weight: 650;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.advisor-asset-copy span {
+    font-size: 0.78rem;
+    color: var(--ink-3);
+}
+
+.advisor-farm-open {
+    font-size: 0.9rem;
+    font-weight: 650;
+    color: var(--ochre);
+    text-decoration: none;
+    margin-top: 0.15rem;
+}
+
+.advisor-farm-open:hover {
+    color: var(--leaf-deep);
+}
+
+.chat-welcome-lead {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    color: var(--ink);
+    margin: 0 0 0.35rem;
+}
+
+.chat-message-mark {
+    display: none;
+}
+
+.advisor-has-farm .chat-welcome-title {
+    font-size: clamp(1.45rem, 2.6vw, 1.85rem);
+    margin-bottom: 0.15rem;
+}
+
+.advisor-has-farm .job-chips {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.advisor-has-farm .job-chips:has(.job-chips-fallback) {
+    grid-template-columns: 1fr;
+}
+
+.advisor-has-farm .job-chip {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    min-height: 4.6rem;
+    gap: 0.45rem;
+    padding: 0.85rem 0.9rem;
+}
+
+.advisor-has-farm .job-chip::before {
+    content: "";
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: #E8EDE4;
+    position: relative;
+}
+
+.advisor-has-farm .chat-messages {
+    min-height: 14rem;
+    max-height: min(52vh, 560px);
+}
+
+.advisor-has-farm .chat-message-assistant {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    max-width: 94%;
+}
+
+.advisor-has-farm .chat-message-mark {
+    display: block;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 50%;
+    background: var(--leaf-deep);
+    flex-shrink: 0;
+    position: relative;
+}
+
+.advisor-has-farm .chat-message-mark::after {
+    content: "";
+    position: absolute;
+    inset: 28% 32% 24% 38%;
+    background: #E8EDE4;
+    border-radius: 0 70% 40% 70%;
+    transform: rotate(-28deg);
+}
+
+.advisor-has-farm .chat-message-assistant .chat-message-body {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+    padding: 0.95rem 1.15rem;
+}
+
+.advisor-has-farm .chat-input {
+    min-height: 3.4rem;
+}
+
 @media (max-width: 992px) {
     .featured-guide {
         grid-template-columns: 1fr;
@@ -2530,6 +2755,28 @@ input[type="range"] {
         background:
             linear-gradient(180deg, rgba(248, 245, 238, 0.72) 0%, var(--paper) 78%),
             url("../assets/images/hero-field.jpg") center / cover no-repeat;
+    }
+
+    .advisor-layout.advisor-has-farm {
+        grid-template-columns: 1fr;
+    }
+
+    .advisor-farm-rail {
+        position: static;
+    }
+
+    .advisor-farm-assets {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 0.15rem;
+    }
+
+    .advisor-asset-row {
+        min-width: 14.5rem;
+    }
+
+    .advisor-has-farm .job-chips {
+        grid-template-columns: 1fr 1fr;
     }
 }
 

@@ -23,12 +23,101 @@
     function createMessage(role, text) {
         const wrap = document.createElement("div");
         wrap.className = `chat-message chat-message-${role}`;
-
-        const body = document.createElement("p");
-        body.className = "chat-message-text";
-        body.textContent = text;
+        if (role === "assistant") {
+            const mark = document.createElement("span");
+            mark.className = "chat-message-mark";
+            mark.setAttribute("aria-hidden", "true");
+            wrap.appendChild(mark);
+        }
+        const body = document.createElement("div");
+        body.className = "chat-message-body";
+        const copy = document.createElement("p");
+        copy.className = "chat-message-text";
+        copy.textContent = text;
+        body.appendChild(copy);
         wrap.appendChild(body);
         return wrap;
+    }
+
+    function farmAdvisorContext() {
+        const farmUi = global.AgriviaFarmUi;
+        if (!farmUi || !farmUi.hasAdvisorFarmContext || !farmUi.hasAdvisorFarmContext()) {
+            return null;
+        }
+        const snapshot = farmUi.getSnapshot && farmUi.getSnapshot();
+        const assets = snapshot && Array.isArray(snapshot.assets) ? snapshot.assets : [];
+        const profile = (snapshot && snapshot.profile) || {};
+        return {
+            assets: assets,
+            profile: profile,
+            place: farmUi.placeLine ? farmUi.placeLine(profile) : "",
+            kindLabel: farmUi.kindLabel || function (kind) { return kind; },
+        };
+    }
+
+    function farmAskLine(assets) {
+        const titles = (assets || [])
+            .map((asset) => (asset.title || "").trim())
+            .filter(Boolean)
+            .slice(0, 3);
+        if (titles.length === 1) {
+            return `Ask about ${titles[0]}, or the job in front of you.`;
+        }
+        if (titles.length === 2) {
+            return `Ask about ${titles[0]}, ${titles[1]}, or the job in front of you.`;
+        }
+        if (titles.length >= 3) {
+            return `Ask about ${titles[0]}, ${titles[1]}, ${titles[2]}, or the job in front of you.`;
+        }
+        return "Ask about the job in front of you.";
+    }
+
+    function createFarmRailRow(asset, kindLabel) {
+        const row = document.createElement("button");
+        row.type = "button";
+        row.className = "advisor-asset-row";
+        row.setAttribute("data-kind", asset.kind || "");
+        row.setAttribute("data-title", asset.title || "");
+
+        if (asset.imageUrl) {
+            const thumb = document.createElement("img");
+            thumb.className = "advisor-asset-thumb";
+            thumb.src = asset.imageUrl;
+            thumb.alt = "";
+            thumb.addEventListener("error", () => {
+                thumb.replaceWith(createRailFallback());
+            });
+            row.appendChild(thumb);
+        } else {
+            row.appendChild(createRailFallback());
+        }
+
+        const copy = document.createElement("span");
+        copy.className = "advisor-asset-copy";
+        const title = document.createElement("strong");
+        title.textContent = asset.title || "Saved asset";
+        copy.appendChild(title);
+        const metaParts = [];
+        if (asset.kind) {
+            metaParts.push(kindLabel(asset.kind));
+        }
+        if (asset.status) {
+            metaParts.push(asset.status);
+        }
+        if (metaParts.length) {
+            const meta = document.createElement("span");
+            meta.textContent = metaParts.join(" · ");
+            copy.appendChild(meta);
+        }
+        row.appendChild(copy);
+        return row;
+    }
+
+    function createRailFallback() {
+        const mark = document.createElement("span");
+        mark.className = "advisor-asset-fallback";
+        mark.setAttribute("aria-hidden", "true");
+        return mark;
     }
 
     function createStatus(text, kind) {
@@ -200,6 +289,8 @@
         const chips = el("chatChips");
         const jobChips = el("chatJobChips");
         const greetingEl = el("chatGreeting");
+        const welcomeTitle = el("chatWelcomeTitle");
+        const welcomeLead = el("chatWelcomeLead");
         const categoryRow = el("chatCategories");
         const saveHint = el("chatSaveHint");
         if (!form || !input || !messages) {
@@ -208,6 +299,10 @@
 
         let selectedCategory = config.category || "General";
         let isSending = false;
+        let lastWelcomeGreeting = "";
+        const defaultTitle = welcomeTitle ? welcomeTitle.textContent : "What are you working on today?";
+        const defaultGreeting = greetingEl ? greetingEl.textContent : "";
+        const defaultPlaceholder = input.getAttribute("placeholder") || "";
 
         function currentDeviceUuid() {
             const auth = global.AgriviaAuth;
@@ -305,12 +400,83 @@
                 selectedCategory = config.category || "General";
             }
             renderActiveCategory();
+            highlightFarmRail();
         }
 
         function syncGuestHint() {
             if (saveHint) {
                 saveHint.hidden = isSignedIn();
             }
+        }
+
+        function highlightFarmRail() {
+            const assetsEl = el("advisorFarmAssets");
+            if (!assetsEl) {
+                return;
+            }
+            const active = isKnownCategory(selectedCategory) ? selectedCategory : "";
+            assetsEl.querySelectorAll(".advisor-asset-row").forEach((row) => {
+                row.classList.toggle("is-active", Boolean(active) && row.getAttribute("data-kind") === active);
+            });
+        }
+
+        function applyWelcomeCopy() {
+            const ctx = farmAdvisorContext();
+            if (welcomeTitle) {
+                welcomeTitle.textContent = ctx ? "Welcome to the Agrivia advisor" : defaultTitle;
+            }
+            if (welcomeLead) {
+                welcomeLead.hidden = !ctx;
+            }
+            if (!greetingEl) {
+                return;
+            }
+            if (lastWelcomeGreeting && !isGenericGreeting(lastWelcomeGreeting)) {
+                setText(greetingEl, lastWelcomeGreeting);
+                return;
+            }
+            if (ctx) {
+                setText(greetingEl, farmAskLine(ctx.assets));
+                return;
+            }
+            if (isSignedIn()) {
+                setText(greetingEl, "Ask about the job in front of you.");
+                return;
+            }
+            setText(greetingEl, defaultGreeting);
+        }
+
+        function syncFarmAdvisorLayout() {
+            const ctx = farmAdvisorContext();
+            const layout = el("advisorLayout");
+            const rail = el("advisorFarmRail");
+            const place = el("advisorFarmPlace");
+            const assetsEl = el("advisorFarmAssets");
+            if (layout) {
+                layout.classList.toggle("advisor-has-farm", Boolean(ctx));
+            }
+            if (rail) {
+                rail.hidden = !ctx;
+            }
+            applyWelcomeCopy();
+            if (!ctx || !assetsEl) {
+                if (assetsEl) {
+                    assetsEl.replaceChildren();
+                }
+                if (!ctx) {
+                    input.placeholder = defaultPlaceholder;
+                }
+                return;
+            }
+            if (place) {
+                place.textContent = ctx.place;
+                place.hidden = !ctx.place;
+            }
+            assetsEl.replaceChildren();
+            ctx.assets.forEach((asset) => {
+                assetsEl.appendChild(createFarmRailRow(asset, ctx.kindLabel));
+            });
+            highlightFarmRail();
         }
 
         async function showFarmFeedback(before) {
@@ -369,7 +535,7 @@
                 }
                 const assistant = createMessage("assistant", answerText);
                 if (result.qaId) {
-                    addRatingRow(assistant, result.qaId, deviceUuid);
+                    addRatingRow(assistant.querySelector(".chat-message-body") || assistant, result.qaId, deviceUuid);
                 }
                 appendNode(assistant);
                 try {
@@ -491,14 +657,34 @@
         if (jobChips) {
             jobChips.addEventListener("click", onChipClick);
         }
+        const farmAssetsEl = el("advisorFarmAssets");
+        if (farmAssetsEl) {
+            farmAssetsEl.addEventListener("click", (event) => {
+                const row = event.target.closest(".advisor-asset-row");
+                if (!row || isSending) {
+                    return;
+                }
+                const kind = row.getAttribute("data-kind") || "";
+                const title = row.getAttribute("data-title") || "";
+                setChatCategory(kind);
+                input.placeholder = title ? `Ask about ${title}…` : defaultPlaceholder;
+                input.focus();
+            });
+        }
 
         renderActiveCategory();
         syncGuestHint();
+        syncFarmAdvisorLayout();
         global.addEventListener("agrivia-auth-changed", () => {
             if (!isSignedIn()) {
                 setChatCategory("");
+                input.placeholder = defaultPlaceholder;
             }
             syncGuestHint();
+            syncFarmAdvisorLayout();
+        });
+        global.addEventListener("agrivia-farm-changed", () => {
+            syncFarmAdvisorLayout();
         });
         global.addEventListener("agrivia-chat-category", (event) => {
             const name = event && event.detail && event.detail.category;
@@ -527,9 +713,8 @@
 
         api.getWelcomeGreeting(currentDeviceUuid(), config.category || "General", new Date().getHours())
             .then((welcome) => {
-                if (welcome.greeting && greetingEl && !isGenericGreeting(welcome.greeting)) {
-                    setText(greetingEl, welcome.greeting);
-                }
+                lastWelcomeGreeting = (welcome.greeting || "").trim();
+                applyWelcomeCopy();
                 const starters = [];
                 if (welcome.nextQuestionPrompt) {
                     starters.push(welcome.nextQuestionPrompt);

@@ -594,6 +594,14 @@
 
     document.addEventListener("DOMContentLoaded", init);
 
+    function hasAdvisorFarmContext() {
+        const auth = global.AgriviaAuth;
+        if (!auth || !auth.isSignedIn() || !lastSnapshot) {
+            return false;
+        }
+        return lastAssets.length > 0;
+    }
+
     global.AgriviaFarmUi = {
         refresh: loadFarm,
         refreshAndDiff: refreshAndDiff,
@@ -603,5 +611,8 @@
         getPendingPrompt: function () {
             return pendingPromptFrom(lastSnapshot);
         },
+        hasAdvisorFarmContext: hasAdvisorFarmContext,
+        placeLine: placeLine,
+        kindLabel: kindLabel,
     };
 })(window);
