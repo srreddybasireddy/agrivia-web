@@ -89,6 +89,10 @@ function normalizeCategory(value) {
     return "General";
 }
 
+function isGuidesPath(path) {
+    return path === "/guides" || /^\/guides\/[a-z0-9-]+$/i.test(path);
+}
+
 function isFarmPath(path) {
     if (ALLOWED_FARM_EXACT.has(path)) {
         return true;
@@ -247,7 +251,8 @@ export default {
 
         const isChat = ALLOWED_CHAT.has(path);
         const farm = isFarmPath(path);
-        if (!isChat && !farm) {
+        const guides = request.method === "GET" && isGuidesPath(path);
+        if (!isChat && !farm && !guides) {
             return json(404, { error: "Not found." });
         }
 
@@ -268,7 +273,7 @@ export default {
             if (path === "/welcome_greeting" && request.method === "GET") {
                 return await proxyWelcome(request, env);
             }
-            if (farm) {
+            if (farm || guides) {
                 return await proxyFarm(request, env, path);
             }
             return json(405, { error: "Method not allowed." });
