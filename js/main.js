@@ -3,11 +3,8 @@
  */
 
 const HOME_SECTIONS = {
-    features: 'features',
     start: 'start',
     calculator: 'calculator',
-    blog: 'blog',
-    download: 'download-section',
     'ai-advisor-preview': 'ai-advisor-preview',
 };
 

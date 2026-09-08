@@ -2,7 +2,19 @@
  * Header sign-in + farm portfolio UI. Chat still works when this is hidden.
  */
 (function (global) {
+    const KIND_LABELS = {
+        Crops: "Crops",
+        Cattle: "Livestock",
+        Garden: "Garden",
+        "Poultry & Eggs": "Poultry",
+        "Birds & Bees": "Birds / bees",
+        "Fish & Shrimp": "Fish",
+    };
+
     let lastSnapshot = null;
+    let lastAssets = [];
+    let activeKindFilter = "";
+    let profileEditorOpen = false;
 
     function el(id) {
         return document.getElementById(id);
@@ -33,42 +45,79 @@
         return acres === 1 ? "1 acre" : `${rounded} acres`;
     }
 
-    function kpiItems(profile) {
-        const items = [];
-        if (profile.farmSizeAcres > 0) {
-            items.push({ label: formatAcres(profile.farmSizeAcres), value: "" });
-        }
-        items.push({ label: "Crops", value: String(profile.totalCrops || 0) });
-        items.push({ label: "Livestock", value: String(profile.totalLivestock || 0) });
-        items.push({ label: "Garden", value: String(profile.totalGarden || 0) });
-        items.push({ label: "Poultry", value: String(profile.totalPoultry || 0) });
-        return items;
+    function kindLabel(kind) {
+        return KIND_LABELS[kind] || kind;
     }
 
-    function headerPillText(profile, careCount) {
-        const parts = [];
-        if (profile.totalCrops) {
-            parts.push(`${profile.totalCrops} crop${profile.totalCrops === 1 ? "" : "s"}`);
-        }
-        if (profile.totalLivestock) {
-            parts.push(`${profile.totalLivestock} cattle`);
-        }
-        if (profile.totalGarden) {
-            parts.push(`${profile.totalGarden} garden`);
-        }
-        if (profile.totalPoultry) {
-            parts.push(`${profile.totalPoultry} poultry`);
-        }
-        if (profile.totalBirdsBees) {
-            parts.push(`${profile.totalBirdsBees} birds/bees`);
-        }
-        if (profile.totalFishShrimp) {
-            parts.push(`${profile.totalFishShrimp} fish`);
-        }
+    function kindCounts(assets) {
+        const counts = {};
+        (assets || []).forEach((asset) => {
+            if (!asset.kind) {
+                return;
+            }
+            counts[asset.kind] = (counts[asset.kind] || 0) + 1;
+        });
+        return Object.keys(counts).map((kind) => ({
+            kind: kind,
+            label: kindLabel(kind),
+            count: counts[kind],
+        }));
+    }
+
+    function headerPillText(assets, careCount) {
+        const parts = kindCounts(assets).map((item) => {
+            const noun = item.label.toLowerCase();
+            return `${item.count} ${noun}`;
+        });
         if (careCount > 0) {
             parts.push(`${careCount} alert${careCount === 1 ? "" : "s"}`);
         }
         return parts.join(" · ");
+    }
+
+    function placeLine(profile) {
+        const auth = global.AgriviaAuth;
+        const name = (profile && profile.userName) || (auth && auth.getName()) || "";
+        const place = (profile && (profile.address || profile.zipCode)) || "";
+        if (name && place) {
+            return `${name} · ${place}`;
+        }
+        return name || place;
+    }
+
+    function visibleAssets(assets) {
+        if (!activeKindFilter) {
+            return assets;
+        }
+        return assets.filter((asset) => asset.kind === activeKindFilter);
+    }
+
+    function openAdvisor(detail) {
+        if (detail && detail.query) {
+            global.dispatchEvent(new CustomEvent("agrivia-chat-ask", { detail: detail }));
+        } else if (detail && detail.category) {
+            global.dispatchEvent(new CustomEvent("agrivia-chat-category", {
+                detail: { category: detail.category },
+            }));
+        }
+        if (typeof global.navigateTo === "function") {
+            global.navigateTo("ai-advisor");
+        } else {
+            window.location.hash = "ai-advisor";
+        }
+    }
+
+    function setProfileOpen(open) {
+        profileEditorOpen = Boolean(open);
+        const form = el("farmProfileForm");
+        const toggle = el("farmEditToggle");
+        setHidden(form, !profileEditorOpen);
+        if (form) {
+            form.classList.toggle("is-open", profileEditorOpen);
+        }
+        if (toggle) {
+            toggle.setAttribute("aria-expanded", profileEditorOpen ? "true" : "false");
+        }
     }
 
     function renderHeader() {
@@ -91,19 +140,38 @@
         }
         if (!signedIn) {
             lastSnapshot = null;
+            lastAssets = [];
+            activeKindFilter = "";
+            profileEditorOpen = false;
             const pill = el("farmHeaderPill");
             setHidden(pill, true);
         }
     }
 
-    function renderHeaderPill(profile, careCount) {
+    function renderHeaderPill(assets, careCount) {
         const pill = el("farmHeaderPill");
         if (!pill) {
             return;
         }
-        const text = headerPillText(profile, careCount || 0);
+        const text = headerPillText(assets, careCount || 0);
         pill.textContent = text;
         setHidden(pill, !text);
+    }
+
+    function renderIdentity(profile, signedIn) {
+        const line = el("farmPlaceLine");
+        const toggle = el("farmEditToggle");
+        const text = signedIn ? placeLine(profile) : "";
+        if (line) {
+            line.textContent = text;
+            setHidden(line, !text);
+        }
+        setHidden(toggle, !signedIn);
+        const hint = el("farmProfileHint");
+        setHidden(hint, true);
+        if (!signedIn || !profileEditorOpen) {
+            setProfileOpen(false);
+        }
     }
 
     function renderCareBanner(careItems) {
@@ -120,7 +188,7 @@
         setHidden(banner, false);
         const heading = document.createElement("p");
         heading.className = "farm-care-heading";
-        heading.textContent = items.length === 1 ? "1 care item this week" : `${items.length} care items this week`;
+        heading.textContent = items.length === 1 ? "This week" : `This week · ${items.length} items`;
         banner.appendChild(heading);
         const list = document.createElement("ul");
         list.className = "farm-care-list";
@@ -140,29 +208,54 @@
         return pending.prompt.trim();
     }
 
-    function renderKpis(profile) {
+    function renderFilters(profile, assets) {
         const banner = el("farmKpiBanner");
         if (!banner) {
             return;
         }
         banner.replaceChildren();
-        kpiItems(profile).forEach((item) => {
-            const chip = document.createElement("div");
-            chip.className = "farm-kpi-chip";
-            if (item.value) {
-                const value = document.createElement("strong");
-                value.textContent = item.value;
-                chip.appendChild(value);
-            }
-            const label = document.createElement("span");
-            label.textContent = item.label;
-            chip.appendChild(label);
+        const acres = formatAcres(profile && profile.farmSizeAcres);
+        if (acres) {
+            const chip = document.createElement("span");
+            chip.className = "farm-stat-chip";
+            chip.textContent = acres;
+            banner.appendChild(chip);
+        }
+        const filters = kindCounts(assets);
+        if (activeKindFilter && !filters.some((item) => item.kind === activeKindFilter)) {
+            activeKindFilter = "";
+        }
+        filters.forEach((item) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "farm-kind-chip";
+            chip.setAttribute(
+                "aria-pressed",
+                item.kind === activeKindFilter || filters.length === 1 ? "true" : "false"
+            );
+            const mark = document.createElement("span");
+            mark.className = "farm-kind-chip-mark";
+            mark.setAttribute("aria-hidden", "true");
+            const name = document.createElement("span");
+            name.textContent = item.label;
+            const count = document.createElement("span");
+            count.className = "farm-kind-chip-count";
+            count.textContent = String(item.count);
+            chip.appendChild(mark);
+            chip.appendChild(name);
+            chip.appendChild(count);
+            chip.addEventListener("click", () => {
+                activeKindFilter = activeKindFilter === item.kind ? "" : item.kind;
+                renderFilters(profile, lastAssets);
+                renderAssets(visibleAssets(lastAssets));
+            });
             banner.appendChild(chip);
         });
+        setHidden(banner, !banner.childElementCount);
     }
 
-    function cardMeta(asset) {
-        const parts = [asset.kind];
+    function cardFacts(asset) {
+        const parts = [];
         if (asset.variety && asset.kind === "Crops") {
             parts.push(asset.variety);
         }
@@ -177,8 +270,9 @@
         if (planted) {
             parts.push(`Planted ${planted}`);
         }
-        if (asset.status) {
-            parts.push(asset.status);
+        const harvest = formatDate(asset.harvestDate);
+        if (harvest) {
+            parts.push(`Harvest ${harvest}`);
         }
         return parts.join(" · ");
     }
@@ -190,57 +284,74 @@
             return;
         }
         grid.replaceChildren();
-        setHidden(empty, assets.length > 0);
+        setHidden(empty, lastAssets.length > 0);
         assets.forEach((asset) => {
             const card = document.createElement("article");
-            card.className = "farm-asset-card";
+            card.className = asset.imageUrl ? "farm-asset-card has-image" : "farm-asset-card";
+
+            const copy = document.createElement("div");
+            copy.className = "farm-asset-copy";
 
             const kind = document.createElement("span");
             kind.className = "farm-asset-kind";
-            kind.textContent = asset.kind;
-            card.appendChild(kind);
+            kind.textContent = kindLabel(asset.kind);
+            copy.appendChild(kind);
 
             const title = document.createElement("h3");
             title.textContent = asset.title;
-            card.appendChild(title);
+            copy.appendChild(title);
 
+            const statusLine = [kindLabel(asset.kind)];
+            if (asset.status) {
+                statusLine.push(asset.status);
+            }
             const meta = document.createElement("p");
             meta.className = "farm-asset-meta";
-            meta.textContent = cardMeta(asset);
-            card.appendChild(meta);
-
+            meta.textContent = statusLine.join(" · ");
+            copy.appendChild(meta);
+            const facts = cardFacts(asset);
+            if (facts) {
+                const extra = document.createElement("p");
+                extra.className = "farm-asset-roi";
+                extra.textContent = facts;
+                copy.appendChild(extra);
+            }
             if (asset.roiEstimate) {
                 const roi = document.createElement("p");
                 roi.className = "farm-asset-roi";
                 roi.textContent = asset.roiEstimate;
-                card.appendChild(roi);
+                copy.appendChild(roi);
             }
             if (asset.healthAlerts) {
                 const alerts = document.createElement("p");
                 alerts.className = "farm-asset-alert";
                 alerts.textContent = asset.healthAlerts;
-                card.appendChild(alerts);
+                copy.appendChild(alerts);
             }
-            card.tabIndex = 0;
-            card.setAttribute("role", "button");
-            card.setAttribute("aria-label", `Ask Advisor about ${asset.title}`);
-            const openInAdvisor = () => {
-                global.dispatchEvent(new CustomEvent("agrivia-chat-category", {
-                    detail: { category: asset.kind },
-                }));
-                if (typeof global.navigateTo === "function") {
-                    global.navigateTo("ai-advisor");
-                } else {
-                    window.location.hash = "ai-advisor";
-                }
-            };
-            card.addEventListener("click", openInAdvisor);
-            card.addEventListener("keydown", (event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    openInAdvisor();
-                }
+
+            const ask = document.createElement("button");
+            ask.type = "button";
+            ask.className = "farm-asset-ask";
+            ask.textContent = "Ask Advisor →";
+            ask.addEventListener("click", () => {
+                openAdvisor({ category: asset.kind });
             });
+            copy.appendChild(ask);
+            card.appendChild(copy);
+
+            if (asset.imageUrl) {
+                const deco = document.createElement("div");
+                deco.className = "farm-asset-deco";
+                const art = document.createElement("img");
+                art.src = asset.imageUrl;
+                art.alt = "";
+                art.addEventListener("error", () => {
+                    deco.remove();
+                    card.classList.remove("has-image");
+                });
+                deco.appendChild(art);
+                card.appendChild(deco);
+            }
             grid.appendChild(card);
         });
     }
@@ -250,11 +361,31 @@
         if (!node) {
             return;
         }
+        node.replaceChildren();
         const prompt = pending && pending.nextQuestion && typeof pending.nextQuestion.prompt === "string"
             ? pending.nextQuestion.prompt.trim()
             : "";
-        node.textContent = prompt ? `Next: ${prompt}` : "";
-        setHidden(node, !prompt);
+        if (!prompt) {
+            setHidden(node, true);
+            return;
+        }
+        const mark = document.createElement("span");
+        mark.className = "farm-next-mark";
+        mark.setAttribute("aria-hidden", "true");
+        const copy = document.createElement("p");
+        copy.className = "farm-next-copy";
+        copy.textContent = `Next: ${prompt}`;
+        const ask = document.createElement("button");
+        ask.type = "button";
+        ask.className = "farm-next-ask";
+        ask.textContent = "Ask Advisor →";
+        ask.addEventListener("click", () => {
+            openAdvisor({ query: prompt });
+        });
+        node.appendChild(mark);
+        node.appendChild(copy);
+        node.appendChild(ask);
+        setHidden(node, false);
     }
 
     function fillProfileForm(profile) {
@@ -284,38 +415,61 @@
         const guestPanel = el("farmGuest");
         const signedPanel = el("farmSigned");
         const status = el("farmStatus");
+        const loadStatus = el("farmLoadStatus");
         const auth = global.AgriviaAuth;
-        const signedIn = auth && auth.isSignedIn();
+        const signedIn = Boolean(auth && auth.isSignedIn());
         setHidden(guestPanel, signedIn);
         setHidden(signedPanel, !signedIn);
         if (!signedIn || !global.AgriviaFarmApi) {
             lastSnapshot = null;
+            lastAssets = [];
+            renderIdentity(null, false);
             renderCareBanner([]);
+            setHidden(loadStatus, true);
             global.dispatchEvent(new CustomEvent("agrivia-farm-changed", { detail: { snapshot: null } }));
             return null;
         }
-        if (status) {
-            status.textContent = "Loading your farm…";
+        renderIdentity({
+            userName: (auth && auth.getName()) || "",
+            address: "",
+            zipCode: "",
+        }, true);
+        if (loadStatus) {
+            loadStatus.textContent = "Loading your farm…";
+            setHidden(loadStatus, false);
         }
         try {
             const portfolio = await global.AgriviaFarmApi.getPortfolio();
             lastSnapshot = portfolio;
+            lastAssets = portfolio.assets || [];
             fillProfileForm(portfolio.profile);
-            renderKpis(portfolio.profile);
-            renderHeaderPill(portfolio.profile, (portfolio.careItems || []).length);
+            renderIdentity(portfolio.profile, true);
+            renderFilters(portfolio.profile, lastAssets);
+            renderHeaderPill(lastAssets, (portfolio.careItems || []).length);
             renderCareBanner(portfolio.careItems);
-            renderAssets(portfolio.assets);
+            renderAssets(visibleAssets(lastAssets));
             renderNextQuestion(portfolio.pending);
             global.dispatchEvent(new CustomEvent("agrivia-farm-changed", { detail: { snapshot: portfolio } }));
-            if (status) {
-                status.textContent = portfolio.listErrors
-                    ? "Profile loaded. Some asset lists could not be reached."
-                    : "Saved on the same farm API the apps use.";
+            if (portfolio.listErrors) {
+                if (loadStatus) {
+                    loadStatus.textContent = "Some asset lists could not be reached.";
+                    setHidden(loadStatus, false);
+                }
+            } else {
+                setHidden(loadStatus, true);
+                if (status && !profileEditorOpen) {
+                    status.textContent = "";
+                }
             }
             return portfolio;
         } catch (err) {
+            const message = err.message || "Could not load the farm profile.";
+            if (loadStatus) {
+                loadStatus.textContent = message;
+                setHidden(loadStatus, false);
+            }
             if (status) {
-                status.textContent = err.message || "Could not load the farm profile.";
+                status.textContent = message;
             }
             return lastSnapshot;
         }
@@ -357,6 +511,32 @@
             }
         });
 
+        const editToggle = el("farmEditToggle");
+        if (editToggle) {
+            editToggle.addEventListener("click", () => {
+                const form = el("farmProfileForm");
+                const opening = Boolean(form && form.hidden);
+                if (opening && lastSnapshot) {
+                    fillProfileForm(lastSnapshot.profile);
+                }
+                setProfileOpen(opening);
+            });
+        }
+
+        const editCancel = el("farmEditCancel");
+        if (editCancel) {
+            editCancel.addEventListener("click", () => {
+                if (lastSnapshot) {
+                    fillProfileForm(lastSnapshot.profile);
+                }
+                const status = el("farmStatus");
+                if (status) {
+                    status.textContent = "";
+                }
+                setProfileOpen(false);
+            });
+        }
+
         const profileForm = el("farmProfileForm");
         if (profileForm) {
             profileForm.addEventListener("submit", async (event) => {
@@ -370,10 +550,9 @@
                         zipCode: el("farmZip").value,
                         address: el("farmAddress").value,
                     });
-                    if (status) {
-                        status.textContent = "Profile saved.";
-                    }
+                    setProfileOpen(false);
                     await loadFarm();
+                    setProfileOpen(false);
                 } catch (err) {
                     if (status) {
                         status.textContent = err.message || "Could not save the profile.";

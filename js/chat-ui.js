@@ -103,15 +103,36 @@
         return card;
     }
 
+    function asChip(item) {
+        if (typeof item === "string") {
+            const text = item.trim();
+            return text ? { label: text, query: text } : null;
+        }
+        if (!item || typeof item !== "object") {
+            return null;
+        }
+        const query = (item.query || item.query_text || item.label || "").trim();
+        const label = (item.label || item.title || query).trim();
+        if (!query || !label) {
+            return null;
+        }
+        return { label: label, query: query };
+    }
+
     function renderChips(container, chips, onPick) {
         container.replaceChildren();
+        const items = (chips || []).map(asChip).filter(Boolean);
+        if (!items.length) {
+            container.hidden = true;
+            return;
+        }
         container.hidden = false;
-        chips.forEach((label) => {
+        items.forEach((item) => {
             const button = document.createElement("button");
             button.type = "button";
             button.className = "query-chip";
-            button.textContent = label;
-            button.addEventListener("click", () => onPick(label));
+            button.textContent = item.label;
+            button.addEventListener("click", () => onPick(item.query));
             container.appendChild(button);
         });
     }
@@ -357,15 +378,18 @@
                     // Chat already succeeded; farm refresh is best-effort.
                 }
 
-                const followUps = chipsAfterAnswer(query, result);
+                const followUps = chipsAfterAnswer(result);
                 const pendingChip = global.AgriviaFarmUi && global.AgriviaFarmUi.getPendingPrompt
                     ? global.AgriviaFarmUi.getPendingPrompt()
                     : "";
-                if (pendingChip && followUps.indexOf(pendingChip) === -1) {
-                    followUps.unshift(pendingChip);
+                if (pendingChip) {
+                    const pending = asChip(pendingChip);
+                    if (pending && !followUps.some((chip) => chip.query === pending.query)) {
+                        followUps.unshift(pending);
+                    }
                 }
-                renderChips(chips, followUps.slice(0, 4), (label) => {
-                    sendQuery(label);
+                renderChips(chips, followUps.slice(0, 4), (query) => {
+                    sendQuery(query);
                 });
             } catch (err) {
                 pending.remove();
@@ -392,85 +416,57 @@
             }
         });
 
-        const defaultHobbyChips = [
-            "My fence charger keeps losing power after rain. What should I check?",
-            "How do I keep a cattle tank from freezing?",
-            "My raised bed soil is too wet. What should I check?",
-            "How much shade do six cattle need in a drylot?"
-        ];
-
         function isGenericGreeting(text) {
-            return /assist you|agricultural needs|assistance service|how can i help/i.test(text || "");
+            return /assist you|agricultural needs|assistance service|how can i help|here to help|planning and managing your farm/i.test(text || "");
         }
 
         function isGenericChip(text) {
-            return /farm tasks should i focus|seasonal tips for my region|how can i help you/i.test(text || "");
+            return /farm tasks should i focus|seasonal tips for my region|how can i help you|planning and managing your farm/i.test(text || "");
         }
 
-        const afterAnswerChips = [
-            "What should I check on the fence charger next?",
-            "How do I keep a tank from freezing?",
-            "Is this bed too wet to water today?",
-            "How much shade do the cattle need?",
-        ];
-
-        function topicFollowUps(query, answer) {
-            const haystack = `${query} ${answer}`.toLowerCase();
-            if (/charger|fence|joule|grounding/.test(haystack)) {
-                return [
-                    "How do I ground a charger on a small place?",
-                    "Solar or plug-in for a goat paddock?",
-                ];
-            }
-            if (/cow|cattle|calf|herd|heat stress|shade/.test(haystack)) {
-                return [
-                    "How much shade do they need in a drylot?",
-                    "What should change in their winter feed?",
-                ];
-            }
-            if (/goat|sheep/.test(haystack)) {
-                return [
-                    "What fencing works for goats on a small place?",
-                    "How do I keep water from freezing?",
-                ];
-            }
-            if (/chicken|poultry|hen|egg|coop/.test(haystack)) {
-                return [
-                    "How do I keep coop water from freezing?",
-                    "What should I check in the run this week?",
-                ];
-            }
-            if (/wet|moisture|soil pen|raised bed|tomato|garden|leaf|drip/.test(haystack)) {
-                return [
-                    "How often should I water raised beds this week?",
-                    "What should I photograph on a sick leaf?",
-                ];
-            }
-            if (/tank|waterer|freez/.test(haystack)) {
-                return [
-                    "What fails when the power drops?",
-                    "Heated tank or freeze-proof drinker?",
-                ];
-            }
-            return [];
-        }
-
-        function chipsAfterAnswer(query, result) {
+        function chipsAfterAnswer(result) {
             const followUps = [];
             const seen = {};
-            function add(label) {
-                const chip = (label || "").trim();
-                if (!chip || seen[chip] || isGenericChip(chip)) {
+            function add(item) {
+                const chip = asChip(item);
+                if (!chip || seen[chip.query] || isGenericChip(chip.query) || isGenericChip(chip.label)) {
                     return;
                 }
-                seen[chip] = true;
+                seen[chip.query] = true;
                 followUps.push(chip);
             }
             add(result.nextQuestionPrompt);
             (result.suggestionChips || []).forEach(add);
-            topicFollowUps(query, result.answer).forEach(add);
-            afterAnswerChips.forEach(add);
             return followUps.slice(0, 4);
+        }
+
+        function renderStarterChips(suggestions) {
+            if (!jobChips) {
+                return;
+            }
+            jobChips.replaceChildren();
+            const items = (suggestions || [])
+                .map(asChip)
+                .filter((chip) => chip && !isGenericChip(chip.query) && !isGenericChip(chip.label))
+                .slice(0, 4);
+            if (!items.length) {
+                const browse = document.createElement("a");
+                browse.href = "guides/index.html";
+                browse.className = "btn btn-outline job-chips-fallback";
+                browse.textContent = "Browse guides";
+                jobChips.appendChild(browse);
+                jobChips.hidden = false;
+                return;
+            }
+            items.forEach((item) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "job-chip";
+                button.setAttribute("data-query", item.query);
+                button.textContent = item.label;
+                jobChips.appendChild(button);
+            });
+            jobChips.hidden = false;
         }
 
         function showDefaultChips() {
@@ -508,6 +504,15 @@
             const name = event && event.detail && event.detail.category;
             setChatCategory(name);
         });
+        global.addEventListener("agrivia-chat-ask", (event) => {
+            const detail = event && event.detail ? event.detail : {};
+            if (detail.category) {
+                setChatCategory(detail.category);
+            }
+            if (detail.query) {
+                sendQuery(detail.query);
+            }
+        });
 
         const pendingAsk = consumePendingAsk();
         if (pendingAsk) {
@@ -525,10 +530,15 @@
                 if (welcome.greeting && greetingEl && !isGenericGreeting(welcome.greeting)) {
                     setText(greetingEl, welcome.greeting);
                 }
-                // Keep editorial job chips. Do not replace them with vague API suggestions.
+                const starters = [];
+                if (welcome.nextQuestionPrompt) {
+                    starters.push(welcome.nextQuestionPrompt);
+                }
+                (welcome.suggestions || []).forEach((item) => starters.push(item));
+                renderStarterChips(starters);
             })
             .catch(() => {
-                // Job chips are already in the HTML.
+                renderStarterChips([]);
             });
     }
 

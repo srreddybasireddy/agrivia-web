@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=20260906-farm6">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5524710580723425" crossorigin="anonymous"></script>
 </head>
 <body class="paper-theme">
@@ -35,14 +35,17 @@
                     <h1 class="guides-hero-title">Equipment guides</h1>
                     <p class="guides-hero-desc">Honest, practical buying criteria to help you choose and set up the right gear for a small place.</p>
                 </div>
-                <a href="../index.html#ai-advisor" class="btn btn-primary btn-pill">Ask the advisor</a>
+                <a href="../index.html#ai-advisor" class="btn btn-primary">Ask the advisor</a>
             </div>
 
             <article class="featured-guide paper-card">
-                <p class="featured-kicker">Featured · Start here</p>
-                <h2>Soil pens and moisture sensors</h2>
-                <p>The first buying call on a backyard plot or a small paddock: whether a finger test is enough, or a pen in the bed earns its keep.</p>
-                <a class="btn btn-primary btn-pill" href="soil-moisture-sensors.html">Read guide</a>
+                <img class="featured-photo" src="../assets/images/featured-homestead.jpg" alt="Homestead beds at dusk. Licensed stock, not an Agrivia trial.">
+                <div class="featured-copy">
+                    <p class="featured-kicker">Featured · Start here</p>
+                    <h2>Soil pens and moisture sensors</h2>
+                    <p>The first buying call on a backyard plot or a small paddock: whether a finger test is enough, or a pen in the bed earns its keep.</p>
+                    <a class="btn btn-primary" href="soil-moisture-sensors.html">Read guide</a>
+                </div>
             </article>
 
             <div class="guide-filters" id="guideFilters" role="group" aria-label="Filter guides by topic">
@@ -54,52 +57,64 @@
                 <button type="button" class="filter-chip" data-filter="garden" aria-pressed="false">Garden</button>
             </div>
             <div class="blog-grid guide-card-grid">
-                <article class="blog-card paper-card guide-card-strong" data-guide-category="soil">
-                    <a class="blog-card-hit" href="soil-moisture-sensors.html">
-                        <span class="category-tag">Soil</span>
-                        <h3>Soil pens and moisture sensors</h3>
-                        <p>Handheld probes in a raised bed, a probe left in a paddock, and when your finger is enough.</p>
-                        <span class="read-more-link">Read guide</span>
-                    </a>
-                </article>
-                <article class="blog-card paper-card guide-card-strong" data-guide-category="water garden">
-                    <a class="blog-card-hit" href="irrigation-controllers.html">
-                        <span class="category-tag">Water · Garden</span>
-                        <h3>Hose timers and drip for raised beds</h3>
-                        <p>Clock, soil skip, and weather skip for a backyard — not a pivot. Filling a stock tank is a different job.</p>
-                        <span class="read-more-link">Read guide</span>
-                    </a>
-                </article>
                 <article class="blog-card paper-card guide-card-strong" data-guide-category="fence livestock">
                     <a class="blog-card-hit" href="electric-fence-chargers.html">
-                        <span class="category-tag">Fence</span>
-                        <h3>Chargers for cattle, goats, and poultry</h3>
-                        <p>Joules, solar vs plug-in, and grounding so a paddock or chicken run holds a pulse.</p>
-                        <span class="read-more-link">Read guide</span>
+                        <span class="guide-card-photo">
+                            <img src="../assets/images/guide-charger.jpg" alt="Cattle in a paddock. Licensed stock, not an Agrivia trial.">
+                            <span class="category-tag">Fence</span>
+                        </span>
+                        <h3>Electric fence chargers</h3>
+                        <p>Joules, solar vs plug-in, and grounding so a paddock holds a pulse.</p>
                     </a>
                 </article>
                 <article class="blog-card paper-card guide-card-strong" data-guide-category="water livestock">
                     <a class="blog-card-hit" href="livestock-waterers.html">
-                        <span class="category-tag">Water · Livestock</span>
-                        <h3>Tanks and freeze-proof waterers</h3>
-                        <p>Cattle tanks, goat buckets, poultry drinkers, refill rate, and what fails when the power drops.</p>
-                        <span class="read-more-link">Read guide</span>
+                        <span class="guide-card-photo">
+                            <img src="../assets/images/guide-waterer.jpg" alt="Poultry near a waterer. Licensed stock, not an Agrivia trial.">
+                            <span class="category-tag">Water</span>
+                        </span>
+                        <h3>Livestock waterers</h3>
+                        <p>Tanks, drinkers, refill rate, and what fails when power drops.</p>
+                    </a>
+                </article>
+                <article class="blog-card paper-card guide-card-strong" data-guide-category="soil">
+                    <a class="blog-card-hit" href="soil-moisture-sensors.html">
+                        <span class="guide-card-photo">
+                            <img src="../assets/images/guide-soil.jpg" alt="Hands working garden soil. Licensed stock, not an Agrivia trial.">
+                            <span class="category-tag">Soil</span>
+                        </span>
+                        <h3>Soil moisture sensors</h3>
+                        <p>Handheld probes, a probe left in a bed, and when a finger test is enough.</p>
+                    </a>
+                </article>
+                <article class="blog-card paper-card guide-card-strong" data-guide-category="water garden">
+                    <a class="blog-card-hit" href="irrigation-controllers.html">
+                        <span class="guide-card-photo">
+                            <img src="../assets/images/guide-irrigation.jpg" alt="Garden rows with irrigation. Licensed stock, not an Agrivia trial.">
+                            <span class="category-tag">Garden</span>
+                        </span>
+                        <h3>Hose timers and drip</h3>
+                        <p>Clock, soil skip, and weather skip for raised beds — not a pivot.</p>
                     </a>
                 </article>
                 <article class="blog-card paper-card guide-card-strong" data-guide-category="livestock">
                     <a class="blog-card-hit" href="cattle-heat-stress.html">
-                        <span class="category-tag">Livestock</span>
+                        <span class="guide-card-photo">
+                            <img src="../assets/images/guide-heat.jpg" alt="Cattle in a drylot. Licensed stock, not an Agrivia trial.">
+                            <span class="category-tag">Livestock</span>
+                        </span>
                         <h3>Heat, shade, cattle, and flocks</h3>
-                        <p>Cloth shade for a small herd, water space, and coop air before misters.</p>
-                        <span class="read-more-link">Read guide</span>
+                        <p>Cloth shade, water space, and coop air before misters.</p>
                     </a>
                 </article>
                 <article class="blog-card paper-card guide-card-strong" data-guide-category="garden">
                     <a class="blog-card-hit" href="crop-disease-photos.html">
-                        <span class="category-tag">Garden</span>
+                        <span class="guide-card-photo">
+                            <img src="../assets/images/guide-leaf.jpg" alt="Garden leaves. Licensed stock, not an Agrivia trial.">
+                            <span class="category-tag">Garden</span>
+                        </span>
                         <h3>Photographing a sick leaf</h3>
-                        <p>Light, scale, and notes for a garden leaf or a pasture plant — for extension, a vet, or a first-pass chat.</p>
-                        <span class="read-more-link">Read guide</span>
+                        <p>Light, scale, and notes so extension or chat can see what you see.</p>
                     </a>
                 </article>
             </div>

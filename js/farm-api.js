@@ -112,6 +112,31 @@
         return (item && (item.operational_details || item.operationalDetails || item.extra_details || item.extraDetails)) || {};
     }
 
+    function readImageUrl(source, extra) {
+        const pools = [source, extra];
+        for (let i = 0; i < pools.length; i += 1) {
+            const container = pools[i];
+            if (!container || typeof container !== "object") {
+                continue;
+            }
+            const raw = readText(
+                container.imageUrl
+                || container.image_url
+                || container.photoUrl
+                || container.photo_url
+                || container.illustrationUrl
+                || container.illustration_url
+            );
+            if (!raw) {
+                continue;
+            }
+            if (/^https?:\/\//i.test(raw) || raw.charAt(0) === "/") {
+                return raw;
+            }
+        }
+        return "";
+    }
+
     function emptyProfile() {
         return {
             userName: "",
@@ -160,6 +185,7 @@
             harvestDate: crop.estimated_harvest_date || crop.estimatedHarvestDate || "",
             subtitle: "",
             roiEstimate: readRoi(ops),
+            imageUrl: readImageUrl(crop, ops),
             healthAlerts: "",
             careItems: cropTimelineCare(crop),
         };
@@ -210,6 +236,7 @@
             harvestDate: "",
             subtitle: readText(asset.subtitle),
             roiEstimate: readRoi(extra),
+            imageUrl: readImageUrl(asset, extra),
             healthAlerts: "",
             careItems: [],
         };
@@ -233,6 +260,7 @@
                     harvestDate: "",
                     subtitle: "",
                     roiEstimate: readRoi(operationalOf(row)),
+                    imageUrl: readImageUrl(row, operationalOf(row)),
                     healthAlerts: "",
                     careItems: [],
                     count: 0,
@@ -240,6 +268,9 @@
             }
             const group = groups.get(key);
             group.count += 1;
+            if (!group.imageUrl) {
+                group.imageUrl = readImageUrl(row, operationalOf(row));
+            }
             const alerts = row.health_alerts || row.healthAlerts;
             if (typeof alerts === "string" && alerts.trim()) {
                 group.healthAlerts = group.healthAlerts ? `${group.healthAlerts}; ${alerts.trim()}` : alerts.trim();

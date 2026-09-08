@@ -42,6 +42,41 @@
         return trimmed;
     }
 
+    function normalizeSuggestion(item) {
+        if (typeof item === "string") {
+            const text = readableString(item);
+            return text ? { label: text, query: text } : null;
+        }
+        if (!item || typeof item !== "object") {
+            return null;
+        }
+        const query = readableString(item.query_text)
+            || readableString(item.query)
+            || readableString(item.prompt)
+            || readableString(item.label);
+        const label = readableString(item.label)
+            || readableString(item.title)
+            || query;
+        if (!query || !label) {
+            return null;
+        }
+        return { label: label, query: query };
+    }
+
+    function uniqueSuggestions(items) {
+        const seen = {};
+        const out = [];
+        (Array.isArray(items) ? items : []).forEach((item) => {
+            const chip = normalizeSuggestion(item);
+            if (!chip || seen[chip.query]) {
+                return;
+            }
+            seen[chip.query] = true;
+            out.push(chip);
+        });
+        return out;
+    }
+
     async function parseJson(response) {
         const text = await response.text();
         if (!text) {
@@ -102,19 +137,14 @@
         const nextFromNested = data.nextQuestion
             ? readableString(data.nextQuestion.prompt)
             : null;
-        const rootChips = Array.isArray(data.suggestionChips)
-            ? data.suggestionChips.filter((chip) => typeof chip === "string" && chip.trim())
-            : [];
-        const nestedChips = data.nextQuestion && Array.isArray(data.nextQuestion.suggestionChips)
-            ? data.nextQuestion.suggestionChips.filter((chip) => typeof chip === "string" && chip.trim())
-            : [];
-        const suggestionChips = [];
-        rootChips.concat(nestedChips).forEach((chip) => {
-            const label = chip.trim();
-            if (label && !suggestionChips.includes(label)) {
-                suggestionChips.push(label);
-            }
-        });
+        const suggestionChips = uniqueSuggestions(
+            [].concat(
+                data.suggestionChips || [],
+                data.nextQuestion && data.nextQuestion.suggestionChips
+                    ? data.nextQuestion.suggestionChips
+                    : []
+            )
+        );
 
         return {
             answer: typeof data.answer === "string" ? data.answer : "",
@@ -148,16 +178,16 @@
         }
 
         const data = await parseJson(response);
-        const suggestions = Array.isArray(data.suggestions)
-            ? data.suggestions.filter((chip) => typeof chip === "string" && chip.trim())
-            : [];
         const nestedPrompt = data.nextQuestion
             ? readableString(data.nextQuestion.prompt)
             : null;
+        const nestedChips = data.nextQuestion && data.nextQuestion.suggestionChips
+            ? data.nextQuestion.suggestionChips
+            : [];
 
         return {
             greeting: readableString(data.greeting) || "",
-            suggestions: suggestions,
+            suggestions: uniqueSuggestions([].concat(data.suggestions || [], nestedChips)),
             nextQuestionPrompt: nestedPrompt,
         };
     }
