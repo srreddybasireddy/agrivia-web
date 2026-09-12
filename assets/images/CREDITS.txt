@@ -1,7 +1,8 @@
 Guide and hero photographs are licensed Unsplash stills used as
 category illustration. They are not Agrivia field trials.
 
-hero-field.jpg          Unsplash photo-1500382017468-9049fed747ef
+hero-homestead.jpg      Generated illustration matching the homepage mock
+                        (raised beds, goat, chickens, barn). Not an Agrivia trial.
 featured-homestead.jpg  Unsplash photo-1500076656116-558758c991c1
 guide-fence.jpg         Unsplash photo-1714983024051-21056ac3029e
 guide-waterer.jpg       Unsplash photo-1548550023-2bdb3c5beed7

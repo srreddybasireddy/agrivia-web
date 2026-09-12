@@ -50,9 +50,22 @@ iOS and Android call:
 - `GET /api/welcome_greeting?device_uuid=&category=`
 - `POST /api/chat/rate`
 
-The website uses that same contract, with category locked to `General` and a browser UUID in localStorage. It does not call `/register`, location, or inventory endpoints.
+The website uses that same contract, with category inferred from the question. On https://agrivia.ai the page calls `/api` (Worker `agrivia-chat-bff`).
 
-On https://agrivia.ai the page calls `/api` (Worker `agrivia-chat-bff`, route `agrivia.ai/api/*`). Local preview still calls `https://api.agrivia.ai/api` directly.
+That Worker also serves the **apex site**:
+
+- `GET /guides/<slug>` — HTML from the guides API (title + body in the first response)
+- `GET /guides/article.html?slug=X` — 301 to `/guides/X`
+- `GET /sitemap.xml` — home, trust pages, hub, and every published guide
+- `https://www.agrivia.ai/*` — 301 to `https://agrivia.ai/*`
+- unknown paths — HTML 404 (not the homepage)
+
+Deploy the Worker after website sync:
+
+```bash
+cd cloudflare/chat-bff
+npx wrangler deploy
+```
 
 Do not orange-cloud `api.agrivia.ai`.
 

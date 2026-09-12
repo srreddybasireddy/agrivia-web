@@ -4,3 +4,13 @@ compatibility_date = "2026-08-01"
 
 [vars]
 ORIGIN_API_BASE = "https://api.agrivia.ai/api"
+SITE_ORIGIN = "http://agrivia.ai.s3-website-us-west-2.amazonaws.com"
+
+# Apex HTML + /api BFF. www 301s to https://agrivia.ai. Do not orange-cloud api.agrivia.ai.
+[[routes]]
+pattern = "agrivia.ai/*"
+zone_name = "agrivia.ai"
+
+[[routes]]
+pattern = "www.agrivia.ai/*"
+zone_name = "agrivia.ai"

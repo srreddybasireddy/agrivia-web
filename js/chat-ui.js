@@ -527,7 +527,7 @@
                 renderActiveCategory();
                 const result = await api.getAdvisoryResponse(deviceUuid, category, query);
                 pending.remove();
-                const answerText = result.answer.trim();
+                const answerText = answerWithFollowUp(result);
                 if (!answerText) {
                     appendNode(createStatus("No answer came back. Try a more specific farm question.", "empty"));
                     showDefaultChips();
@@ -545,15 +545,6 @@
                 }
 
                 const followUps = chipsAfterAnswer(result);
-                const pendingChip = global.AgriviaFarmUi && global.AgriviaFarmUi.getPendingPrompt
-                    ? global.AgriviaFarmUi.getPendingPrompt()
-                    : "";
-                if (pendingChip) {
-                    const pending = asChip(pendingChip);
-                    if (pending && !followUps.some((chip) => chip.query === pending.query)) {
-                        followUps.unshift(pending);
-                    }
-                }
                 renderChips(chips, followUps.slice(0, 4), (query) => {
                     sendQuery(query);
                 });
@@ -587,21 +578,39 @@
         }
 
         function isGenericChip(text) {
-            return /farm tasks should i focus|seasonal tips for my region|how can i help you|planning and managing your farm/i.test(text || "");
+            // Greeting leftovers only. Farm-task / seasonal chips are real API templates now.
+            return /how can i help you|planning and managing your farm/i.test(text || "");
+        }
+
+        function answerWithFollowUp(result) {
+            let text = String(result.answer || "").trim();
+            const prompt = String(result.nextQuestionPrompt || "").trim();
+            if (!prompt) {
+                return text;
+            }
+            const haystack = text.toLowerCase();
+            const needle = prompt.toLowerCase().replace(/[?؟]$/, "").trim();
+            if (needle && haystack.includes(needle)) {
+                return text;
+            }
+            return `${text}\n\n${prompt}`;
         }
 
         function chipsAfterAnswer(result) {
             const followUps = [];
             const seen = {};
+            const prompt = (result.nextQuestionPrompt || "").trim();
             function add(item) {
                 const chip = asChip(item);
                 if (!chip || seen[chip.query] || isGenericChip(chip.query) || isGenericChip(chip.label)) {
                     return;
                 }
+                if (prompt && (chip.query === prompt || chip.label === prompt)) {
+                    return;
+                }
                 seen[chip.query] = true;
                 followUps.push(chip);
             }
-            add(result.nextQuestionPrompt);
             (result.suggestionChips || []).forEach(add);
             return followUps.slice(0, 4);
         }
@@ -716,9 +725,6 @@
                 lastWelcomeGreeting = (welcome.greeting || "").trim();
                 applyWelcomeCopy();
                 const starters = [];
-                if (welcome.nextQuestionPrompt) {
-                    starters.push(welcome.nextQuestionPrompt);
-                }
                 (welcome.suggestions || []).forEach((item) => starters.push(item));
                 renderStarterChips(starters);
             })

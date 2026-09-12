@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css?v=20260908-guides1">
+    <link rel="stylesheet" href="../css/style.css?v=20260910-guides16">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5524710580723425" crossorigin="anonymous"></script>
 </head>
 <body class="paper-theme">
@@ -25,7 +25,18 @@
                 <a href="/#ai-advisor" class="nav-item">Advisor</a>
                 <a href="/#farm" class="nav-item">Farm</a>
             </nav>
-            <button class="mobile-menu-toggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <div class="header-actions">
+                <div class="auth-slot" id="authSlot">
+                    <div id="authGuest">
+                        <div id="googleSignInBtn" class="google-signin-mount"></div>
+                    </div>
+                    <div id="authSignedIn" hidden>
+                        <span class="auth-email" id="authEmailLabel"></span>
+                        <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            </div>
         </div>
     </header>
     <main class="section-padding">
@@ -35,11 +46,14 @@
                 <p class="guide-kicker" id="guideKicker">Guide</p>
                 <h1 id="guideTitle"></h1>
                 <p id="guideSummary"></p>
+                <p class="guide-author" id="guideAuthor" hidden></p>
                 <div class="guide-topics" id="guideTopics"></div>
                 <p class="guide-disclosure">Guidance only, not a vet diagnosis or a lab soil test. Confirm treatment with local extension or a vet.</p>
             </div>
             <div class="guide-video" id="guideMediaMount" hidden></div>
             <div id="guideBody"></div>
+            <div class="guide-engage" id="guideEngage" hidden></div>
+            <section class="guide-comments" id="guideComments" hidden></section>
             <aside class="guide-related" id="guideRelated" hidden></aside>
             <div class="guide-next">
                 <a class="btn btn-primary" id="guideAsk" href="/#ai-advisor">Ask the advisor</a>
@@ -52,9 +66,10 @@
             <p>&copy; 2026 Agrivia. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a> · <a href="../affiliate-disclosure.html">Disclosure</a> · <a href="../contact.html">Contact</a></p>
         </div>
     </footer>
-    <script src="../js/config.js?v=20260908-guides1"></script>
-    <script src="../js/guides-api.js?v=20260908-guides1"></script>
-    <script src="../js/guides-ui.js?v=20260908-guides1"></script>
-    <script src="../js/main.js?v=20260908-guides1"></script>
+    <script src="../js/config.js?v=20260910-guides16"></script>
+    <script src="../js/auth.js?v=20260910-guides16"></script>
+    <script src="../js/guides-api.js?v=20260910-guides16"></script>
+    <script src="../js/guides-ui.js?v=20260910-guides16"></script>
+    <script src="../js/main.js?v=20260910-guides16"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guides for gardens, cattle, and homestead livestock | Agrivia</title>
-    <meta name="description" content="How-to guides for growing plants and raising animals, plus equipment that supports a small place.">
+    <meta name="description" content="How-to documents and farm videos for growing plants and raising animals. Write a guide or post a video from your place.">
     <link rel="canonical" href="https://agrivia.ai/guides/index.html">
     <link rel="icon" href="../favicon.ico" sizes="48x48">
     <link rel="icon" href="../assets/icons/favicon-48.png" type="image/png" sizes="48x48">
@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css?v=20260908-guides1">
+    <link rel="stylesheet" href="../css/style.css?v=20260910-guides16">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5524710580723425" crossorigin="anonymous"></script>
 </head>
 <body class="paper-theme">
@@ -25,7 +25,18 @@
                 <a href="/#ai-advisor" class="nav-item">Advisor</a>
                 <a href="/#farm" class="nav-item">Farm</a>
             </nav>
-            <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <div class="header-actions">
+                <div class="auth-slot" id="authSlot">
+                    <div id="authGuest">
+                        <div id="googleSignInBtn" class="google-signin-mount"></div>
+                    </div>
+                    <div id="authSignedIn" hidden>
+                        <span class="auth-email" id="authEmailLabel"></span>
+                        <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            </div>
         </div>
     </header>
     <main class="section-padding">
@@ -33,22 +44,31 @@
             <div class="guides-hero">
                 <div>
                     <h1 class="guides-hero-title">Guides</h1>
-                    <p class="guides-hero-desc" id="guidesTabHelper">Learn to grow plants and raise animals — equipment is here when you need it.</p>
+                    <p class="guides-hero-desc" id="guidesTabHelper">How-to documents from Agrivia and other growers.</p>
                 </div>
-                <a href="/#ai-advisor" class="btn btn-primary">Ask the advisor</a>
+                <div class="guides-hero-actions">
+                    <a href="write.html" class="btn btn-outline" id="guidesWriteBtn">Write a guide</a>
+                    <a href="/#ai-advisor" class="btn btn-primary">Ask the advisor</a>
+                </div>
             </div>
             <form class="guide-search" id="guidesSearchForm" role="search">
                 <label class="visually-hidden" for="guidesSearchInput">Search guides</label>
-                <input class="form-input" id="guidesSearchInput" type="search" name="q" placeholder="Search growing topics (tomatoes, goats, soil…)">
+                <input class="form-input" id="guidesSearchInput" type="search" name="q" placeholder="Search documents (tomatoes, goats, soil…)">
                 <button type="submit" class="btn btn-primary">Search</button>
             </form>
             <div class="guide-tabs" id="guidesTabs" role="tablist" aria-label="Guide type">
-                <button type="button" class="guide-tab" data-tab="growing" aria-pressed="true">Growing</button>
-                <button type="button" class="guide-tab" data-tab="equipment" aria-pressed="false">Equipment</button>
+                <button type="button" class="guide-tab" data-tab="documents" aria-pressed="true">Documents</button>
+                <button type="button" class="guide-tab" data-tab="videos" aria-pressed="false">Videos</button>
+            </div>
+            <div class="guide-tabs guide-subtabs" id="guidesOutcomeTabs" role="tablist" aria-label="Video outcome" hidden>
+                <button type="button" class="guide-tab" data-outcome="" aria-pressed="true">All videos</button>
+                <button type="button" class="guide-tab" data-outcome="success" aria-pressed="false">Success</button>
+                <button type="button" class="guide-tab" data-outcome="experience" aria-pressed="false">Experiences</button>
             </div>
             <p class="farm-status" id="guidesStatus" hidden>Loading guides…</p>
             <article class="featured-guide paper-card" id="guidesFeatured" hidden></article>
             <div class="blog-grid guide-card-grid" id="guidesGrid"></div>
+            <div class="guide-empty-actions" id="guidesEmptyActions" hidden></div>
             <div class="chat-chips" id="guidesStarters" hidden></div>
         </div>
     </main>
@@ -57,9 +77,10 @@
             <p>&copy; 2026 Agrivia. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a> · <a href="../affiliate-disclosure.html">Disclosure</a> · <a href="../about.html">About</a> · <a href="../contact.html">Contact</a></p>
         </div>
     </footer>
-    <script src="../js/config.js?v=20260908-guides1"></script>
-    <script src="../js/guides-api.js?v=20260908-guides1"></script>
-    <script src="../js/guides-ui.js?v=20260908-guides1"></script>
-    <script src="../js/main.js?v=20260908-guides1"></script>
+    <script src="../js/config.js?v=20260910-guides16"></script>
+    <script src="../js/auth.js?v=20260910-guides16"></script>
+    <script src="../js/guides-api.js?v=20260910-guides16"></script>
+    <script src="../js/guides-ui.js?v=20260910-guides16"></script>
+    <script src="../js/main.js?v=20260910-guides16"></script>
 </body>
 </html>
