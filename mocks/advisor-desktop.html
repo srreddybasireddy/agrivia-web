@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advisor on computer — now vs full-page</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #F8F5EE;
+            --raised: #FFFDF8;
+            --ink: #1A1916;
+            --ink-2: #4A453C;
+            --ink-3: #6B6458;
+            --rule: #E2D9C8;
+            --leaf: #2F5D3A;
+            --leaf-deep: #1A3026;
+            --ochre: #B26A3A;
+            --font: "Source Sans 3", "Segoe UI", sans-serif;
+            --serif: "Source Serif 4", Georgia, serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #E4DCCB;
+            color: var(--ink);
+            font-family: var(--font);
+            line-height: 1.5;
+        }
+        .page-intro {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.25rem 1.5rem 0.5rem;
+        }
+        .page-intro h1 {
+            font-family: var(--serif);
+            font-size: 1.7rem;
+            margin-bottom: 0.35rem;
+        }
+        .page-intro p { color: var(--ink-2); max-width: 42rem; }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .tabs button {
+            font: inherit;
+            font-weight: 650;
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            color: var(--ink-2);
+            border-radius: 999px;
+            padding: 0.45rem 0.95rem;
+            cursor: pointer;
+        }
+        .tabs button[aria-pressed="true"] {
+            background: var(--leaf-deep);
+            border-color: var(--leaf-deep);
+            color: #FFFDF8;
+        }
+        .hidden { display: none !important; }
+        .label {
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 650;
+            margin: 1rem 1.5rem 0.6rem;
+        }
+        .now-label { color: #9B2C2C; }
+        .next-label { color: var(--leaf); }
+
+        .browser {
+            max-width: 1180px;
+            margin: 0 auto 2rem;
+            background: var(--paper);
+            border: 1px solid #C9C0AE;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .chrome {
+            background: #E8E1D2;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+            color: var(--ink-3);
+        }
+        .site-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 1.5rem;
+            background: var(--raised);
+            border-bottom: 1px solid var(--rule);
+        }
+        .logo { display: flex; align-items: center; gap: 0.45rem; font-weight: 700; }
+        .dot {
+            width: 1.1rem;
+            height: 1.1rem;
+            border-radius: 50%;
+            background: var(--leaf-deep);
+        }
+        .badge { color: var(--ochre); }
+        .nav { display: flex; gap: 1.4rem; color: var(--ink-2); }
+        .nav strong { color: var(--leaf-deep); }
+        .signin {
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            background: var(--raised);
+        }
+
+        /* NOW: small card stuck at top, empty page below */
+        .now-stage {
+            min-height: 640px;
+            padding: 1.4rem 1.5rem 2rem;
+            background: var(--paper);
+        }
+        .now-card {
+            max-width: 48rem;
+            margin: 0 auto;
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 16px;
+            padding: 1.5rem 1.7rem 1.15rem;
+        }
+        .welcome {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .spark {
+            width: 2.7rem;
+            height: 2.7rem;
+            border-radius: 50%;
+            background: var(--leaf-deep);
+            flex-shrink: 0;
+        }
+        .kicker {
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ochre);
+            font-weight: 650;
+        }
+        .title {
+            font-family: var(--serif);
+            font-size: 1.7rem;
+            color: var(--leaf-deep);
+            line-height: 1.2;
+            margin: 0.15rem 0 0.35rem;
+        }
+        .copy { color: var(--ink-2); }
+        .muted { color: var(--ink-3); font-size: 0.9rem; margin: 0.75rem 0; }
+        .chips-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.65rem;
+            margin-bottom: 0.9rem;
+        }
+        .chip {
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            border-radius: 14px;
+            padding: 0.75rem 0.9rem;
+            color: var(--ochre);
+            font-weight: 650;
+        }
+        .row {
+            display: flex;
+            gap: 0.65rem;
+        }
+        .field {
+            flex: 1;
+            border: 1px solid var(--rule);
+            background: var(--paper);
+            border-radius: 12px;
+            min-height: 3.4rem;
+            padding: 0.7rem 0.85rem;
+            color: var(--ink-3);
+        }
+        .send {
+            background: var(--leaf-deep);
+            color: #FFFDF8;
+            border-radius: 12px;
+            min-width: 5.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 650;
+        }
+        .legal { font-size: 0.75rem; color: var(--ink-3); margin-top: 0.65rem; }
+        .wasted {
+            margin-top: 1.25rem;
+            border: 1px dashed #C9B89A;
+            border-radius: 12px;
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9B2C2C;
+            font-weight: 650;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        /* CLEARER: full-page chat */
+        .app {
+            min-height: 720px;
+            display: flex;
+            flex-direction: column;
+            background: var(--paper);
+        }
+        .app-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 52rem;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+        }
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 0 1rem;
+        }
+        .hero .spark { margin: 0 auto 0.85rem; width: 3.2rem; height: 3.2rem; }
+        .hero .title { font-size: 2.35rem; }
+        .pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.45rem; margin-top: 1rem; }
+        .pill {
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            border-radius: 999px;
+            padding: 0.45rem 0.85rem;
+            color: var(--ochre);
+            font-weight: 650;
+            font-size: 0.92rem;
+        }
+        .dock {
+            padding: 0 0 1.1rem;
+        }
+        .dock .row {
+            background: #FFFDF8;
+            border: 1px solid var(--rule);
+            border-radius: 18px;
+            padding: 0.4rem 0.4rem 0.4rem 1.05rem;
+            align-items: center;
+            min-height: 3.4rem;
+            box-shadow: 0 1px 0 rgba(26, 25, 22, 0.04);
+        }
+        .dock .field {
+            border: 0;
+            background: transparent;
+            min-height: 0;
+            padding: 0.65rem 0;
+            font-size: 1.02rem;
+        }
+        .dock .send {
+            flex: 0 0 auto;
+            min-width: 5.4rem;
+            min-height: 2.7rem;
+            padding: 0 1.15rem;
+            border-radius: 14px;
+        }
+        .thread {
+            flex: 1;
+            padding: 1.75rem 0 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .grow { flex: 1; }
+        .thread .suggest { margin-bottom: 0; }
+        .ask-you {
+            font-size: 0.72rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            font-weight: 650;
+            margin-bottom: 0.3rem;
+        }
+        .ask-q {
+            font-weight: 650;
+            font-size: 1.35rem;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+        }
+        .ask-a {
+            color: var(--ink);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        .ask-a ul { padding-left: 1.2rem; }
+        .ask-a li + li { margin-top: 0.4rem; }
+        .rate {
+            margin-top: 1.1rem;
+            font-size: 0.88rem;
+            color: var(--ink-3);
+        }
+        .rate b {
+            display: inline-block;
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            padding: 0.2rem 0.6rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-left: 0.25rem;
+        }
+        .suggest {
+            display: inline-block;
+            margin-bottom: 0.6rem;
+            border: 1px solid var(--rule);
+            background: var(--paper);
+            border-radius: 999px;
+            padding: 0.4rem 0.8rem;
+            color: var(--ochre);
+            font-weight: 650;
+            font-size: 0.9rem;
+        }
+        .dock-frame {
+            border-top: 1px solid var(--rule);
+            background: var(--raised);
+            padding: 0.85rem 1.25rem 1.1rem;
+        }
+        .dock-frame .app-main {
+            flex: none;
+            padding: 0;
+        }
+        .note {
+            max-width: 1100px;
+            margin: 0 auto 2rem;
+            padding: 0 1.5rem;
+            color: var(--ink-2);
+        }
+    </style>
+</head>
+<body>
+    <div class="page-intro">
+        <h1>Computer advisor</h1>
+        <p>Same idea as the phone: the question and answer stay in one reading thread. Type and Send sit in one bar under that thread — not as extra cards.</p>
+        <div class="tabs">
+            <button type="button" id="tabNow" aria-pressed="true">Now — small card</button>
+            <button type="button" id="tabNew" aria-pressed="false">Clearer — full-page chat</button>
+            <button type="button" id="tabTalk" aria-pressed="false">Clearer — after a question</button>
+        </div>
+    </div>
+
+    <div id="viewNow">
+        <p class="label now-label">Now — advisor sits at the top, unused page below</p>
+        <div class="browser">
+            <div class="chrome">agrivia.ai/#ai-advisor</div>
+            <div class="site-bar">
+                <div class="logo"><span class="dot"></span> Agrivia<span class="badge">.ai</span></div>
+                <div class="nav"><span>Guides</span><strong>Advisor</strong><span>Farm</span></div>
+                <span class="signin">Google Sign-in</span>
+            </div>
+            <div class="now-stage">
+                <div class="now-card">
+                    <div class="welcome">
+                        <div class="spark"></div>
+                        <div>
+                            <p class="kicker">Advisor</p>
+                            <h2 class="title">What are you working on today?</h2>
+                            <p class="copy">Ask about beds, animals, or equipment.</p>
+                        </div>
+                    </div>
+                    <p class="muted">Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
+                    <div class="chips-2">
+                        <div class="chip">What farm tasks should I focus on this week?</div>
+                        <div class="chip">Give me seasonal tips for my region</div>
+                    </div>
+                    <div class="row">
+                        <div class="field">Ask about beds, cattle, or a coop…</div>
+                        <div class="send">Send</div>
+                    </div>
+                    <p class="legal">Guidance only, not a vet diagnosis.</p>
+                </div>
+                <div class="wasted">Empty page — this is why it feels small</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewNew" class="hidden">
+        <p class="label next-label">Clearer — the advisor is the page</p>
+        <div class="browser">
+            <div class="chrome">agrivia.ai/#ai-advisor</div>
+            <div class="site-bar">
+                <div class="logo"><span class="dot"></span> Agrivia<span class="badge">.ai</span></div>
+                <div class="nav"><span>Guides</span><strong>Advisor</strong><span>Farm</span></div>
+                <span class="signin">Sign in</span>
+            </div>
+            <div class="app">
+                <div class="app-main">
+                    <div class="hero">
+                        <div class="spark"></div>
+                        <p class="kicker">Advisor</p>
+                        <h2 class="title">What are you working on today?</h2>
+                        <p class="copy">Ask about beds, animals, or equipment.</p>
+                        <div class="pills">
+                            <span class="pill">This week’s farm tasks</span>
+                            <span class="pill">Seasonal tips for my region</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dock-frame">
+                    <div class="app-main">
+                        <div class="dock">
+                            <div class="row">
+                                <div class="field">Ask about tomatoes, chicks, or a coop…</div>
+                                <div class="send">Send</div>
+                            </div>
+                            <p class="legal">Guidance only, not a vet diagnosis. How this site works</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewTalk" class="hidden">
+        <p class="label next-label">Clearer — after you ask, one thread and one bar</p>
+        <div class="browser">
+            <div class="chrome">agrivia.ai/#ai-advisor</div>
+            <div class="site-bar">
+                <div class="logo"><span class="dot"></span> Agrivia<span class="badge">.ai</span></div>
+                <div class="nav"><span>Guides</span><strong>Advisor</strong><span>Farm</span></div>
+                <span class="signin">Sign in</span>
+            </div>
+            <div class="app">
+                <div class="app-main">
+                    <div class="thread">
+                        <p class="ask-you">You asked</p>
+                        <p class="ask-q">How often should I water my garden this week?</p>
+                        <div class="ask-a">
+                            <ul>
+                                <li>Water when the top 2–3 inches of soil feel dry.</li>
+                                <li>Aim for about 1–2 inches a week, rain plus irrigation.</li>
+                                <li>In a hot spell, check every 2–3 days.</li>
+                            </ul>
+                        </div>
+                        <p class="rate">Was this useful? <b>Helpful</b> <b>Not helpful</b></p>
+                        <div class="grow"></div>
+                        <span class="suggest">What if it rained yesterday?</span>
+                    </div>
+                </div>
+                <div class="dock-frame">
+                    <div class="app-main">
+                        <div class="dock">
+                            <div class="row">
+                                <div class="field">Ask a follow-up…</div>
+                                <div class="send">Send</div>
+                            </div>
+                            <p class="legal">Guidance only, not a vet diagnosis. How this site works</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="note">This is a look mock only. Header, Guides, and Farm stay. If this computer look is right, say so and I will build it on the live site.</p>
+    <script>
+        const views = {
+            now: document.getElementById("viewNow"),
+            neu: document.getElementById("viewNew"),
+            talk: document.getElementById("viewTalk"),
+        };
+        const tabs = {
+            now: document.getElementById("tabNow"),
+            neu: document.getElementById("tabNew"),
+            talk: document.getElementById("tabTalk"),
+        };
+        function show(key) {
+            views.now.classList.toggle("hidden", key !== "now");
+            views.neu.classList.toggle("hidden", key !== "neu");
+            views.talk.classList.toggle("hidden", key !== "talk");
+            Object.keys(tabs).forEach((name) => {
+                tabs[name].setAttribute("aria-pressed", name === key ? "true" : "false");
+            });
+        }
+        tabs.now.addEventListener("click", () => show("now"));
+        tabs.neu.addEventListener("click", () => show("neu"));
+        tabs.talk.addEventListener("click", () => show("talk"));
+    </script>
+</body>
+</html>

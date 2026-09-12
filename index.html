@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20260911-home8">
+    <link rel="stylesheet" href="css/style.css?v=20260912-advisor-box">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5524710580723425" crossorigin="anonymous"></script>
     <script type="application/ld+json">
     {
@@ -240,7 +240,7 @@
         </section>
 
         <section id="view-ai-advisor" class="page-view">
-            <div class="container section-padding advisor-page">
+            <div class="advisor-page">
                 <div class="advisor-layout" id="advisorLayout">
                     <aside class="advisor-farm-rail paper-card" id="advisorFarmRail" hidden aria-label="Your farm">
                         <p class="advisor-farm-kicker">Your farm</p>
@@ -248,31 +248,37 @@
                         <div class="advisor-farm-assets" id="advisorFarmAssets"></div>
                         <a href="#farm" class="advisor-farm-open" onclick="navigateTo('farm')">Open Farm</a>
                     </aside>
-                    <div class="chat-shell paper-card chat-shell-wide">
-                        <div class="chat-welcome" id="chatEmpty">
-                            <div class="chat-welcome-mark" aria-hidden="true">
-                                <svg class="btn-sparkle" viewBox="0 0 24 24" focusable="false">
-                                    <path fill="currentColor" d="M8.2 2.4l1.05 4.2 4.2 1.05-4.2 1.05-1.05 4.2-1.05-4.2-4.2-1.05 4.2-1.05 1.05-4.2zm8.7 7.1l.72 2.88 2.88.72-2.88.72-.72 2.88-.72-2.88-2.88-.72 2.88-.72.72-2.88z"></path>
-                                </svg>
+                    <div class="chat-shell chat-shell-wide is-empty">
+                        <div class="chat-thread">
+                            <div class="chat-welcome" id="chatEmpty">
+                                <div class="chat-welcome-mark" aria-hidden="true">
+                                    <svg class="btn-sparkle" viewBox="0 0 24 24" focusable="false">
+                                        <path fill="currentColor" d="M8.2 2.4l1.05 4.2 4.2 1.05-4.2 1.05-1.05 4.2-1.05-4.2-4.2-1.05 4.2-1.05 1.05-4.2zm8.7 7.1l.72 2.88 2.88.72-2.88.72-.72 2.88-.72-2.88-2.88-.72 2.88-.72.72-2.88z"></path>
+                                    </svg>
+                                </div>
+                                <div class="chat-welcome-copy">
+                                    <p class="chat-empty-kicker">Advisor</p>
+                                    <h1 class="chat-welcome-title" id="chatWelcomeTitle">What are you working on today?</h1>
+                                    <p class="chat-welcome-lead" id="chatWelcomeLead" hidden>What are you working on today?</p>
+                                    <p id="chatGreeting" hidden></p>
+                                </div>
                             </div>
-                            <div class="chat-welcome-copy">
-                                <p class="chat-empty-kicker">Advisor</p>
-                                <h1 class="chat-welcome-title" id="chatWelcomeTitle">What are you working on today?</h1>
-                                <p class="chat-welcome-lead" id="chatWelcomeLead" hidden>What are you working on today?</p>
-                                <p id="chatGreeting">Ask about the job in front of you. No account needed — sign in later to save a farm profile.</p>
+                            <div class="chat-categories" id="chatCategories" hidden></div>
+                            <p class="chat-save-hint" id="chatSaveHint" hidden>Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
+                            <div class="job-chips" id="chatJobChips" hidden></div>
+                            <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
+                            <div class="chat-chips" id="chatChips" hidden></div>
+                        </div>
+                        <div class="chat-dock">
+                            <div class="chat-dock-inner">
+                                <form class="chat-form" id="chatForm">
+                                    <label class="visually-hidden" for="chatInput">Garden or livestock question</label>
+                                    <textarea id="chatInput" name="query" class="form-input chat-input" rows="1" maxlength="2000" placeholder="Ask about tomatoes, chicks, goats, or a backyard coop…" required></textarea>
+                                    <button type="submit" class="btn btn-primary" id="chatSendBtn">Send</button>
+                                </form>
+                                <p class="chat-disclaimer">Guidance only, not a vet diagnosis. <a href="about.html">How this site works</a></p>
                             </div>
                         </div>
-                        <div class="chat-categories" id="chatCategories" hidden></div>
-                        <p class="chat-save-hint" id="chatSaveHint" hidden>Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
-                        <div class="job-chips" id="chatJobChips" hidden></div>
-                        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
-                        <div class="chat-chips" id="chatChips" hidden></div>
-                        <form class="chat-form" id="chatForm">
-                            <label class="visually-hidden" for="chatInput">Garden or livestock question</label>
-                            <textarea id="chatInput" name="query" class="form-input chat-input" rows="2" maxlength="2000" placeholder="Ask anything about your farm, animals, crops, or equipment…" required></textarea>
-                            <button type="submit" class="btn btn-primary" id="chatSendBtn">Send</button>
-                        </form>
-                        <p class="chat-disclaimer">Guidance only, not a vet diagnosis. Confirm treatment with local extension or a vet. <a href="about.html">How this site works</a></p>
                     </div>
                 </div>
             </div>
@@ -410,13 +416,13 @@
     </footer>
 
     <script src="js/config.js?v=20260909-guides10"></script>
-    <script src="js/guides-api.js?v=20260910-guides16"></script>
-    <script src="js/guides-ui.js?v=20260911-home2"></script>
-    <script src="js/chat-api.js?v=20260909-guides10"></script>
+    <script src="js/guides-api.js?v=20260912-like1"></script>
+    <script src="js/guides-ui.js?v=20260912-advisor-m2"></script>
+    <script src="js/chat-api.js?v=20260912-ask1"></script>
     <script src="js/auth.js?v=20260909-guides10"></script>
     <script src="js/farm-api.js?v=20260909-guides10"></script>
     <script src="js/farm-ui.js?v=20260909-guides10"></script>
-    <script src="js/chat-ui.js?v=20260909-guides13"></script>
-    <script src="js/main.js?v=20260909-guides10"></script>
+    <script src="js/chat-ui.js?v=20260912-advisor-box"></script>
+    <script src="js/main.js?v=20260912-advisor-page"></script>
 </body>
 </html>

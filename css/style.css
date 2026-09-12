@@ -1563,26 +1563,51 @@ input[type="range"] {
     .building-list { grid-template-columns: 1fr; }
 
     .chat-shell {
-        padding: 1.15rem 1.1rem 1rem;
-        min-height: 0;
+        padding: 1rem 1rem 0.85rem;
+        gap: 0.75rem;
+        min-height: calc(100dvh - 7.25rem);
     }
 
     .chat-messages {
-        min-height: 7rem;
-        max-height: 42vh;
+        min-height: 0;
+        max-height: none;
+        flex: 1 1 auto;
+    }
+
+    .chat-form {
+        flex-direction: row;
+        align-items: stretch;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+
+    .chat-input {
+        min-height: 3rem;
+        max-height: 6.5rem;
+        font-size: 1rem;
     }
 
     #chatSendBtn {
-        min-width: 0;
-        min-height: 44px;
+        min-width: 4.4rem;
+        min-height: 3rem;
         align-self: stretch;
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
     }
 
     .chat-message { max-width: 94%; }
 
-    .chat-form {
-        flex-direction: column;
-        align-items: stretch;
+    .chat-save-hint,
+    .chat-categories {
+        display: none !important;
+    }
+
+    .chat-disclaimer {
+        font-size: 0.72rem;
+    }
+
+    .chat-welcome-title {
+        font-size: 1.45rem;
     }
 
     .footer-grid { grid-template-columns: 1fr; }
@@ -2494,7 +2519,7 @@ input[type="range"] {
     font-size: 1.35rem;
 }
 
-.popular-card p {
+.popular-card p:not(.guide-card-stats):not(.guide-card-byline) {
     flex: 1;
     font-size: 0.95rem;
 }
@@ -2503,6 +2528,18 @@ input[type="range"] {
     align-self: flex-end;
     color: var(--ochre);
     font-size: 1.15rem;
+}
+
+.guide-card-stats {
+    margin-top: auto;
+    flex: 0 0 auto;
+    font-size: 0.85rem;
+    font-weight: 650;
+    color: var(--ink-3);
+}
+
+.blog-card-hit .guide-card-stats {
+    padding-top: 0.55rem;
 }
 
 .popular-icon,
@@ -3207,7 +3244,6 @@ input[type="range"] {
 
     .popular-grid,
     .week-grid,
-    .job-chips,
     .guides-hero,
     .section-header-row,
     .advisor-strip {
@@ -3216,8 +3252,49 @@ input[type="range"] {
         align-items: stretch;
     }
 
+    .job-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        grid-template-columns: none;
+    }
+
+    .job-chip {
+        min-height: 0;
+        padding: 0.45rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        gap: 0;
+    }
+
+    .job-chip .job-chip-icon,
+    .advisor-has-farm .job-chip::before {
+        display: none;
+    }
+
+    .advisor-has-farm .job-chips,
+    .advisor-has-farm .job-chips:has(.job-chips-fallback) {
+        grid-template-columns: none;
+    }
+
+    .advisor-has-farm .job-chip {
+        flex-direction: row;
+        min-height: 0;
+        padding: 0.45rem 0.75rem;
+    }
+
+    .advisor-has-farm .chat-messages {
+        min-height: 0;
+        max-height: none;
+    }
+
     .chat-welcome {
         flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    #view-ai-advisor .section-padding {
+        padding: 0.85rem 0 1rem;
     }
 
     .phone-frame {
@@ -3226,5 +3303,322 @@ input[type="range"] {
 
     .phone-screen {
         min-height: 22rem;
+    }
+}
+
+/* Advisor: one reading thread + one Type/Send bar */
+body.advisor-open {
+    overflow: hidden;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+body.advisor-open .site-header {
+    flex: 0 0 auto;
+}
+
+body.advisor-open #appContainer {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body.advisor-open .site-footer {
+    display: none;
+}
+
+#view-ai-advisor.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.advisor-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 1.25rem;
+    min-height: 0;
+}
+
+#view-ai-advisor .advisor-layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#view-ai-advisor .advisor-layout.advisor-has-farm {
+    display: grid;
+    grid-template-columns: minmax(14.5rem, 16.5rem) minmax(0, 1fr);
+    gap: 1.15rem;
+    align-items: stretch;
+}
+
+#view-ai-advisor .chat-shell,
+#view-ai-advisor .chat-shell-wide {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    width: 100%;
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 0;
+    gap: 0;
+    background: var(--raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+#view-ai-advisor .advisor-has-farm .chat-shell-wide {
+    max-width: none;
+    margin: 0;
+}
+
+#view-ai-advisor .chat-thread {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 1.35rem 1.5rem 1rem;
+}
+
+#view-ai-advisor .chat-shell.is-empty .chat-thread {
+    justify-content: flex-start;
+}
+
+#view-ai-advisor .chat-welcome {
+    align-items: flex-start;
+}
+
+#view-ai-advisor .chat-messages {
+    flex: 0 0 auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    gap: 1.15rem;
+}
+
+#view-ai-advisor .chat-messages:empty {
+    display: none;
+}
+
+#view-ai-advisor .chat-message,
+#view-ai-advisor .chat-message-user,
+#view-ai-advisor .chat-message-assistant,
+#view-ai-advisor .advisor-has-farm .chat-message-assistant {
+    max-width: 100%;
+    align-self: stretch;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    display: block;
+}
+
+#view-ai-advisor .chat-message-mark,
+#view-ai-advisor .advisor-has-farm .chat-message-mark {
+    display: none;
+}
+
+#view-ai-advisor .advisor-has-farm .chat-message-assistant .chat-message-body {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+}
+
+#view-ai-advisor .chat-ask-you {
+    font-size: 0.72rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 650;
+    margin: 0 0 0.3rem;
+}
+
+#view-ai-advisor .chat-ask-q {
+    font-weight: 650;
+    font-size: 1.2rem;
+    line-height: 1.35;
+    color: var(--ink);
+    margin: 0 0 0.85rem;
+}
+
+#view-ai-advisor .chat-ask-a,
+#view-ai-advisor .chat-message-text {
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+#view-ai-advisor .chat-message-user .chat-message-text {
+    color: var(--ink);
+}
+
+#view-ai-advisor .chat-chips {
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+#view-ai-advisor .query-chip {
+    background: var(--paper);
+    color: var(--ochre);
+    font-weight: 650;
+}
+
+#view-ai-advisor .job-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    grid-template-columns: none;
+    margin-top: 0.85rem;
+}
+
+#view-ai-advisor .job-chip,
+#view-ai-advisor .advisor-has-farm .job-chip {
+    min-height: 0;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+}
+
+#view-ai-advisor .job-chip .job-chip-icon,
+#view-ai-advisor .advisor-has-farm .job-chip::before {
+    display: none;
+}
+
+#view-ai-advisor .chat-dock {
+    flex: 0 0 auto;
+    border-top: 1px solid var(--rule);
+    background: var(--raised);
+    padding: 0.85rem 1.25rem 1.05rem;
+}
+
+#view-ai-advisor .chat-dock-inner {
+    max-width: 52rem;
+    margin: 0 auto;
+}
+
+#view-ai-advisor .chat-form {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 3.4rem;
+    margin: 0;
+    padding: 0.4rem 0.4rem 0.4rem 1.05rem;
+    background: #FFFDF8;
+    border: 1px solid var(--rule);
+    border-radius: 18px;
+    box-shadow: 0 1px 0 rgba(26, 25, 22, 0.04);
+}
+
+#view-ai-advisor .chat-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    max-height: 6.5rem;
+    resize: none;
+    border: 0;
+    background: transparent;
+    padding: 0.55rem 0;
+    font-size: 1.02rem;
+    line-height: 1.4;
+    border-radius: 0;
+}
+
+#view-ai-advisor .chat-input:focus {
+    outline: none;
+}
+
+#view-ai-advisor .chat-form:focus-within {
+    outline: 2px solid var(--leaf);
+    outline-offset: 1px;
+}
+
+#view-ai-advisor #chatSendBtn {
+    flex: 0 0 auto;
+    align-self: center;
+    min-width: 5.4rem;
+    min-height: 2.7rem;
+    padding: 0 1.15rem;
+    border-radius: 14px;
+}
+
+#view-ai-advisor .chat-disclaimer {
+    margin-top: 0.5rem;
+}
+
+#view-ai-advisor .advisor-farm-rail {
+    position: static;
+    overflow: auto;
+}
+
+@media (max-width: 992px) {
+    #view-ai-advisor .advisor-layout.advisor-has-farm {
+        grid-template-columns: 1fr;
+    }
+
+    #view-ai-advisor .advisor-farm-rail {
+        max-height: 8.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .advisor-page {
+        padding: 0 1rem;
+    }
+
+    #view-ai-advisor .chat-shell.is-empty .chat-thread {
+        justify-content: flex-start;
+        padding-top: 1.15rem;
+    }
+
+    #view-ai-advisor .chat-thread {
+        padding: 1.1rem 1rem 0.85rem;
+    }
+
+    #view-ai-advisor .chat-dock {
+        padding: 0.7rem 1rem 0.85rem;
+    }
+
+    #view-ai-advisor .chat-form {
+        min-height: 3.1rem;
+        gap: 0.45rem;
+        padding: 0.3rem 0.3rem 0.3rem 0.9rem;
+    }
+
+    #view-ai-advisor .chat-input {
+        font-size: 1rem;
+        min-height: 0;
+    }
+
+    #view-ai-advisor #chatSendBtn {
+        min-width: 4.4rem;
+        min-height: 2.55rem;
+        padding: 0 0.9rem;
+    }
+
+    #view-ai-advisor .chat-ask-q {
+        font-size: 1.08rem;
+    }
+
+    #view-ai-advisor .chat-welcome {
+        flex-direction: column;
+        gap: 0.65rem;
     }
 }

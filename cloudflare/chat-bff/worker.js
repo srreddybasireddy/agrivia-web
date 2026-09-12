@@ -27,7 +27,7 @@ const GLOBAL_MAX = 2;
 const UNAVAILABLE = { error: "The advisor is unavailable right now. Try again shortly." };
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RESERVED_GUIDE_PAGES = new Set(["index", "write", "article"]);
-const ASSET_VER = "20260910-guides16";
+const ASSET_VER = "20260912-like1";
 const GUIDE_CACHE_TTL = 60;
 const ADSENSE = "ca-pub-5524710580723425";
 

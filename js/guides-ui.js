@@ -150,6 +150,24 @@
         return guide.author_name ? `By ${guide.author_name}` : "Reader guide";
     }
 
+    function countLabel(count, one, many) {
+        const n = Number(count) || 0;
+        return n === 1 ? `1 ${one}` : `${n} ${many}`;
+    }
+
+    function statsLine(guide) {
+        const likes = Number(guide && guide.like_count) || 0;
+        const comments = Number(guide && guide.comment_count) || 0;
+        return `${countLabel(likes, "like", "likes")} · ${countLabel(comments, "comment", "comments")}`;
+    }
+
+    function appendStats(parent, guide) {
+        const stats = document.createElement("p");
+        stats.className = "guide-card-stats";
+        stats.textContent = statsLine(guide);
+        parent.appendChild(stats);
+    }
+
     function cardNode(guide) {
         const article = document.createElement("article");
         article.className = "blog-card paper-card guide-card-strong";
@@ -190,6 +208,7 @@
             author.textContent = byline;
             link.appendChild(author);
         }
+        appendStats(link, guide);
         article.appendChild(link);
         return article;
     }
@@ -250,7 +269,8 @@
                 q: q,
                 topic: topic,
                 outcome: outcome,
-                limit: 50,
+                sort: "rated",
+                limit: q ? 50 : 10,
             });
             if (status) {
                 status.hidden = true;
@@ -274,6 +294,9 @@
                 heading.textContent = payload.featured.title;
                 const summary = document.createElement("p");
                 summary.textContent = payload.featured.summary;
+                const stats = document.createElement("p");
+                stats.className = "guide-card-stats";
+                stats.textContent = statsLine(payload.featured);
                 const cta = document.createElement("a");
                 cta.className = "btn btn-primary";
                 cta.href = hrefFor(payload.featured);
@@ -281,6 +304,7 @@
                 copy.appendChild(kicker);
                 copy.appendChild(heading);
                 copy.appendChild(summary);
+                copy.appendChild(stats);
                 copy.appendChild(cta);
                 featured.appendChild(copy);
             }
@@ -679,6 +703,7 @@
             author.textContent = byline;
             body.appendChild(author);
         }
+        appendStats(body, guide);
         const arrow = document.createElement("span");
         arrow.className = "popular-arrow";
         arrow.setAttribute("aria-hidden", "true");
@@ -697,7 +722,7 @@
             "How-to guides and an on-site advisor for your backyard homestead",
             "How-to guides, practical advice, and an AI advisor for your backyard homestead",
             "Step-by-step guides and an AI advisor for plants, animals, and a small place",
-            "Read a how-to, or ask the advisor about the job in front of you",
+            "Read a how-to, or ask the advisor about your place",
             "Help for raised beds, livestock, and the gear that supports them",
         ];
     }
@@ -757,7 +782,11 @@
             return;
         }
         try {
-            const payload = await global.AgriviaGuidesApi.list({ tab: "all", limit: 50 });
+            const payload = await global.AgriviaGuidesApi.list({
+                tab: "all",
+                sort: "rated",
+                limit: 5,
+            });
             const guides = payload.guides || [];
             if (grid) {
                 grid.replaceChildren();

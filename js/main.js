@@ -48,7 +48,10 @@ function navigateTo(viewId, targetElementId = null) {
     if (targetView) {
         targetView.classList.add('active');
         window.location.hash = viewId;
+        document.body.classList.toggle('advisor-open', viewId === 'ai-advisor');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        document.body.classList.remove('advisor-open');
     }
 
     // Update active nav styling

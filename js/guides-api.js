@@ -16,7 +16,11 @@
         try {
             return JSON.parse(text);
         } catch (err) {
-            throw new Error("Unexpected response from the guides API.");
+            const trimmed = text.replace(/\s+/g, " ").trim();
+            if (trimmed && trimmed.length < 160 && trimmed[0] !== "<") {
+                throw new Error(trimmed);
+            }
+            throw new Error("The guides API returned an unexpected response.");
         }
     }
 
@@ -80,6 +84,7 @@
                 outcome: opts.outcome || "",
                 limit: opts.limit || "",
                 offset: opts.offset || "",
+                sort: opts.sort || "",
             })}`);
         },
         get: function (slug) {
