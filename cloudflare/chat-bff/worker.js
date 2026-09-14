@@ -27,7 +27,7 @@ const GLOBAL_MAX = 2;
 const UNAVAILABLE = { error: "The advisor is unavailable right now. Try again shortly." };
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RESERVED_GUIDE_PAGES = new Set(["index", "write", "article"]);
-const ASSET_VER = "20260912-like1";
+const ASSET_VER = "20260913-menu-left";
 const GUIDE_CACHE_TTL = 60;
 const ADSENSE = "ca-pub-5524710580723425";
 
@@ -489,6 +489,7 @@ function guidePage(guide) {
 <body class="paper-theme">
     <header class="site-header">
         <div class="header-container">
+            <button class="mobile-menu-toggle" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false" onclick="toggleMobileMenu()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
             <a href="/" class="logo-link"><span class="logo-mark" aria-hidden="true"></span><span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span></a>
             <nav class="main-nav" id="mainNav" aria-label="Primary">
                 <a href="/guides/" class="nav-item active">Guides</a>

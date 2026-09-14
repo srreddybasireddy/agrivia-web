@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrivia — in-image hero mock</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font: "Source Sans 3", "Segoe UI", sans-serif;
+            --serif: "Source Serif 4", Georgia, serif;
+            --ink: #1A1916;
+            --ink-2: #4A453C;
+            --ink-3: #6B6458;
+            --leaf: #2F5D3A;
+            --leaf-deep: #1A3026;
+            --paper: #FAF8F4;
+            --raised: #FFFEFC;
+            --rule: #E7E3D8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font);
+            color: var(--ink);
+            background: #EDE8DE;
+            line-height: 1.5;
+        }
+        .review {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.25rem 1rem 2rem;
+        }
+        .review h1 {
+            font-family: var(--serif);
+            font-size: 1.65rem;
+            margin-bottom: 0.35rem;
+        }
+        .review > p { color: var(--ink-2); max-width: 46rem; margin-bottom: 1.15rem; }
+        .desk {
+            background: var(--paper);
+            border: 1px solid #D8D0C2;
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .bar {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.85rem 1.4rem;
+            background: var(--raised);
+            border-bottom: 1px solid var(--rule);
+        }
+        .mark {
+            width: 1.35rem;
+            height: 1.35rem;
+            border-radius: 50%;
+            background: var(--leaf-deep);
+        }
+        .logo { font-family: var(--serif); font-weight: 650; font-size: 1.25rem; }
+        .logo em { color: var(--leaf); font-style: normal; }
+        .nav {
+            margin-left: auto;
+            display: flex;
+            gap: 1.2rem;
+            color: var(--ink-2);
+            font-size: 0.95rem;
+        }
+        .hero {
+            position: relative;
+            aspect-ratio: 2.05 / 1;
+            display: flex;
+            align-items: flex-start;
+            overflow: hidden;
+            background: var(--paper);
+        }
+        .hero img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 50% 100%;
+            z-index: 0;
+        }
+        .copy {
+            position: relative;
+            z-index: 1;
+            width: min(36rem, 46%);
+            padding: 2.15rem 1rem 0 2.45rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: var(--ink-2);
+            background: rgba(255,254,252,0.7);
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            padding: 0.18rem 0.65rem;
+            font-size: 0.68rem;
+            font-weight: 650;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.7rem;
+        }
+        .copy h2 {
+            font-family: var(--serif);
+            color: var(--leaf-deep);
+            font-size: clamp(2.4rem, 3.15vw, 2.9rem);
+            font-weight: 650;
+            line-height: 1.12;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+        .search {
+            display: flex;
+            align-items: center;
+            align-self: stretch;
+            gap: 0.45rem;
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            min-height: 2.85rem;
+            padding: 0.22rem 0.22rem 0.22rem 0.95rem;
+            color: var(--ink-3);
+            font-size: 0.95rem;
+            max-width: 28rem;
+            width: 100%;
+            margin-bottom: 0.9rem;
+        }
+        .search svg { width: 1.05rem; height: 1.05rem; flex-shrink: 0; }
+        .search-text { flex: 1; min-width: 0; }
+        .search-go {
+            flex-shrink: 0;
+            min-width: 2.55rem;
+            min-height: 2.35rem;
+            padding: 0 0.85rem;
+            border-radius: 999px;
+            background: var(--leaf-deep);
+            color: #FFFEFC;
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+            font-weight: 650;
+        }
+        .ctas { display: flex; gap: 0.55rem; flex-wrap: wrap; }
+        .btn {
+            min-height: 2.55rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            font-weight: 650;
+            font-size: 0.92rem;
+            padding: 0 1.1rem;
+        }
+        .dark { background: var(--leaf-deep); color: #FFFEFC; }
+        .line { border: 1px solid var(--leaf); color: var(--leaf-deep); background: var(--raised); }
+        .spark { width: 1rem; height: 1rem; }
+        .week-wrap { padding: 1.1rem 1.5rem 1.4rem; }
+        .week {
+            font-family: var(--serif);
+            color: var(--leaf-deep);
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 0.7rem;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .card {
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 14px;
+            padding: 0.7rem 0.85rem;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.55rem 0.7rem;
+        }
+        .icon {
+            width: 2.05rem;
+            height: 2.05rem;
+            border-radius: 50%;
+            background: #C56A3A;
+            grid-row: 1 / span 2;
+        }
+        .card strong {
+            font-family: var(--serif);
+            color: var(--leaf-deep);
+            font-size: 1.02rem;
+        }
+        .card p { color: var(--ink-2); font-size: 0.86rem; }
+        .phone-label {
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            margin: 0 0 0.55rem;
+        }
+        .phone {
+            width: 390px;
+            background: var(--paper);
+            border: 1px solid #D8D0C2;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .phone .bar { padding: 0.7rem 0.9rem; }
+        .phone .nav { display: none; }
+        .phone .hero {
+            aspect-ratio: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .phone .hero img {
+            position: relative;
+            height: 10.5rem;
+            object-position: 55% 100%;
+        }
+        .phone .copy {
+            width: auto;
+            padding: 1rem 1.1rem 0.15rem;
+            order: -1;
+        }
+        .phone .copy h2 { font-size: 1.55rem; margin-bottom: 0.7rem; }
+        .phone .search { min-height: 2.5rem; font-size: 0.88rem; }
+        .phone .ctas { display: grid; grid-template-columns: 1fr 1fr; }
+        .phone .btn { min-height: 2.4rem; font-size: 0.88rem; padding: 0 0.5rem; }
+        .phone .week-wrap { padding: 0.85rem 0.9rem 1rem; }
+        .phone .week { font-size: 1.05rem; }
+        .phone .cards { grid-template-columns: 1fr; gap: 0.5rem; }
+        .phone .card { padding: 0.6rem 0.7rem; }
+        .phone .card p { font-size: 0.8rem; }
+        .phone .icon { width: 1.7rem; height: 1.7rem; }
+        @media (max-width: 900px) {
+            .desk { overflow-x: auto; }
+            .phone { width: 100%; max-width: 390px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="review">
+        <h1>In-image hero — mock only</h1>
+        <p>Not live. Headline, search, and buttons sit in the left of a wide homestead photo. Button still says Browse guides (the site has guides, not a community). Photo is a generated illustration, not an Agrivia field trial. Review this, then we can put it on agrivia.ai or leave the current stacked layout.</p>
+
+        <p class="phone-label">Desktop</p>
+        <div class="desk">
+            <div class="bar">
+                <span class="mark" aria-hidden="true"></span>
+                <span class="logo">Agrivia<em>.ai</em></span>
+                <span class="nav"><span>Guides</span><span>Advisor</span><span>Farm</span></span>
+            </div>
+            <div class="hero">
+                <div class="copy">
+                    <span class="badge">For homesteaders</span>
+                    <h2>Grow plants and raise<br>animals with confidence</h2>
+                    <div class="search">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.25" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M16 16.5L20 20.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+                        <span class="search-text">Search guides, plants, animals…</span>
+                        <span class="search-go" aria-hidden="true">→</span>
+                    </div>
+                    <div class="ctas">
+                        <span class="btn dark">
+                            <svg class="spark" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.2 2.4l1.05 4.2 4.2 1.05-4.2 1.05-1.05 4.2-1.05-4.2-4.2-1.05 4.2-1.05 1.05-4.2zm8.7 7.1l.72 2.88 2.88.72-2.88.72-.72 2.88-.72-2.88-2.88-.72 2.88-.72.72-2.88z"></path></svg>
+                            Ask the advisor
+                        </span>
+                        <span class="btn line">Browse guides</span>
+                    </div>
+                </div>
+                <img src="hero-banner-homestead.png?v=2" alt="">
+            </div>
+            <div class="week-wrap">
+                <p class="week">This week on a small place</p>
+                <div class="cards">
+                    <div class="card"><span class="icon"></span><strong>First tomato bed</strong><p>Build healthy soil and get your first harvest off to a strong start.</p></div>
+                    <div class="card"><span class="icon"></span><strong>Backyard chickens this month</strong><p>Care, feed, and coop checks to keep your flock healthy and happy.</p></div>
+                    <div class="card"><span class="icon"></span><strong>Is this leaf a problem?</strong><p>Quick ways to read leaf symptoms and decide what to do next.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <p class="phone-label">Phone</p>
+        <div class="phone">
+            <div class="bar">
+                <span class="mark" aria-hidden="true"></span>
+                <span class="logo">Agrivia<em>.ai</em></span>
+            </div>
+            <div class="hero">
+                <div class="copy">
+                    <span class="badge">For homesteaders</span>
+                    <h2>Grow plants and raise<br>animals with confidence</h2>
+                    <div class="search">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.25" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M16 16.5L20 20.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+                        <span class="search-text">Search guides, plants, animals…</span>
+                        <span class="search-go" aria-hidden="true">→</span>
+                    </div>
+                    <div class="ctas">
+                        <span class="btn dark">Ask advisor</span>
+                        <span class="btn line">Browse guides</span>
+                    </div>
+                </div>
+                <img src="hero-banner-homestead.png?v=2" alt="">
+            </div>
+            <div class="week-wrap">
+                <p class="week">This week on a small place</p>
+                <div class="cards">
+                    <div class="card"><span class="icon"></span><strong>First tomato bed</strong><p>Build healthy soil and get your first harvest off to a strong start.</p></div>
+                    <div class="card"><span class="icon"></span><strong>Backyard chickens this month</strong><p>Care, feed, and coop checks to keep your flock healthy and happy.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

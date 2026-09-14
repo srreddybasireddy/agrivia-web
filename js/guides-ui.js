@@ -727,6 +727,10 @@
         ];
     }
 
+    function compactHeroSubtitle() {
+        return "How-to guides and an on-site advisor";
+    }
+
     function randomSubtitleIndex(exceptIndex) {
         if (heroLines.length < 2) {
             return 0;
@@ -748,6 +752,10 @@
     function startHeroRotate() {
         const subtitle = el("heroSubtitle");
         if (!subtitle) {
+            return;
+        }
+        if (window.matchMedia("(max-width: 768px)").matches) {
+            applyHeroSubtitle(compactHeroSubtitle());
             return;
         }
         heroLines = fallbackSubtitles();
