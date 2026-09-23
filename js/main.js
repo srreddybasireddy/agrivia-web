@@ -3,7 +3,8 @@
  */
 
 const HOME_SECTIONS = {
-    start: 'start',
+    start: 'community',
+    community: 'community',
     calculator: 'calculator',
     'ai-advisor-preview': 'ai-advisor-preview',
 };

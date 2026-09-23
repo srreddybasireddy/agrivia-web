@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrivia — compact footer mock</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font: "Source Sans 3", "Segoe UI", sans-serif;
+            --serif: "Source Serif 4", Georgia, serif;
+            --ink: #1A1916;
+            --ink-2: #4A453C;
+            --leaf-deep: #1A3026;
+            --cream: #E8E2D4;
+            --paper: #FAF8F4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font);
+            color: var(--ink);
+            background: #EDE8DE;
+            line-height: 1.5;
+        }
+        .review {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 1.25rem 1.5rem 2rem;
+        }
+        .review h1 {
+            font-family: var(--serif);
+            font-size: 1.65rem;
+            margin-bottom: 0.35rem;
+        }
+        .review > p { color: var(--ink-2); max-width: 46rem; margin-bottom: 1rem; }
+        .why {
+            background: #FFFEFC;
+            border: 1px solid #D8D0C2;
+            border-radius: 14px;
+            padding: 0.9rem 1rem;
+            margin-bottom: 1.25rem;
+            max-width: 46rem;
+        }
+        .why h2 { font-size: 0.78rem; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.4rem; }
+        .why li { margin: 0.25rem 0 0 1.1rem; color: var(--ink-2); font-size: 0.92rem; }
+        .pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .frame {
+            background: #FFFEFC;
+            border: 1px solid #D8D0C2;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .frame h3 {
+            font-size: 0.78rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            padding: 0.7rem 0.9rem 0.55rem;
+        }
+        .now-label { color: #9B2C2C; }
+        .next-label { color: #2F5D3A; }
+        .site-footer {
+            background: var(--leaf-deep);
+            color: #D4CBB8;
+            font-size: 0.88rem;
+        }
+        .site-footer a { color: #E8E2D4; text-decoration: none; }
+        .logo { font-family: var(--serif); color: #FFFDF8; font-size: 1.15rem; font-weight: 650; }
+        .logo span { color: #C5D4C0; }
+
+        /* Current — desktop */
+        .now-desk { padding: 2.4rem 1.4rem 1.1rem; }
+        .now-desk .grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr;
+            gap: 1.2rem;
+            margin-bottom: 1.4rem;
+        }
+        .now-desk h4 { color: #FFFDF8; margin-bottom: 0.55rem; font-size: 0.82rem; }
+        .now-desk p { font-size: 0.74rem; margin-bottom: 0.55rem; }
+        .now-desk li { list-style: none; margin-bottom: 0.28rem; font-size: 0.78rem; }
+        .now-desk .note { border-top: 1px solid rgba(255,253,248,0.15); padding-top: 0.45rem; }
+        .bar { border-top: 1px solid rgba(255,253,248,0.15); padding-top: 0.65rem; font-size: 0.72rem; }
+
+        /* Current — mobile */
+        .phone { width: 22rem; max-width: 100%; margin: 0 auto 0.4rem; }
+        .now-phone { padding: 1.6rem 1.1rem 1rem; }
+        .now-phone .logo { margin-bottom: 0.55rem; }
+        .now-phone p { font-size: 0.8rem; margin-bottom: 0.7rem; }
+        .now-phone h4 { color: #FFFDF8; margin: 0.85rem 0 0.4rem; }
+        .now-phone li { list-style: none; margin-bottom: 0.35rem; }
+
+        /* Recommended — desktop: same links, tighter */
+        .next-desk { padding: 1.15rem 1.4rem 0.85rem; }
+        .next-desk .row {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1fr;
+            gap: 1.1rem 1.4rem;
+            margin-bottom: 0.75rem;
+        }
+        .next-desk .tag {
+            font-size: 0.78rem;
+            margin-top: 0.3rem;
+            max-width: 18rem;
+        }
+        .next-desk h4 { color: #FFFDF8; margin-bottom: 0.35rem; font-size: 0.78rem; }
+        .next-desk ul { list-style: none; }
+        .next-desk li { margin-bottom: 0.22rem; font-size: 0.84rem; }
+        .next-desk .bar { margin-top: 0; }
+
+        /* Recommended — mobile: same links, two columns */
+        .next-phone { padding: 1rem 1.1rem 0.8rem; }
+        .next-phone .logo { margin-bottom: 0.25rem; }
+        .next-phone .tag { font-size: 0.78rem; margin-bottom: 0.7rem; }
+        .next-phone .cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem 1rem;
+            margin-bottom: 0.7rem;
+        }
+        .next-phone h4 { color: #FFFDF8; margin-bottom: 0.3rem; font-size: 0.78rem; }
+        .next-phone ul { list-style: none; }
+        .next-phone li { margin-bottom: 0.28rem; }
+
+        .measure {
+            font-size: 0.75rem;
+            color: var(--ink-2);
+            padding: 0 0.9rem 0.7rem;
+        }
+        @media (max-width: 860px) {
+            .pair { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="review">
+        <h1>Footer: keep the green, cut the height</h1>
+        <p>Nothing useful is deleted. Advisor, Farm, Community, All guides, About, Privacy, Terms, Disclosure, and Contact all stay. Only the long paragraphs and the five individual guide titles go away — those already live on About, Privacy, and All guides.</p>
+        <div class="why">
+            <h2>What stays vs what moves</h2>
+            <ul>
+                <li><strong>Stays in the footer:</strong> Agrivia.ai, a one-line tagline, On this site, Company, copyright.</li>
+                <li><strong>Stays as one link:</strong> All guides — not five separate guide titles.</li>
+                <li><strong>Moves to existing pages:</strong> the long farm/apps paragraph (About) and the ads/affiliate paragraph (Privacy / Disclosure).</li>
+            </ul>
+        </div>
+
+        <div class="pair">
+            <article class="frame">
+                <h3 class="now-label">Desktop now — about 280px tall</h3>
+                <footer class="site-footer now-desk">
+                    <div class="grid">
+                        <div>
+                            <div class="logo">Agrivia<span>.ai</span></div>
+                            <p>Equipment guides and an on-site advisor for hobby farms, gardens, and people keeping cattle, goats, sheep, or poultry. Separate iOS and Android apps are being built and are not in the public stores yet.</p>
+                            <p class="note">Ads may appear if AdSense is approved. We do not currently run affiliate-network tracking.</p>
+                        </div>
+                        <div>
+                            <h4>On this site</h4>
+                            <ul>
+                                <li>Advisor</li>
+                                <li>Farm</li>
+                                <li>Community</li>
+                                <li>All guides</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Guides</h4>
+                            <ul>
+                                <li>Heat and shade…</li>
+                                <li>First raised bed…</li>
+                                <li>Electric fence…</li>
+                                <li>Hose timers…</li>
+                                <li>Livestock waterers</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Company</h4>
+                            <ul>
+                                <li>About</li>
+                                <li>Privacy</li>
+                                <li>Terms</li>
+                                <li>Disclosure</li>
+                                <li>Contact</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="bar">© 2026 Agrivia. agrivia.ai · Guide photos are licensed stock, not field trials.</p>
+                </footer>
+                <p class="measure">Four columns + two paragraphs + five guide titles.</p>
+            </article>
+            <article class="frame">
+                <h3 class="next-label">Desktop after — same links, shorter</h3>
+                <footer class="site-footer next-desk">
+                    <div class="row">
+                        <div>
+                            <div class="logo">Agrivia<span>.ai</span></div>
+                            <p class="tag">Guides and an on-site advisor for hobby farms and backyard growers.</p>
+                        </div>
+                        <div>
+                            <h4>On this site</h4>
+                            <ul>
+                                <li><a href="#">Advisor</a></li>
+                                <li><a href="#">Farm</a></li>
+                                <li><a href="#">Community</a></li>
+                                <li><a href="#">All guides</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Company</h4>
+                            <ul>
+                                <li><a href="#">About</a></li>
+                                <li><a href="#">Privacy</a></li>
+                                <li><a href="#">Terms</a></li>
+                                <li><a href="#">Disclosure</a></li>
+                                <li><a href="#">Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="bar">© 2026 Agrivia. agrivia.ai · Guide photos are licensed stock, not field trials.</p>
+                </footer>
+                <p class="measure">All site and company links stay. The essays and five guide titles do not.</p>
+            </article>
+        </div>
+
+        <div class="pair">
+            <article class="frame">
+                <h3 class="now-label">Mobile now — a full extra screen</h3>
+                <div class="phone">
+                    <footer class="site-footer now-phone">
+                        <div class="logo">Agrivia<span>.ai</span></div>
+                        <p>Equipment guides and an on-site advisor for hobby farms, gardens, and people keeping cattle, goats, sheep, or poultry. Separate iOS and Android apps are being built and are not in the public stores yet.</p>
+                        <p>Ads may appear if AdSense is approved. We do not currently run affiliate-network tracking. See Privacy and Disclosure.</p>
+                        <h4>On this site</h4>
+                        <ul>
+                            <li>Advisor</li>
+                            <li>Farm</li>
+                            <li>Community</li>
+                            <li>All guides</li>
+                        </ul>
+                        <h4>Guides</h4>
+                        <ul>
+                            <li>Heat and shade for cattle…</li>
+                            <li>First raised bed: soil…</li>
+                            <li>Electric fence chargers</li>
+                            <li>Hose timers and drip</li>
+                            <li>Livestock waterers</li>
+                        </ul>
+                        <h4>Company</h4>
+                        <ul>
+                            <li>About</li>
+                            <li>Privacy</li>
+                            <li>Terms</li>
+                            <li>Disclosure</li>
+                            <li>Contact</li>
+                        </ul>
+                        <p class="bar">© 2026 Agrivia. agrivia.ai · Guide photos are licensed stock, not field trials.</p>
+                    </footer>
+                </div>
+                <p class="measure">Same copy stacked. This is what your phone screenshot shows.</p>
+            </article>
+            <article class="frame">
+                <h3 class="next-label">Mobile after — same links, two columns</h3>
+                <div class="phone">
+                    <footer class="site-footer next-phone">
+                        <div class="logo">Agrivia<span>.ai</span></div>
+                        <p class="tag">Guides and an on-site advisor for hobby farms and backyard growers.</p>
+                        <div class="cols">
+                            <div>
+                                <h4>On this site</h4>
+                                <ul>
+                                    <li><a href="#">Advisor</a></li>
+                                    <li><a href="#">Farm</a></li>
+                                    <li><a href="#">Community</a></li>
+                                    <li><a href="#">All guides</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4>Company</h4>
+                                <ul>
+                                    <li><a href="#">About</a></li>
+                                    <li><a href="#">Privacy</a></li>
+                                    <li><a href="#">Terms</a></li>
+                                    <li><a href="#">Disclosure</a></li>
+                                    <li><a href="#">Contact</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="bar">© 2026 Agrivia. agrivia.ai · Guide photos are licensed stock, not field trials.</p>
+                    </footer>
+                </div>
+                <p class="measure">Every destination from today is still here except the five individual guide titles.</p>
+            </article>
+        </div>
+    </div>
+</body>
+</html>

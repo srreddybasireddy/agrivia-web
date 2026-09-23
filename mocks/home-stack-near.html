@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrivia — stacked hero + Near you ZIP (recommended)</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font: "Source Sans 3", "Segoe UI", sans-serif;
+            --serif: "Source Serif 4", Georgia, serif;
+            --ink: #1A1916;
+            --ink-2: #4A453C;
+            --ink-3: #6B6458;
+            --leaf: #2F5D3A;
+            --leaf-deep: #1A3026;
+            --paper: #FAF8F4;
+            --raised: #FFFEFC;
+            --rule: #E7E3D8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font); color: var(--ink); background: #EDE8DE; line-height: 1.45; }
+        .review { max-width: 1180px; margin: 0 auto; padding: 1.1rem 1.25rem 0.6rem; }
+        .review h1 { font-family: var(--serif); font-size: 1.45rem; margin-bottom: 0.3rem; }
+        .review p { color: var(--ink-2); max-width: 46rem; font-size: 0.95rem; }
+        .links { display: flex; gap: 0.85rem; flex-wrap: wrap; margin: 0.55rem 0 0.95rem; font-size: 0.92rem; }
+        .links a { color: var(--leaf); }
+        .desk {
+            background: var(--paper);
+            border: 1px solid #D8D0C2;
+            border-radius: 18px;
+            overflow: hidden;
+            margin: 0 1.25rem 2rem;
+            max-width: 1180px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .bar {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.85rem 2rem;
+        }
+        .logo { font-family: var(--serif); font-weight: 650; font-size: 1.55rem; color: var(--leaf-deep); }
+        .logo em { color: var(--leaf); font-style: normal; }
+        .nav { margin: 0 auto; color: var(--leaf); font-weight: 600; }
+        .nav span + span::before { content: " · "; color: #8A8378; }
+        .sign {
+            margin-left: auto;
+            border: 1.5px solid var(--leaf);
+            border-radius: 999px;
+            padding: 0.35rem 1rem;
+            font-weight: 650;
+            background: var(--paper);
+            color: var(--leaf-deep);
+        }
+        .cream {
+            padding: 1.6rem 2rem 1.7rem;
+            background: var(--paper);
+        }
+        .cream-inner { max-width: 40rem; }
+        .badge {
+            display: inline-flex;
+            border: 1px solid #D9D3C6;
+            border-radius: 999px;
+            padding: 0.28rem 0.75rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-2);
+            margin-bottom: 0.7rem;
+        }
+        .cream h2 {
+            font-family: var(--serif);
+            color: var(--leaf-deep);
+            font-size: clamp(1.85rem, 3vw, 2.45rem);
+            font-weight: 650;
+            line-height: 1.12;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.45rem;
+        }
+        .cream .sub { color: var(--ink-2); font-size: 1.05rem; margin-bottom: 1rem; }
+        .search {
+            display: flex;
+            gap: 0.45rem;
+            margin-bottom: 0.85rem;
+        }
+        .search input {
+            flex: 1;
+            min-height: 2.7rem;
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            padding: 0 1rem;
+            font: inherit;
+            background: var(--raised);
+        }
+        .search button, .cta, .zip button {
+            border: 0;
+            border-radius: 999px;
+            min-height: 2.7rem;
+            padding: 0 1.15rem;
+            font: inherit;
+            font-weight: 650;
+            cursor: default;
+        }
+        .go { background: var(--leaf-deep); color: #FFFDF8; }
+        .ctas { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .cta.primary { background: var(--leaf-deep); color: #FFFDF8; }
+        .cta.ghost { background: var(--raised); border: 1px solid var(--rule); color: var(--leaf-deep); }
+        .farm-band { background: #E8EDE4; }
+        .farm-band img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 22rem;
+            object-fit: cover;
+            object-position: 62% 18%;
+        }
+        .feed { padding: 1.15rem 2rem 1.6rem; }
+        .head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem 0.7rem;
+            margin-bottom: 0.75rem;
+        }
+        .head h3 { font-family: var(--serif); color: var(--leaf-deep); font-size: 1.35rem; margin-right: auto; }
+        .tab {
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            border-radius: 999px;
+            padding: 0.35rem 0.85rem;
+            font-weight: 650;
+            font-size: 0.88rem;
+        }
+        .tab.on { background: var(--leaf-deep); color: #FFFDF8; border-color: var(--leaf-deep); }
+        .share {
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            border-radius: 999px;
+            padding: 0.35rem 0.85rem;
+            font-weight: 650;
+            color: var(--leaf-deep);
+        }
+        .zip {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.45rem;
+            margin-bottom: 0.85rem;
+            color: var(--ink-2);
+            font-size: 0.9rem;
+        }
+        .zip input {
+            width: 6.5rem;
+            min-height: 2.3rem;
+            border: 1px solid var(--rule);
+            border-radius: 10px;
+            padding: 0 0.65rem;
+            font: inherit;
+            background: var(--raised);
+        }
+        .zip button { background: var(--leaf-deep); color: #FFFDF8; min-height: 2.3rem; }
+        .grid {
+            display: grid;
+            grid-template-columns: minmax(0, 40rem);
+            justify-content: center;
+            gap: 1rem;
+        }
+        .card {
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 16px;
+            padding: 1rem 1.05rem 0.9rem;
+            text-align: left;
+        }
+        .who { display: grid; grid-template-columns: auto 1fr auto; gap: 0.12rem 0.55rem; align-items: center; }
+        .av {
+            width: 2.25rem; height: 2.25rem; border-radius: 50%;
+            background: var(--leaf-deep); color: #FFF8F2;
+            display: grid; place-items: center; font-weight: 700;
+            grid-row: 1 / span 2;
+        }
+        .av.off { background: #2F5D3A; }
+        .who strong { font-size: 0.9rem; }
+        .time, .meta { font-size: 0.75rem; color: var(--ink-3); }
+        .meta { grid-column: 2 / span 2; }
+        .official {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--leaf-deep);
+            background: #E8EDE4;
+            border-radius: 999px;
+            padding: 0.1rem 0.45rem;
+            margin-left: 0.35rem;
+        }
+        .photo {
+            margin: 0.65rem 0 0.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 16 / 10;
+            background: #E8EDE4;
+        }
+        .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .card p { font-size: 0.9rem; margin-bottom: 0.45rem; }
+        .ask {
+            display: inline-block;
+            margin-bottom: 0.45rem;
+            color: var(--leaf-deep);
+            font-weight: 650;
+            font-size: 0.85rem;
+        }
+        .acts { color: #B42318; font-weight: 650; font-size: 0.82rem; }
+        .trust { font-size: 0.78rem; color: var(--ink-3); margin-top: 0.85rem; max-width: 40rem; }
+        .note {
+            max-width: 1180px;
+            margin: 0 auto 2rem;
+            padding: 0 1.25rem;
+            color: var(--ink-2);
+            font-size: 0.88rem;
+        }
+        @media (max-width: 720px) {
+            .bar, .cream, .feed { padding-left: 1rem; padding-right: 1rem; }
+            .nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="review">
+        <h1>Recommended homepage (mock)</h1>
+        <p>This is the layout I recommended: cream search first, farm photo with no text on it, then a centered Near-you feed with a guest ZIP. Official cards are Agrivia primers, not invented growers. Open this file to click around; it is not live agrivia.ai.</p>
+        <div class="links">
+            <a href="home-community.html">Older overlay + 4-up mock</a>
+            <a href="../index.html">Live local homepage</a>
+        </div>
+    </div>
+
+    <div class="desk">
+        <header class="bar">
+            <div class="logo">Agrivia<em>.ai</em></div>
+            <nav class="nav" aria-label="Primary"><span>Guides</span><span>Advisor</span><span>Farm</span></nav>
+            <span class="sign">Sign in</span>
+        </header>
+
+        <section class="cream">
+            <div class="cream-inner">
+                <p class="badge">For homesteaders and new backyard growers</p>
+                <h2>Grow plants and raise animals with confidence</h2>
+                <p class="sub">How-to guides and an on-site advisor for your backyard homestead</p>
+                <div class="search">
+                    <input type="search" value="" placeholder="Search guides, plants, animals, and more..." readonly>
+                    <button class="go" type="button">Search</button>
+                </div>
+                <div class="ctas">
+                    <span class="cta primary">Ask the advisor</span>
+                    <span class="cta ghost">Browse community</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="farm-band" aria-label="Homestead illustration">
+            <img src="../assets/images/hero-banner-complete-farm.png" width="1280" height="720" alt="Illustration of a homestead with a goat, chickens, garden beds, and a barn. Not an Agrivia field trial.">
+        </section>
+
+        <section class="feed">
+            <div class="head">
+                <h3>Community near you</h3>
+                <span class="tab on">Near you</span>
+                <span class="tab">Top rated</span>
+                <span class="tab">For you</span>
+                <span class="share">Share your post</span>
+            </div>
+            <div class="zip">
+                <label for="mockZip">ZIP so we can rank Near you</label>
+                <input id="mockZip" value="85041" readonly>
+                <button type="button">Apply</button>
+                <span>About 25 miles. Or allow location.</span>
+            </div>
+            <div class="grid">
+                <article class="card">
+                    <div class="who">
+                        <span class="av off" aria-hidden="true">A</span>
+                        <strong>Agrivia <span class="official">Official</span></strong>
+                        <span class="time">primer</span>
+                        <span class="meta">Buying-criteria guide · not a neighbor post</span>
+                    </div>
+                    <p>First raised bed: soil, water, and what can wait</p>
+                    <span class="ask">Ask the advisor about a first bed →</span>
+                    <div class="acts">♥ · Comment · Report</div>
+                </article>
+                <article class="card">
+                    <div class="who">
+                        <span class="av" aria-hidden="true">S</span>
+                        <strong>Signed-in name</strong>
+                        <span class="time">1m</span>
+                        <span class="meta">1 mi away</span>
+                    </div>
+                    <div class="photo">
+                        <img src="../assets/images/hero-banner-complete-farm.png" alt="">
+                    </div>
+                    <p>Layout of a real grower post after ZIP or location is known. Miles only show when we have a place.</p>
+                    <div class="acts">♥ 1 · Comment 0 · Report</div>
+                </article>
+            </div>
+            <p class="trust">Grower posts are not a vet diagnosis. Official primers are Agrivia. We do not invent neighbor names to fill the strip.</p>
+        </section>
+    </div>
+    <p class="note">Compared with live agrivia.ai: copy is no longer sitting on the goat, the photo is its own band, Near you has a ZIP field, and a single post is a wide reading card instead of a 1/4-width tile.</p>
+</body>
+</html>

@@ -14,3 +14,12 @@ zone_name = "agrivia.ai"
 [[routes]]
 pattern = "www.agrivia.ai/*"
 zone_name = "agrivia.ai"
+
+# Community feed: KV for post JSON, R2 for photo/video bytes.
+# Binding names must match env.COMMUNITY and env.COMMUNITY_MEDIA in community.js.
+[[kv_namespaces]]
+binding = "COMMUNITY"
+id = "114780c5bedf49319f2c4db82cd8ce6d"
+[[r2_buckets]]
+binding = "COMMUNITY_MEDIA"
+bucket_name = "agrivia-community-media"

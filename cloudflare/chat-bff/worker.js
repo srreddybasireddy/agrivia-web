@@ -1,12 +1,14 @@
 /**
  * Production edge for agrivia.ai:
- *   /api/*           chat + farm + guides JSON BFF (same contract as the apps)
+ *   /api/*           chat + farm + guides + community BFF (JSON + multipart media)
  *   /guides/<slug>   SSR article HTML from GET /api/guides/:slug
  *   /sitemap.xml     published URLs from the guides API
  *   www              301 → https://agrivia.ai (no http hop)
  *
  * Zone SSL stays Flexible for S3. Do not orange-cloud api.agrivia.ai.
  */
+
+import { handleCommunity, isCommunityPath } from "./community.js";
 
 const ALLOWED_CHAT = new Set(["/chat", "/chat/rate", "/welcome_greeting"]);
 const ALLOWED_FARM_EXACT = new Set([
@@ -268,6 +270,10 @@ async function handleApi(request, env) {
         return new Response(null, { status: 204 });
     }
 
+    if (isCommunityPath(path)) {
+        return await handleCommunity(request, env, fetchOrigin);
+    }
+
     const isChat = ALLOWED_CHAT.has(path);
     const farm = isFarmPath(path);
     const guides = isGuidesRequest(request.method, path);
@@ -418,7 +424,6 @@ function notFoundPage() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page not found | Agrivia</title>
     <meta name="robots" content="noindex">
-    <link rel="canonical" href="https://agrivia.ai/404.html">
     <link rel="stylesheet" href="/css/style.css?v=${ASSET_VER}">
 </head>
 <body class="paper-theme">
@@ -583,7 +588,10 @@ async function ssrGuide(env, slug) {
 
 async function handleGuidesHtml(request, env, url) {
     const path = url.pathname.replace(/\/+$/, "") || "/";
-    if (path === "/guides" || path === "/guides/index.html") {
+    if (url.pathname === "/guides" || url.pathname === "/guides/index.html") {
+        return redirect301(`https://agrivia.ai/guides/${url.search}`);
+    }
+    if (path === "/guides") {
         return passSite(request, env, "/guides/index.html" + url.search);
     }
     if (path === "/guides/write.html" || path === "/guides/write") {
@@ -718,6 +726,9 @@ export default {
         }
 
         try {
+            if (url.pathname === "/index.html") {
+                return redirect301(`https://agrivia.ai/${url.search}`);
+            }
             if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {
                 return await handleApi(request, env);
             }
