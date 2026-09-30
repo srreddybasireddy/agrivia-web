@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // SPA Hash Navigation Handler
-function navigateTo(viewId, targetElementId = null) {
+function navigateTo(viewId, targetElementId = null, keepHash = false) {
     if (STANDALONE_PAGES[viewId]) {
         window.location.href = STANDALONE_PAGES[viewId];
         return;
@@ -48,7 +48,9 @@ function navigateTo(viewId, targetElementId = null) {
     const targetView = document.getElementById(`view-${viewId}`);
     if (targetView) {
         targetView.classList.add('active');
-        window.location.hash = viewId;
+        if (!keepHash) {
+            window.location.hash = viewId;
+        }
         document.body.classList.toggle('advisor-open', viewId === 'ai-advisor');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
@@ -86,6 +88,15 @@ function handleHashRouting() {
 
     if (hash === 'guides' || hash === 'blog') {
         window.location.replace('guides/index.html');
+        return;
+    }
+
+    const assetRoute = hash.match(/^farm\/asset\/([^/?#]+)$/);
+    if (assetRoute || hash === 'notifications') {
+        navigateTo('farm', null, true);
+        if (window.AgriviaFarmCareUi) {
+            window.AgriviaFarmCareUi.syncRoute();
+        }
         return;
     }
 

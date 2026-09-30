@@ -580,7 +580,19 @@
                     alerts.textContent = asset.healthAlerts;
                     copy.appendChild(alerts);
                 }
+                if (asset.id && global.AgriviaFarmCareUi) {
+                    global.AgriviaFarmCareUi.appendCardCare(copy, asset);
+                }
                 appendCardActions(copy, asset);
+                if (asset.id) {
+                    card.classList.add("is-linked");
+                    card.addEventListener("click", (event) => {
+                        if (event.target.closest("button, a, input, select, textarea, label")) {
+                            return;
+                        }
+                        global.location.hash = `farm/asset/${encodeURIComponent(asset.id)}`;
+                    });
+                }
             }
             card.appendChild(copy);
 
@@ -663,9 +675,10 @@
         const loadStatus = el("farmLoadStatus");
         const auth = global.AgriviaAuth;
         const signedIn = Boolean(auth && auth.isSignedIn());
-        setHidden(guestPanel, signedIn);
-        setHidden(signedPanel, !signedIn);
-        if (!signedIn || !global.AgriviaFarmApi) {
+        const preview = Boolean(global.AgriviaFarmPreview && global.AgriviaFarmPreview.enabled());
+        setHidden(guestPanel, signedIn || preview);
+        setHidden(signedPanel, !(signedIn || preview));
+        if ((!signedIn && !preview) || !global.AgriviaFarmApi) {
             lastSnapshot = null;
             lastAssets = [];
             renderIdentity(null, false);
@@ -691,11 +704,14 @@
             renderIdentity(portfolio.profile, true);
             renderFilters(portfolio.profile, lastAssets);
             renderHeaderPill(lastAssets, (portfolio.careItems || []).length);
-            renderCareBanner(portfolio.careItems);
+            renderCareBanner([]);
             renderAssets(visibleAssets(lastAssets));
             renderNextQuestion(portfolio.pending);
             global.dispatchEvent(new CustomEvent("agrivia-farm-changed", { detail: { snapshot: portfolio } }));
-            if (portfolio.listErrors) {
+            if (preview && loadStatus) {
+                loadStatus.textContent = "Local preview. Sign-in is still required on agrivia.ai.";
+                setHidden(loadStatus, false);
+            } else if (portfolio.listErrors) {
                 if (loadStatus) {
                     loadStatus.textContent = "Some asset lists could not be reached.";
                     setHidden(loadStatus, false);
