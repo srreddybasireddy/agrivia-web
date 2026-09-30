@@ -23,14 +23,19 @@
     function createMessage(role, text) {
         const wrap = document.createElement("div");
         wrap.className = `chat-message chat-message-${role}`;
-        if (role === "assistant") {
-            const mark = document.createElement("span");
-            mark.className = "chat-message-mark";
-            mark.setAttribute("aria-hidden", "true");
-            wrap.appendChild(mark);
+        if (role === "user") {
+            const kicker = document.createElement("p");
+            kicker.className = "chat-ask-you";
+            kicker.textContent = "You asked";
+            const question = document.createElement("p");
+            question.className = "chat-ask-q";
+            question.textContent = text;
+            wrap.appendChild(kicker);
+            wrap.appendChild(question);
+            return wrap;
         }
         const body = document.createElement("div");
-        body.className = "chat-message-body";
+        body.className = "chat-message-body chat-ask-a";
         const copy = document.createElement("p");
         copy.className = "chat-message-text";
         copy.textContent = text;
@@ -61,15 +66,15 @@
             .filter(Boolean)
             .slice(0, 3);
         if (titles.length === 1) {
-            return `Ask about ${titles[0]}, or the job in front of you.`;
+            return `Ask about ${titles[0]}, or anything else on the place.`;
         }
         if (titles.length === 2) {
-            return `Ask about ${titles[0]}, ${titles[1]}, or the job in front of you.`;
+            return `Ask about ${titles[0]}, ${titles[1]}, or anything else on the place.`;
         }
         if (titles.length >= 3) {
-            return `Ask about ${titles[0]}, ${titles[1]}, ${titles[2]}, or the job in front of you.`;
+            return `Ask about ${titles[0]}, ${titles[1]}, ${titles[2]}, or anything else on the place.`;
         }
-        return "Ask about the job in front of you.";
+        return "";
     }
 
     function createFarmRailRow(asset, kindLabel) {
@@ -293,6 +298,7 @@
         const welcomeLead = el("chatWelcomeLead");
         const categoryRow = el("chatCategories");
         const saveHint = el("chatSaveHint");
+        const shell = form.closest(".chat-shell");
         if (!form || !input || !messages) {
             return;
         }
@@ -301,8 +307,38 @@
         let isSending = false;
         let lastWelcomeGreeting = "";
         const defaultTitle = welcomeTitle ? welcomeTitle.textContent : "What are you working on today?";
-        const defaultGreeting = greetingEl ? greetingEl.textContent : "";
         const defaultPlaceholder = input.getAttribute("placeholder") || "";
+        const askLines = [];
+        let askIndex = 0;
+        let askRotateTimer = 0;
+
+        function setAskLines(prompts) {
+            askLines.length = 0;
+            (Array.isArray(prompts) ? prompts : []).forEach((text) => {
+                const line = String(text || "").trim();
+                if (line && askLines.indexOf(line) === -1) {
+                    askLines.push(line);
+                }
+            });
+            askIndex = askLines.length
+                ? Math.floor(Math.random() * askLines.length)
+                : 0;
+        }
+
+        function nextAskIndex(except) {
+            if (askLines.length < 2) {
+                return 0;
+            }
+            let next = except;
+            while (next === except) {
+                next = Math.floor(Math.random() * askLines.length);
+            }
+            return next;
+        }
+
+        function guestAskLine() {
+            return askLines[askIndex] || "";
+        }
 
         function currentDeviceUuid() {
             const auth = global.AgriviaAuth;
@@ -354,6 +390,41 @@
             }
         }
 
+        function shouldRotateAsk() {
+            if (!empty || empty.hidden || !greetingEl || askLines.length < 2) {
+                return false;
+            }
+            const ctx = farmAdvisorContext();
+            if (ctx && farmAskLine(ctx.assets)) {
+                return false;
+            }
+            return true;
+        }
+
+        function stopAskRotate() {
+            if (askRotateTimer) {
+                window.clearInterval(askRotateTimer);
+                askRotateTimer = 0;
+            }
+        }
+
+        function startAskRotate() {
+            stopAskRotate();
+            if (!shouldRotateAsk()) {
+                return;
+            }
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                return;
+            }
+            askRotateTimer = window.setInterval(() => {
+                if (!shouldRotateAsk()) {
+                    return;
+                }
+                askIndex = nextAskIndex(askIndex);
+                setText(greetingEl, guestAskLine());
+            }, 8000);
+        }
+
         function showEmpty(visible) {
             if (empty) {
                 empty.hidden = !visible;
@@ -364,12 +435,26 @@
             if (chips) {
                 chips.hidden = visible;
             }
+            if (shell) {
+                shell.classList.toggle("is-empty", visible);
+            }
+            syncGuestHint();
+            if (visible) {
+                startAskRotate();
+            } else {
+                stopAskRotate();
+            }
         }
 
         function appendNode(node) {
             showEmpty(false);
             messages.appendChild(node);
-            messages.scrollTop = messages.scrollHeight;
+            const thread = messages.closest(".chat-thread");
+            if (thread) {
+                thread.scrollTop = thread.scrollHeight;
+            } else {
+                messages.scrollTop = messages.scrollHeight;
+            }
         }
 
         function renderActiveCategory() {
@@ -404,9 +489,12 @@
         }
 
         function syncGuestHint() {
-            if (saveHint) {
-                saveHint.hidden = isSignedIn();
+            if (!saveHint) {
+                return;
             }
+            const narrow = window.matchMedia("(max-width: 768px)").matches;
+            const conversationOn = empty && empty.hidden;
+            saveHint.hidden = isSignedIn() || narrow || conversationOn;
         }
 
         function highlightFarmRail() {
@@ -426,24 +514,23 @@
                 welcomeTitle.textContent = ctx ? "Welcome to the Agrivia advisor" : defaultTitle;
             }
             if (welcomeLead) {
-                welcomeLead.hidden = !ctx;
+                welcomeLead.hidden = true;
             }
             if (!greetingEl) {
                 return;
             }
-            if (lastWelcomeGreeting && !isGenericGreeting(lastWelcomeGreeting)) {
-                setText(greetingEl, lastWelcomeGreeting);
-                return;
-            }
+            let text = "";
             if (ctx) {
-                setText(greetingEl, farmAskLine(ctx.assets));
-                return;
+                text = farmAskLine(ctx.assets);
             }
-            if (isSignedIn()) {
-                setText(greetingEl, "Ask about the job in front of you.");
-                return;
+            if (!text) {
+                text = guestAskLine();
             }
-            setText(greetingEl, defaultGreeting);
+            if (!text && lastWelcomeGreeting && !isGenericGreeting(lastWelcomeGreeting)) {
+                text = lastWelcomeGreeting;
+            }
+            setText(greetingEl, text);
+            greetingEl.hidden = !text;
         }
 
         function syncFarmAdvisorLayout() {
@@ -527,7 +614,7 @@
                 renderActiveCategory();
                 const result = await api.getAdvisoryResponse(deviceUuid, category, query);
                 pending.remove();
-                const answerText = result.answer.trim();
+                const answerText = answerWithFollowUp(result);
                 if (!answerText) {
                     appendNode(createStatus("No answer came back. Try a more specific farm question.", "empty"));
                     showDefaultChips();
@@ -545,15 +632,6 @@
                 }
 
                 const followUps = chipsAfterAnswer(result);
-                const pendingChip = global.AgriviaFarmUi && global.AgriviaFarmUi.getPendingPrompt
-                    ? global.AgriviaFarmUi.getPendingPrompt()
-                    : "";
-                if (pendingChip) {
-                    const pending = asChip(pendingChip);
-                    if (pending && !followUps.some((chip) => chip.query === pending.query)) {
-                        followUps.unshift(pending);
-                    }
-                }
                 renderChips(chips, followUps.slice(0, 4), (query) => {
                     sendQuery(query);
                 });
@@ -583,25 +661,43 @@
         });
 
         function isGenericGreeting(text) {
-            return /assist you|agricultural needs|assistance service|how can i help|here to help|planning and managing your farm/i.test(text || "");
+            return /assist you|agricultural needs|assistance service|how can i help|here to help|planning and managing your farm|job in front of you/i.test(text || "");
         }
 
         function isGenericChip(text) {
-            return /farm tasks should i focus|seasonal tips for my region|how can i help you|planning and managing your farm/i.test(text || "");
+            // Greeting leftovers only. Farm-task / seasonal chips are real API templates now.
+            return /how can i help you|planning and managing your farm/i.test(text || "");
+        }
+
+        function answerWithFollowUp(result) {
+            let text = String(result.answer || "").trim();
+            const prompt = String(result.nextQuestionPrompt || "").trim();
+            if (!prompt) {
+                return text;
+            }
+            const haystack = text.toLowerCase();
+            const needle = prompt.toLowerCase().replace(/[?؟]$/, "").trim();
+            if (needle && haystack.includes(needle)) {
+                return text;
+            }
+            return `${text}\n\n${prompt}`;
         }
 
         function chipsAfterAnswer(result) {
             const followUps = [];
             const seen = {};
+            const prompt = (result.nextQuestionPrompt || "").trim();
             function add(item) {
                 const chip = asChip(item);
                 if (!chip || seen[chip.query] || isGenericChip(chip.query) || isGenericChip(chip.label)) {
                     return;
                 }
+                if (prompt && (chip.query === prompt || chip.label === prompt)) {
+                    return;
+                }
                 seen[chip.query] = true;
                 followUps.push(chip);
             }
-            add(result.nextQuestionPrompt);
             (result.suggestionChips || []).forEach(add);
             return followUps.slice(0, 4);
         }
@@ -675,6 +771,11 @@
         renderActiveCategory();
         syncGuestHint();
         syncFarmAdvisorLayout();
+        startAskRotate();
+        const narrowAdvisor = window.matchMedia("(max-width: 768px)");
+        if (narrowAdvisor.addEventListener) {
+            narrowAdvisor.addEventListener("change", syncGuestHint);
+        }
         global.addEventListener("agrivia-auth-changed", () => {
             if (!isSignedIn()) {
                 setChatCategory("");
@@ -714,15 +815,16 @@
         api.getWelcomeGreeting(currentDeviceUuid(), config.category || "General", new Date().getHours())
             .then((welcome) => {
                 lastWelcomeGreeting = (welcome.greeting || "").trim();
+                setAskLines(welcome.askPrompts);
                 applyWelcomeCopy();
+                startAskRotate();
                 const starters = [];
-                if (welcome.nextQuestionPrompt) {
-                    starters.push(welcome.nextQuestionPrompt);
-                }
                 (welcome.suggestions || []).forEach((item) => starters.push(item));
                 renderStarterChips(starters);
             })
             .catch(() => {
+                setAskLines([]);
+                applyWelcomeCopy();
                 renderStarterChips([]);
             });
     }

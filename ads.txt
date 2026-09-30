@@ -1,2 +1,2 @@
-# agrivia.ai ads.txt — Authorized Digital Sellers (IAB)
+# agrivia.ai ads.txt - Authorized Digital Sellers (IAB)
 google.com, pub-5524710580723425, DIRECT, f08c47fec0942fa0

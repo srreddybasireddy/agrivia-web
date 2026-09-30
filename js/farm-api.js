@@ -223,8 +223,21 @@
         return items;
     }
 
+    function readCount(extra, subtitle) {
+        if (extra && typeof extra === "object") {
+            const raw = extra.count;
+            const parsed = Number(raw);
+            if (Number.isFinite(parsed) && parsed >= 0) {
+                return parsed;
+            }
+        }
+        const match = String(subtitle || "").match(/(\d+)/);
+        return match ? Number(match[1]) : null;
+    }
+
     function mapGeneric(asset, kind) {
         const extra = operationalOf(asset);
+        const subtitle = readText(asset.subtitle);
         return {
             id: String(asset.id || ""),
             kind: kind,
@@ -234,7 +247,8 @@
             acres: 0,
             plantedDate: "",
             harvestDate: "",
-            subtitle: readText(asset.subtitle),
+            subtitle: subtitle,
+            count: readCount(extra, subtitle),
             roiEstimate: readRoi(extra),
             imageUrl: readImageUrl(asset, extra),
             healthAlerts: "",
@@ -254,6 +268,7 @@
                     kind: "Cattle",
                     title: breed && breed.toLowerCase() !== tag.toLowerCase() ? `${tag} · ${breed}` : tag,
                     variety: breed,
+                    tagNumber: tag,
                     status: readText(row.status),
                     acres: 0,
                     plantedDate: "",
@@ -449,6 +464,70 @@
         });
     }
 
+    async function updateAsset(asset, fields) {
+        const farmUuid = requireFarmUuid();
+        const assetId = encodeURIComponent(asset.id);
+        if (!asset.id) {
+            throw new Error("This asset cannot be edited yet.");
+        }
+        if (asset.kind === "Cattle") {
+            return request(`/cattle/${farmUuid}/${assetId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    deviceUuid: farmUuid,
+                    tagNumber: fields.title,
+                    breed: fields.variety,
+                    status: fields.status,
+                    count: fields.count,
+                }),
+            });
+        }
+        if (asset.kind === "Crops") {
+            return request(`/crops/${farmUuid}/${assetId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    deviceUuid: farmUuid,
+                    name: fields.title,
+                    variety: fields.variety,
+                    status: fields.status,
+                    acres: fields.acres,
+                }),
+            });
+        }
+        return request(`/generic_assets/${farmUuid}/${assetId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                deviceUuid: farmUuid,
+                category: asset.kind,
+                title: fields.title,
+                subtitle: fields.subtitle,
+                status: fields.status,
+                count: fields.count,
+            }),
+        });
+    }
+
+    async function deleteAsset(asset) {
+        const farmUuid = requireFarmUuid();
+        const assetId = encodeURIComponent(asset.id);
+        if (!asset.id) {
+            throw new Error("This asset cannot be removed yet.");
+        }
+        if (asset.kind === "Cattle") {
+            return request(`/cattle/${farmUuid}/${assetId}`, { method: "DELETE" });
+        }
+        if (asset.kind === "Crops") {
+            return request(`/crops/${farmUuid}/${assetId}`, { method: "DELETE" });
+        }
+        return request(
+            `/generic_assets/${farmUuid}/${assetId}?category=${encodeURIComponent(asset.kind)}`,
+            { method: "DELETE" }
+        );
+    }
+
     global.AgriviaFarmApi = {
         getProfile: getProfile,
         getCrops: getCrops,
@@ -459,6 +538,8 @@
         diffPortfolio: diffPortfolio,
         saveProfile: saveProfile,
         addAsset: addAsset,
+        updateAsset: updateAsset,
+        deleteAsset: deleteAsset,
         genericCategories: GENERIC_CATEGORIES,
     };
 })(window);

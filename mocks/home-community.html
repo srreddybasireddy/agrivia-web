@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrivia — homepage community mock</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font: "Source Sans 3", "Segoe UI", sans-serif;
+            --serif: "Source Serif 4", Georgia, serif;
+            --ink: #1A1916;
+            --ink-2: #4A453C;
+            --ink-3: #6B6458;
+            --leaf: #2F5D3A;
+            --leaf-deep: #1A3026;
+            --paper: #FAF8F4;
+            --raised: #FFFEFC;
+            --rule: #E7E3D8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font); color: var(--ink); background: #EDE8DE; line-height: 1.45; }
+        .review { max-width: 1400px; margin: 0 auto; padding: 1rem 1rem 2rem; }
+        .review h1 { font-family: var(--serif); font-size: 1.45rem; margin-bottom: 0.3rem; }
+        .review > p { color: var(--ink-2); max-width: 54rem; margin-bottom: 0.65rem; }
+        .links { display: flex; gap: 0.85rem; margin: 0.45rem 0 0.95rem; font-size: 0.92rem; }
+        .links a { color: var(--leaf); }
+        .desk {
+            background: var(--paper);
+            border: 1px solid #D8D0C2;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .bar {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.95rem 2.5rem;
+            background: var(--paper);
+        }
+        .logo { font-family: var(--serif); font-weight: 650; font-size: 1.7rem; color: var(--leaf-deep); }
+        .logo em { color: var(--leaf); font-style: normal; }
+        .nav {
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0.15rem;
+            color: var(--leaf);
+            font-weight: 600;
+            font-size: 1.02rem;
+        }
+        .nav span { padding: 0 0.7rem; }
+        .nav span + span { border-left: 0; }
+        .nav span + span::before {
+            content: "·";
+            margin-right: 0.7rem;
+            color: #8A8378;
+        }
+        .sign {
+            margin-left: auto;
+            border: 1.5px solid var(--leaf);
+            color: var(--leaf-deep);
+            border-radius: 999px;
+            padding: 0.4rem 1.15rem;
+            font-weight: 650;
+            font-size: 0.95rem;
+            background: var(--paper);
+        }
+        .hero {
+            position: relative;
+            background: var(--paper);
+            overflow: hidden;
+            aspect-ratio: 16 / 6.17;
+        }
+        .hero-scene {
+            position: absolute;
+            top: 0;
+            left: -10%;
+            width: 110%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 50% 73.5%;
+            display: block;
+        }
+        .copy {
+            position: absolute;
+            top: 4.5%;
+            left: 2.5rem;
+            z-index: 2;
+            width: min(54rem, 78%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: 1px solid #D9D3C6;
+            border-radius: 999px;
+            padding: 0.32rem 0.8rem 0.32rem 0.58rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-2);
+            background: var(--paper);
+            margin-bottom: 0.8rem;
+        }
+        .badge svg { width: 0.95rem; height: 0.95rem; color: var(--leaf); }
+        .copy h2 {
+            font-family: var(--serif);
+            color: var(--leaf-deep);
+            font-size: clamp(2.05rem, 2.7vw, 2.55rem);
+            font-weight: 650;
+            line-height: 1.12;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.05rem;
+            white-space: nowrap;
+        }
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: var(--raised);
+            border: 1px solid #E1DCCC;
+            box-shadow: 0 1px 2px rgba(26, 25, 22, 0.04);
+            border-radius: 999px;
+            min-height: 2.75rem;
+            padding: 0.22rem 0.22rem 0.22rem 1.1rem;
+            color: var(--ink-3);
+            width: min(34.5rem, 100%);
+            margin-bottom: 1rem;
+        }
+        .search svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; }
+        .search > span:not(.search-go) { flex: 1; min-width: 0; }
+        .search-go {
+            flex: 0 0 auto;
+            min-width: 2.55rem;
+            min-height: 2.35rem;
+            padding: 0 0.85rem;
+            border-radius: 999px;
+            background: var(--leaf-deep);
+            color: #FFFEFC;
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+            font-weight: 650;
+        }
+        .ctas { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+        .btn {
+            min-height: 2.55rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 650;
+            padding: 0 1.2rem;
+            font-size: 0.95rem;
+        }
+        .btn svg { width: 0.95rem; height: 0.95rem; }
+        .dark { background: var(--leaf-deep); color: #FFFEFC; }
+        .outline { border: 1.5px solid var(--leaf); color: var(--leaf-deep); background: var(--paper); }
+        .feed { padding: 0.85rem 2.5rem 1.55rem; background: var(--paper); }
+        .feed-head {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.95rem;
+            flex-wrap: wrap;
+        }
+        .feed-head h3 {
+            font-family: var(--serif);
+            color: var(--leaf-deep);
+            font-size: 1.65rem;
+            font-weight: 650;
+            margin-right: 0.55rem;
+        }
+        .tab {
+            border: 0;
+            background: none;
+            color: var(--ink-3);
+            font-weight: 650;
+            font-size: 0.92rem;
+            padding: 0.42rem 0.9rem;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+        .tab.on { background: #E4EBDD; color: var(--leaf-deep); }
+        .share {
+            margin-left: auto;
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            border-radius: 999px;
+            padding: 0.42rem 0.95rem;
+            font-weight: 650;
+            font-size: 0.88rem;
+            color: var(--leaf-deep);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .share svg { width: 0.9rem; height: 0.9rem; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.95rem; }
+        .card {
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 18px;
+            overflow: hidden;
+            padding: 0.85rem 0.9rem 0.8rem;
+        }
+        .who {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 0.12rem 0.55rem;
+            align-items: center;
+        }
+        .av {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            grid-row: 1 / span 2;
+            object-fit: cover;
+            background: #C9B8A0;
+        }
+        .who strong { font-size: 0.86rem; display: inline-flex; align-items: center; gap: 0.28rem; }
+        .check {
+            width: 0.85rem;
+            height: 0.85rem;
+            border-radius: 50%;
+            background: #2F6FEB;
+            color: #fff;
+            display: inline-grid;
+            place-items: center;
+            font-size: 0.55rem;
+            font-weight: 800;
+        }
+        .who .time { font-size: 0.75rem; color: var(--ink-3); }
+        .meta {
+            grid-column: 2 / span 2;
+            font-size: 0.72rem;
+            color: var(--ink-3);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+        .pin { width: 0.7rem; height: 0.7rem; color: var(--leaf); flex-shrink: 0; }
+        .stars { color: #C4A35A; letter-spacing: -0.04em; margin-left: 0.15rem; }
+        .photo {
+            margin: 0.6rem 0 0.55rem;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 16 / 10;
+            background: #E8EDE4;
+        }
+        .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .card p { font-size: 0.86rem; color: var(--ink); margin-bottom: 0.45rem; }
+        .reason { font-size: 0.72rem; color: var(--leaf); font-weight: 650; margin-bottom: 0.3rem; display: none; }
+        body[data-rank="for_you"] .reason { display: block; }
+        .tags { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
+        .tags span {
+            font-size: 0.72rem;
+            color: var(--ink-3);
+            background: var(--paper);
+            border-radius: 999px;
+            padding: 0.12rem 0.5rem;
+        }
+        .likes { color: #B42318; font-size: 0.82rem; font-weight: 650; }
+        .note, .trust { font-size: 0.78rem; color: var(--ink-3); margin-top: 0.75rem; }
+        .trust { max-width: 46rem; }
+        @media (max-width: 1100px) {
+            .grid { grid-template-columns: 1fr 1fr; }
+            .copy { width: min(36rem, 56%); }
+        }
+        @media (max-width: 800px) {
+            .nav { display: none; }
+            .hero { aspect-ratio: auto; min-height: 0; }
+            .hero-scene {
+                position: relative;
+                left: 0;
+                width: 100%;
+                height: auto;
+            }
+            .copy {
+                position: relative;
+                top: auto;
+                left: auto;
+                width: auto;
+                padding: 1rem 1.15rem 0.85rem;
+            }
+            .copy h2 { white-space: normal; }
+            .bar, .feed { padding-left: 1.15rem; padding-right: 1.15rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="review">
+        <h1>Homepage — community feed mock</h1>
+        <p>Mock only. Not live. Sample posts for layout, not real growers. Guides, Advisor, and Farm stay in the header. Ask the advisor is the primary CTA. Browse community is proposed.</p>
+        <p class="links"><a href="community-feed.html">Open community hub mock →</a></p>
+        <div class="desk">
+            <div class="bar">
+                <span class="logo">Agrivia<em>.ai</em></span>
+                <span class="nav"><span>Guides</span><span>Advisor</span><span>Farm</span></span>
+                <span class="sign">Sign in</span>
+            </div>
+            <div class="hero">
+                <img class="hero-scene" src="hero-banner-complete-farm.png?v=10" alt="Homestead with goat, chickens, garden beds, full barn, hay, and fence">
+                <div class="copy">
+                    <span class="badge">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5L12 5l8 6.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.5 10.5V19h11V10.5" stroke-linejoin="round"></path></svg>
+                        For homesteaders
+                    </span>
+                    <h2>Grow plants and raise animals with confidence</h2>
+                    <div class="search">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.25" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M16 16.5L20 20.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+                        <span>Search guides, plants, animals, and more...</span>
+                        <span class="search-go" aria-hidden="true">→</span>
+                    </div>
+                    <div class="ctas">
+                        <span class="btn dark">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.2 2.4l1.05 4.2 4.2 1.05-4.2 1.05-1.05 4.2-1.05-4.2-4.2-1.05 4.2-1.05 1.05-4.2zm8.7 7.1l.72 2.88 2.88.72-2.88.72-.72 2.88-.72-2.88-2.88-.72 2.88-.72.72-2.88z"></path></svg>
+                            Ask the advisor
+                        </span>
+                        <span class="btn outline">Browse community</span>
+                    </div>
+                </div>
+            </div>
+            <div class="feed">
+                <div class="feed-head">
+                    <h3 id="feed-title">Community near you</h3>
+                    <button class="tab on" type="button" data-rank="near">Near you</button>
+                    <button class="tab" type="button" data-rank="top">Top rated</button>
+                    <button class="tab" type="button" data-rank="for_you">For you</button>
+                    <span class="share">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20l3.2-10.5L20 4l-5.5 12.8L4 20z" stroke-linejoin="round"></path><path d="M12.2 8.2L16.8 12"></path></svg>
+                        Share your post
+                    </span>
+                </div>
+                <div class="grid" id="feed-grid">
+                    <article class="card" data-near="0" data-top="2" data-for="3">
+                        <div class="who">
+                            <img class="av" src="../assets/images/farm-deco-garden.png" alt="">
+                            <strong>homestead_ellen <span class="check">✓</span></strong>
+                            <span class="time">2h</span>
+                            <span class="meta">
+                                <svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5c3.6 0 6.5 2.8 6.5 6.3 0 4.7-6.5 12.7-6.5 12.7S5.5 13.5 5.5 8.8C5.5 5.3 8.4 2.5 12 2.5zm0 8.5a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z"></path></svg>
+                                12 mi away · Phoenix area <span class="stars">★★★★★ 4.8</span>
+                            </span>
+                        </div>
+                        <div class="photo"><img src="../assets/images/farm-deco-tomato.png" alt=""></div>
+                        <p class="reason">Because you asked about tomatoes</p>
+                        <p>First tomatoes of the season! So proud of this little bed.</p>
+                        <div class="tags"><span>tomatoes</span><span>garden</span><span>soil</span></div>
+                        <div class="likes">♥ 124</div>
+                    </article>
+                    <article class="card" data-near="1" data-top="0" data-for="0">
+                        <div class="who">
+                            <img class="av" src="../assets/images/farm-deco-poultry.png" alt="">
+                            <strong>desert_acres <span class="check">✓</span></strong>
+                            <span class="time">4h</span>
+                            <span class="meta">
+                                <svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5c3.6 0 6.5 2.8 6.5 6.3 0 4.7-6.5 12.7-6.5 12.7S5.5 13.5 5.5 8.8C5.5 5.3 8.4 2.5 12 2.5zm0 8.5a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z"></path></svg>
+                                18 mi away · Phoenix area <span class="stars">★★★★★ 4.9</span>
+                            </span>
+                        </div>
+                        <div class="photo"><img src="../assets/images/farm-deco-poultry.png" alt=""></div>
+                        <p class="reason">Because you asked about chickens</p>
+                        <p>Our girls are loving the new run. Fresh greens make them happy!</p>
+                        <div class="tags"><span>chickens</span><span>homestead</span><span>poultry</span></div>
+                        <div class="likes">♥ 98</div>
+                    </article>
+                    <article class="card" data-near="2" data-top="3" data-for="2">
+                        <div class="who">
+                            <img class="av" src="../assets/images/guide-soil.jpg" alt="">
+                            <strong>arizona_soil_sister <span class="check">✓</span></strong>
+                            <span class="time">6h</span>
+                            <span class="meta">
+                                <svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5c3.6 0 6.5 2.8 6.5 6.3 0 4.7-6.5 12.7-6.5 12.7S5.5 13.5 5.5 8.8C5.5 5.3 8.4 2.5 12 2.5zm0 8.5a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z"></path></svg>
+                                9 mi away · Phoenix area <span class="stars">★★★★☆ 4.7</span>
+                            </span>
+                        </div>
+                        <div class="photo"><img src="../assets/images/guide-soil.jpg" alt=""></div>
+                        <p class="reason">Because you asked about soil</p>
+                        <p>Building better soil every season. Compost is my love language.</p>
+                        <div class="tags"><span>soil</span><span>compost</span><span>regenerative</span></div>
+                        <div class="likes">♥ 76</div>
+                    </article>
+                    <article class="card" data-near="3" data-top="1" data-for="1">
+                        <div class="who">
+                            <img class="av" src="../assets/images/farm-deco-cattle.png" alt="">
+                            <strong>roadrunner_farm <span class="check">✓</span></strong>
+                            <span class="time">1d</span>
+                            <span class="meta">
+                                <svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5c3.6 0 6.5 2.8 6.5 6.3 0 4.7-6.5 12.7-6.5 12.7S5.5 13.5 5.5 8.8C5.5 5.3 8.4 2.5 12 2.5zm0 8.5a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z"></path></svg>
+                                15 mi away · Phoenix area <span class="stars">★★★★★ 4.8</span>
+                            </span>
+                        </div>
+                        <div class="photo"><img src="../assets/images/hero-homestead.jpg" alt=""></div>
+                        <p class="reason">Because you asked about goats</p>
+                        <p>Kids are growing so fast! Springtime on the farm is the best.</p>
+                        <div class="tags"><span>goats</span><span>heritage breed</span><span>farm life</span></div>
+                        <div class="likes">♥ 112</div>
+                    </article>
+                </div>
+                <p class="trust">Community posts are grower experience, not a vet diagnosis. For a sick animal or a plant you cannot read, ask the advisor about your own place.</p>
+                <p class="note">Sample cards for layout. A live feed would come from signed-in growers, not these names.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        const titles = {
+            near: "Community near you",
+            top: "Top rated nearby",
+            for_you: "Picked for you"
+        };
+        const grid = document.getElementById("feed-grid");
+        const heading = document.getElementById("feed-title");
+        function rank(mode) {
+            document.body.dataset.rank = mode;
+            heading.textContent = titles[mode];
+            const key = mode === "for_you" ? "for" : mode;
+            [...grid.children]
+                .sort((a, b) => Number(a.dataset[key]) - Number(b.dataset[key]))
+                .forEach((card) => grid.appendChild(card));
+        }
+        document.querySelectorAll(".tab").forEach((tab) => {
+            tab.addEventListener("click", () => {
+                document.querySelectorAll(".tab").forEach((t) => t.classList.remove("on"));
+                tab.classList.add("on");
+                rank(tab.dataset.rank);
+            });
+        });
+        rank("near");
+    </script>
+</body>
+</html>

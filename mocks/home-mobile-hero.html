@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrivia — mobile home, less clutter</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font: "Source Sans 3", "Segoe UI", sans-serif;
+            --serif: "Source Serif 4", Georgia, serif;
+            --paper: #FAF8F4;
+            --raised: #FFFEFC;
+            --ink: #1A1916;
+            --ink-2: #4A453C;
+            --ink-3: #6B6458;
+            --rule: #E7E3D8;
+            --leaf: #2F5D3A;
+            --leaf-deep: #1A3026;
+            --ochre: #B26A3A;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font);
+            background: #EDE8DE;
+            color: var(--ink);
+            line-height: 1.45;
+        }
+        .review {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 1.2rem 1.25rem 0.5rem;
+        }
+        .review h1 {
+            font-family: var(--serif);
+            font-size: 1.55rem;
+            margin-bottom: 0.4rem;
+        }
+        .review p { color: var(--ink-2); max-width: 40rem; font-size: 0.95rem; }
+        .notes {
+            margin: 0.85rem 0 1.1rem;
+            padding-left: 1.15rem;
+            color: var(--ink-2);
+            font-size: 0.92rem;
+        }
+        .phones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            padding: 0 1rem 2rem;
+        }
+        .col { width: 390px; }
+        .label {
+            font-size: 0.75rem;
+            font-weight: 650;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            margin-bottom: 0.55rem;
+        }
+        .now { color: #9B2C2C; }
+        .next { color: var(--leaf); }
+        .phone {
+            background: var(--paper);
+            border: 1px solid #C9C0AE;
+            border-radius: 28px;
+            overflow: hidden;
+            min-height: 720px;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.7rem 0.85rem;
+            background: var(--raised);
+            border-bottom: 1px solid var(--rule);
+        }
+        .menu { width: 1.15rem; height: 0.85rem; display: flex; flex-direction: column; justify-content: space-between; }
+        .menu i { height: 1.5px; background: var(--ink); display: block; }
+        .logo { font-family: var(--serif); font-weight: 650; font-size: 1.2rem; }
+        .logo em { color: var(--leaf); font-style: normal; }
+        .signin {
+            margin-left: auto;
+            font-size: 0.78rem;
+            border: 1px solid var(--leaf);
+            border-radius: 999px;
+            padding: 0.28rem 0.65rem;
+            color: var(--leaf-deep);
+        }
+        .hero { padding: 1.15rem 1.15rem 1.4rem; text-align: center; }
+        .badge {
+            display: inline-block;
+            color: var(--ochre);
+            background: rgba(166, 124, 45, 0.08);
+            border: 1px solid rgba(166, 124, 45, 0.2);
+            border-radius: 999px;
+            padding: 0.22rem 0.65rem;
+            font-size: 0.72rem;
+            font-weight: 650;
+            margin-bottom: 0.7rem;
+        }
+        h2 {
+            font-family: var(--serif);
+            color: var(--leaf-deep);
+            font-weight: 650;
+            line-height: 1.15;
+        }
+        .now-title { font-size: 2.15rem; margin-bottom: 0.45rem; }
+        .next-title { font-size: 1.7rem; margin-bottom: 0.4rem; }
+        .sub { color: var(--ink-2); }
+        .now-sub { font-size: 1.12rem; margin-bottom: 0.95rem; }
+        .next-sub { font-size: 0.95rem; margin-bottom: 0.85rem; }
+        .search-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.95rem;
+        }
+        .field {
+            flex: 1;
+            min-width: 0;
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            padding: 0 0.9rem;
+            color: var(--ink-3);
+            font-size: 0.92rem;
+        }
+        .go {
+            background: var(--leaf-deep);
+            color: #FFFEFC;
+            border-radius: 999px;
+            padding: 0 1rem;
+            font-weight: 650;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        .one-search {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            min-height: 48px;
+            padding: 0 0.35rem 0 1rem;
+            margin-bottom: 0.75rem;
+            color: var(--ink-3);
+            text-align: left;
+        }
+        .one-search span { flex: 1; font-size: 0.95rem; }
+        .one-search b {
+            width: 2.4rem;
+            height: 2.4rem;
+            border-radius: 50%;
+            background: var(--leaf-deep);
+            color: #FFFEFC;
+            display: grid;
+            place-items: center;
+            font-weight: 650;
+        }
+        .stack { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; margin-bottom: 0.85rem; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.55rem; }
+        .btn {
+            min-height: 44px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 650;
+            font-size: 0.92rem;
+            padding: 0 0.7rem;
+        }
+        .dark { background: var(--leaf-deep); color: #FFFEFC; }
+        .line { border: 1px solid var(--leaf); color: var(--leaf-deep); background: var(--raised); }
+        .lg { min-height: 50px; padding: 0 1.2rem; }
+        .quiet { color: var(--ink-3); font-size: 0.78rem; margin-bottom: 1rem; }
+        .week { font-family: var(--serif); color: var(--leaf-deep); font-size: 1.15rem; margin-bottom: 0.65rem; }
+        .card {
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 16px;
+            padding: 0.85rem 0.95rem;
+            text-align: left;
+        }
+        .card strong { display: block; font-family: var(--serif); color: var(--leaf-deep); margin-bottom: 0.2rem; }
+        .card p { color: var(--ink-2); font-size: 0.88rem; }
+    </style>
+</head>
+<body>
+    <div class="review">
+        <h1>Mobile home — keep the first screen to one job</h1>
+        <p>Live phone today stacks a 3-line title, 2-line subtitle, a search that shares the row with a button, then two more full-width buttons. Search loses the row. Proposed: two-line title, one quiet line, one search bar, two buttons on one row.</p>
+        <ul class="notes">
+            <li>Title stays the same words, just smaller so it fits two lines.</li>
+            <li>Subtitle shortens to one line. Badge stays, but smaller.</li>
+            <li>Search is one pill. The arrow lives inside it.</li>
+            <li>Ask advisor and Browse guides sit side by side. Equipment line is a caption, not another heading.</li>
+        </ul>
+    </div>
+    <div class="phones">
+        <div class="col">
+            <p class="label now">Now · live phone</p>
+            <div class="phone">
+                <header>
+                    <span class="menu" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span class="logo">Agrivia<em>.ai</em></span>
+                    <span class="signin">Sign in with Google</span>
+                </header>
+                <div class="hero">
+                    <p class="badge">For homesteaders and new backyard growers</p>
+                    <h2 class="now-title">Grow plants and raise animals with confidence</h2>
+                    <p class="sub now-sub">How-to guides, practical advice, and an AI advisor for your backyard homestead</p>
+                    <div class="search-row">
+                        <div class="field">Search growing topics (…</div>
+                        <div class="go">Search →</div>
+                    </div>
+                    <div class="stack">
+                        <div class="btn dark lg">Ask the advisor</div>
+                        <div class="btn line lg">Browse growing guides</div>
+                    </div>
+                    <p class="quiet">Equipment help is secondary support</p>
+                    <h3 class="week">This week on a small place</h3>
+                    <article class="card">
+                        <strong>First tomato bed</strong>
+                        <p>Build healthy soil and get your first harvest off to a strong start.</p>
+                    </article>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <p class="label next">Proposed · quieter first screen</p>
+            <div class="phone">
+                <header>
+                    <span class="menu" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span class="logo">Agrivia<em>.ai</em></span>
+                    <span class="signin">Sign in with Google</span>
+                </header>
+                <div class="hero">
+                    <p class="badge">For homesteaders</p>
+                    <h2 class="next-title">Grow plants and raise animals with confidence</h2>
+                    <p class="sub next-sub">How-to guides and an on-site advisor</p>
+                    <div class="one-search">
+                        <span>Tomatoes, goats, soil…</span>
+                        <b aria-hidden="true">→</b>
+                    </div>
+                    <div class="row">
+                        <div class="btn dark">Ask advisor</div>
+                        <div class="btn line">Browse guides</div>
+                    </div>
+                    <p class="quiet">Equipment help is secondary</p>
+                    <h3 class="week">This week on a small place</h3>
+                    <article class="card">
+                        <strong>First tomato bed</strong>
+                        <p>Build healthy soil and get your first harvest off to a strong start.</p>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

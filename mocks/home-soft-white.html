@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrivia — soft-white paper mock</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font: "Source Sans 3", "Segoe UI", sans-serif;
+            --serif: "Source Serif 4", Georgia, serif;
+            --ink: #1A1916;
+            --ink-2: #4A453C;
+            --ink-3: #6B6458;
+            --leaf: #2F5D3A;
+            --leaf-deep: #1A3026;
+            --ochre: #B26A3A;
+            --paper: #F8F5EE;
+            --raised: #FFFDF8;
+            --rule: #E2D9C8;
+        }
+
+        [data-tone="current"] {
+            --paper: #F8F5EE;
+            --raised: #FFFDF8;
+            --rule: #E2D9C8;
+            --badge-fill: rgba(166, 124, 45, 0.12);
+            --badge-line: rgba(166, 124, 45, 0.28);
+        }
+
+        [data-tone="soft"] {
+            --paper: #FAF8F4;
+            --raised: #FFFEFC;
+            --rule: #E7E3D8;
+            --badge-fill: rgba(166, 124, 45, 0.08);
+            --badge-line: rgba(166, 124, 45, 0.2);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font);
+            color: var(--ink);
+            background: #EDE8DE;
+            line-height: 1.5;
+        }
+
+        .review {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 1.25rem 1.5rem 0.75rem;
+        }
+        .review h1 {
+            font-family: var(--serif);
+            font-size: 1.65rem;
+            margin-bottom: 0.35rem;
+        }
+        .review p { color: #4A453C; max-width: 44rem; }
+        .swatches {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0 0.85rem;
+        }
+        .swatch-card {
+            background: #FFFEFC;
+            border: 1px solid #D8D0C2;
+            border-radius: 14px;
+            padding: 0.85rem 1rem 1rem;
+        }
+        .swatch-card h2 {
+            font-size: 0.78rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            margin-bottom: 0.65rem;
+        }
+        .chips { display: flex; gap: 0.55rem; flex-wrap: wrap; }
+        .chip {
+            width: 4.4rem;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #D8D0C2;
+        }
+        .chip i { display: block; height: 2.4rem; }
+        .chip span {
+            display: block;
+            font-size: 0.68rem;
+            padding: 0.28rem 0.35rem 0.35rem;
+            color: #6B6458;
+        }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.4rem 0 1rem;
+        }
+        .tabs button {
+            font: inherit;
+            font-weight: 650;
+            border: 1px solid #D8D0C2;
+            background: #FFFEFC;
+            color: #4A453C;
+            border-radius: 999px;
+            padding: 0.45rem 0.95rem;
+            cursor: pointer;
+        }
+        .tabs button[aria-pressed="true"] {
+            background: #1A3026;
+            border-color: #1A3026;
+            color: #FFFEFC;
+        }
+
+        .browser {
+            max-width: 1180px;
+            margin: 0 auto 2rem;
+            background: var(--paper);
+            border: 1px solid #C9C0AE;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 18px 40px rgba(40, 32, 18, 0.08);
+        }
+        .chrome {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.55rem 0.85rem;
+            background: #EFE9DF;
+            border-bottom: 1px solid #D8D0C2;
+        }
+        .dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: #C9C0AE; }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.85rem 1.5rem;
+            background: var(--raised);
+            border-bottom: 1px solid var(--rule);
+        }
+        .logo {
+            font-family: var(--serif);
+            font-size: 1.35rem;
+            font-weight: 650;
+            text-decoration: none;
+            color: var(--ink);
+        }
+        .logo em { color: var(--leaf); font-style: normal; }
+        nav { display: flex; gap: 1.2rem; }
+        nav span { color: var(--ink-2); font-size: 0.95rem; font-weight: 550; }
+        .auth {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 0.88rem;
+            color: var(--ink-2);
+        }
+        .pill {
+            background: var(--leaf-deep);
+            color: #FFFEFC;
+            border-radius: 999px;
+            padding: 0.18rem 0.65rem;
+            font-size: 0.78rem;
+            font-weight: 650;
+        }
+        .ghost {
+            border: 1px solid var(--leaf);
+            color: var(--leaf-deep);
+            background: transparent;
+            border-radius: 999px;
+            padding: 0.35rem 0.8rem;
+            font: inherit;
+            font-weight: 600;
+        }
+
+        .hero {
+            padding: 2rem 1.5rem 2.4rem;
+            text-align: center;
+            background: var(--paper);
+        }
+        .badge {
+            display: inline-flex;
+            color: var(--ochre);
+            background: var(--badge-fill);
+            border: 1px solid var(--badge-line);
+            border-radius: 999px;
+            padding: 0.28rem 0.75rem;
+            font-size: 0.78rem;
+            font-weight: 650;
+            margin-bottom: 1rem;
+        }
+        h2.hero-title {
+            font-family: var(--serif);
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            font-weight: 650;
+            color: var(--leaf-deep);
+            max-width: 18ch;
+            margin: 0 auto 0.5rem;
+            line-height: 1.15;
+        }
+        .sub {
+            color: var(--ink-2);
+            font-size: 1.15rem;
+            max-width: 34rem;
+            margin: 0 auto 1.15rem;
+        }
+        .search {
+            display: flex;
+            gap: 0.65rem;
+            max-width: 46rem;
+            margin: 0 auto 1.1rem;
+        }
+        .search input {
+            flex: 1;
+            min-height: 52px;
+            border-radius: 999px;
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            padding: 0 1.2rem;
+            font: inherit;
+        }
+        .btn-dark {
+            min-height: 52px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--leaf-deep);
+            color: #FFFEFC;
+            padding: 0 1.35rem;
+            font: inherit;
+            font-weight: 650;
+        }
+        .ctas {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .btn-outline {
+            min-height: 48px;
+            border: 1px solid var(--leaf);
+            color: var(--leaf-deep);
+            background: transparent;
+            border-radius: 999px;
+            padding: 0 1.2rem;
+            font: inherit;
+            font-weight: 650;
+            display: inline-flex;
+            align-items: center;
+        }
+        .rule-line {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            max-width: 28rem;
+            margin: 0 auto 1.1rem;
+            color: var(--ink-2);
+            font-size: 0.92rem;
+        }
+        .rule-line::before,
+        .rule-line::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--rule);
+        }
+        .week-h {
+            font-family: var(--serif);
+            color: var(--leaf-deep);
+            font-size: 1.35rem;
+            margin-bottom: 0.85rem;
+        }
+        .week {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            text-align: left;
+            max-width: 52rem;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 16px;
+            padding: 0.95rem 1.05rem 0.85rem;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.2rem 0.85rem;
+        }
+        .icon {
+            grid-row: 1 / span 3;
+            width: 2.45rem;
+            height: 2.45rem;
+            border-radius: 50%;
+            background: #C56A3A;
+            color: #FFF8F2;
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+        }
+        .card strong {
+            font-family: var(--serif);
+            color: var(--leaf-deep);
+            font-size: 1.05rem;
+        }
+        .card p { color: var(--ink-2); font-size: 0.9rem; }
+        .card em { color: var(--ochre); font-style: normal; margin-top: 0.35rem; }
+        .photo {
+            margin: 1.6rem auto 0;
+            max-width: 52rem;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--rule);
+        }
+        .photo img { display: block; width: 100%; height: auto; }
+
+        @media (max-width: 800px) {
+            .swatches, .week { grid-template-columns: 1fr; }
+            nav, .auth span:not(.pill) { display: none; }
+            .search { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="review">
+        <h1>Paper tone — current vs a step toward soft white</h1>
+        <p>Live site today is warm field paper, not white. This mock only lightens the page, cards, and rules. Ink, leaf, and ochre stay the same. Not extreme white.</p>
+        <div class="swatches">
+            <div class="swatch-card">
+                <h2>Current · live</h2>
+                <div class="chips">
+                    <div class="chip"><i style="background:#F8F5EE"></i><span>paper<br>#F8F5EE</span></div>
+                    <div class="chip"><i style="background:#FFFDF8"></i><span>cards<br>#FFFDF8</span></div>
+                    <div class="chip"><i style="background:#E2D9C8"></i><span>rules<br>#E2D9C8</span></div>
+                </div>
+            </div>
+            <div class="swatch-card">
+                <h2>Proposed · soft white</h2>
+                <div class="chips">
+                    <div class="chip"><i style="background:#FAF8F4"></i><span>paper<br>#FAF8F4</span></div>
+                    <div class="chip"><i style="background:#FFFEFC"></i><span>cards<br>#FFFEFC</span></div>
+                    <div class="chip"><i style="background:#E7E3D8"></i><span>rules<br>#E7E3D8</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="tabs">
+            <button type="button" id="tabCurrent" aria-pressed="false">Current warm paper</button>
+            <button type="button" id="tabSoft" aria-pressed="true">Soft white</button>
+        </div>
+    </div>
+
+    <div class="browser" id="frame" data-tone="soft">
+        <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <header>
+            <a class="logo" href="#">Agrivia<em>.ai</em></a>
+            <nav>
+                <span>Guides</span>
+                <span>Advisor</span>
+                <span>Farm</span>
+            </nav>
+            <div class="auth">
+                <span class="pill">1 garden · 1 poultry</span>
+                <span>srreddy.basireddy@gmail.com</span>
+                <button class="ghost" type="button">Sign out</button>
+            </div>
+        </header>
+        <main class="hero">
+            <p class="badge">For homesteaders and new backyard growers</p>
+            <h2 class="hero-title">Grow plants and raise animals with confidence</h2>
+            <p class="sub">How-to guides and an on-site advisor for your backyard homestead</p>
+            <form class="search">
+                <input type="search" value="" placeholder="Search growing topics (tomatoes, goats, soil…)" aria-label="Search">
+                <button class="btn-dark" type="button">Search →</button>
+            </form>
+            <div class="ctas">
+                <button class="btn-dark" type="button">Ask the advisor</button>
+                <span class="btn-outline">Browse growing guides</span>
+            </div>
+            <p class="rule-line">Equipment help is secondary support</p>
+            <h3 class="week-h">This week on a small place</h3>
+            <div class="week">
+                <article class="card">
+                    <span class="icon" aria-hidden="true">✦</span>
+                    <strong>First tomato bed</strong>
+                    <p>Build healthy soil and get your first harvest off to a strong start.</p>
+                    <em>→</em>
+                </article>
+                <article class="card">
+                    <span class="icon" aria-hidden="true">✦</span>
+                    <strong>Backyard chickens this month</strong>
+                    <p>Care, feed, and coop checks to keep your flock healthy and happy.</p>
+                    <em>→</em>
+                </article>
+                <article class="card">
+                    <span class="icon" aria-hidden="true">✦</span>
+                    <strong>Is this leaf a problem?</strong>
+                    <p>Quick ways to read leaf symptoms and decide what to do next.</p>
+                    <em>→</em>
+                </article>
+            </div>
+            <figure class="photo">
+                <img src="../assets/images/hero-homestead.jpg" alt="">
+            </figure>
+        </main>
+    </div>
+    <script>
+        const frame = document.getElementById("frame");
+        const current = document.getElementById("tabCurrent");
+        const soft = document.getElementById("tabSoft");
+        function setTone(tone) {
+            frame.setAttribute("data-tone", tone);
+            current.setAttribute("aria-pressed", tone === "current" ? "true" : "false");
+            soft.setAttribute("aria-pressed", tone === "soft" ? "true" : "false");
+        }
+        current.addEventListener("click", () => setTone("current"));
+        soft.addEventListener("click", () => setTone("soft"));
+    </script>
+</body>
+</html>

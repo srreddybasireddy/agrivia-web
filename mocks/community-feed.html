@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrivia — community hub mock</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font: "Source Sans 3", "Segoe UI", sans-serif;
+            --serif: "Source Serif 4", Georgia, serif;
+            --ink: #1A1916;
+            --ink-2: #4A453C;
+            --ink-3: #6B6458;
+            --leaf: #2F5D3A;
+            --leaf-deep: #1A3026;
+            --paper: #FAF8F4;
+            --raised: #FFFEFC;
+            --rule: #E7E3D8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font); color: var(--ink); background: var(--paper); line-height: 1.5; }
+        .review { max-width: 1120px; margin: 0 auto; padding: 1rem 1.5rem 0.5rem; }
+        .review h1 { font-family: var(--serif); font-size: 1.35rem; }
+        .review p { color: var(--ink-2); font-size: 0.92rem; max-width: 46rem; margin: 0.3rem 0 0.85rem; }
+        .review a { color: var(--leaf); }
+        .bar {
+            display: flex; align-items: center; gap: 1rem;
+            max-width: 1120px; margin: 0 auto; padding: 0.85rem 1.5rem 0.5rem;
+        }
+        .brand { display: flex; align-items: center; gap: 0.55rem; }
+        .leaf-mark {
+            width: 1.7rem; height: 1.7rem; border-radius: 50%;
+            background: var(--leaf-deep);
+        }
+        .brand strong { font-family: var(--serif); font-size: 1.35rem; }
+        .brand small { display: block; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+        .title-block { border-left: 1px solid var(--rule); padding-left: 1rem; }
+        .title-block b { font-family: var(--serif); font-size: 1.35rem; color: var(--leaf-deep); display: block; line-height: 1.1; }
+        .title-block span { font-size: 0.85rem; color: var(--ink-3); }
+        .keep { display: flex; gap: 0.85rem; margin-left: 0.5rem; font-size: 0.88rem; }
+        .keep a { color: var(--ink-2); text-decoration: none; }
+        .keep a:hover { color: var(--ink); }
+        .tools { margin-left: auto; display: flex; align-items: center; gap: 0.55rem; }
+        .icon-btn {
+            width: 2.3rem; height: 2.3rem; border-radius: 50%;
+            border: 1px solid var(--rule); background: var(--raised);
+        }
+        .who { display: flex; align-items: center; gap: 0.45rem; font-weight: 650; }
+        .who i {
+            width: 2.1rem; height: 2.1rem; border-radius: 50%;
+            background: #C56A3A; display: inline-block;
+        }
+        .filters {
+            display: flex; gap: 0.55rem; flex-wrap: wrap;
+            max-width: 1120px; margin: 0.7rem auto 1rem; padding: 0 1.5rem;
+        }
+        .chip {
+            border: 1px solid var(--rule); background: var(--raised);
+            border-radius: 999px; padding: 0.55rem 1rem; font-weight: 650;
+            color: var(--leaf-deep); cursor: pointer;
+        }
+        .chip.on { background: var(--leaf-deep); color: #FFFEFC; border-color: var(--leaf-deep); }
+        .board {
+            max-width: 1120px; margin: 0 auto; padding: 0 1.5rem 4.5rem;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem;
+        }
+        .post {
+            background: var(--raised); border: 1px solid var(--rule);
+            border-radius: 18px; padding: 1rem 1.05rem 0.9rem;
+        }
+        .post-top { display: grid; grid-template-columns: auto 1fr auto; gap: 0.55rem; align-items: start; }
+        .av {
+            width: 2.5rem; height: 2.5rem; border-radius: 50%;
+            background: #5C6B4A; color: #FFF8F2; display: grid; place-items: center; font-weight: 700;
+        }
+        .av.b { background: #2F5D3A; }
+        .av.c { background: #8A5A32; }
+        .av.d { background: #4A453C; }
+        .post-top strong { display: block; }
+        .post-top small { color: var(--ink-3); font-size: 0.8rem; }
+        .more { color: var(--ink-3); font-size: 1.2rem; line-height: 1; }
+        .post h2 {
+            font-family: var(--serif); color: var(--leaf-deep);
+            font-size: 1.12rem; margin: 0.7rem 0 0.3rem; font-weight: 650;
+        }
+        .post p { color: var(--ink-2); font-size: 0.92rem; }
+        .asked { font-style: italic; color: var(--ink-3); font-size: 0.85rem; margin: 0.45rem 0 0.65rem; }
+        .thumbs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.4rem; margin-bottom: 0.55rem; }
+        .thumbs img { width: 100%; height: 4.4rem; object-fit: cover; border-radius: 8px; display: block; }
+        .foot { display: flex; align-items: center; gap: 0.85rem; font-size: 0.82rem; color: var(--ink-2); }
+        .star { color: var(--leaf); font-weight: 700; }
+        .save { margin-left: auto; color: var(--ink-3); }
+        .disclaimer {
+            max-width: 1120px; margin: -3.2rem auto 0; padding: 0 1.5rem 2rem;
+        }
+        .disclaimer span {
+            display: inline-flex; gap: 0.4rem; align-items: center;
+            background: #E8EDE4; color: var(--leaf-deep); border-radius: 999px;
+            padding: 0.4rem 0.85rem; font-size: 0.82rem;
+        }
+        .fab {
+            position: fixed; right: 1.6rem; bottom: 1.4rem;
+            width: 4.2rem; height: 4.2rem; border-radius: 50%;
+            background: var(--leaf-deep); color: #FFFEFC;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-weight: 650; font-size: 0.75rem; box-shadow: 0 8px 24px rgba(26,48,38,0.18);
+        }
+        .fab b { font-size: 1.4rem; line-height: 1; }
+        @media (max-width: 800px) {
+            .board { grid-template-columns: 1fr; }
+            .keep { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="review">
+        <h1>Community hub — signed-in feed</h1>
+        <p>Mock only. Not live. Guides, Advisor, and Farm stay available in this header. Posts are layout samples. A real hub would load threads from an API, with location only after the grower shares it. <a href="home-community.html">← Homepage mock</a></p>
+    </div>
+    <header class="bar">
+        <div class="brand">
+            <span class="leaf-mark" aria-hidden="true"></span>
+            <div>
+                <strong>Agrivia</strong>
+                <small>Grow · Share · Thrive</small>
+            </div>
+        </div>
+        <div class="title-block">
+            <b>Community</b>
+            <span>for homesteaders</span>
+        </div>
+        <nav class="keep" aria-label="Existing site">
+            <a href="../guides/index.html">Guides</a>
+            <a href="../index.html#ai-advisor">Advisor</a>
+            <a href="../index.html#farm">Farm</a>
+        </nav>
+        <div class="tools">
+            <span class="icon-btn" aria-hidden="true"></span>
+            <span class="icon-btn" aria-hidden="true"></span>
+            <span class="who"><i></i> Maya</span>
+        </div>
+    </header>
+    <div class="filters">
+        <button class="chip on" type="button">Near you</button>
+        <button class="chip" type="button">Top rated</button>
+        <button class="chip" type="button">For you</button>
+        <button class="chip" type="button">Interests</button>
+    </div>
+    <div class="board">
+        <article class="post">
+            <div class="post-top">
+                <span class="av">SH</span>
+                <div><strong>Sara homestead</strong><small>2 mi away</small></div>
+                <span class="more">···</span>
+            </div>
+            <h2>First time broody hen — what to expect?</h2>
+            <p>My barred rock has gone broody and I’m new to this. What helped your hens through it?</p>
+            <p class="asked">Because you asked about chickens</p>
+            <div class="foot"><span class="star">★ 4.9</span><span>12 replies</span><span>3 min read</span><span class="save">Bookmark</span></div>
+        </article>
+        <article class="post">
+            <div class="post-top">
+                <span class="av b">WW</span>
+                <div><strong>Wild Willow Farm</strong><small>5 mi away</small></div>
+                <span class="more">···</span>
+            </div>
+            <h2>Mulberry shade + chicken run = happy flock</h2>
+            <p>Planted a mulberry last spring and the birds love the shade (and the fallen fruit). Small wins.</p>
+            <p class="asked">Because you asked about chickens</p>
+            <div class="foot"><span class="star">★ 4.9</span><span>8 replies</span><span>5 min read</span><span class="save">Bookmark</span></div>
+        </article>
+        <article class="post">
+            <div class="post-top">
+                <span class="av c">OC</span>
+                <div><strong>Oak Creek Homestead</strong><small>8 mi away</small></div>
+                <span class="more">···</span>
+            </div>
+            <h2>Low-cost dust bath mix that works</h2>
+            <p>Our go-to blend: play sand, soil, wood ash, and a bit of diatomaceous earth. Keeps mites down and they love it.</p>
+            <p class="asked">Because you asked about chicken care</p>
+            <div class="foot"><span class="star">★ 4.8</span><span>15 replies</span><span>4 min read</span><span class="save">Bookmark</span></div>
+        </article>
+        <article class="post">
+            <div class="post-top">
+                <span class="av d">HH</span>
+                <div><strong>Hearth &amp; Harvest</strong><small>3 mi away</small></div>
+                <span class="more">···</span>
+            </div>
+            <h2>Raised bed trellis for peas (before &amp; after)</h2>
+            <p>Simple, sturdy, and made from garden scraps. Peas are climbing like crazy now.</p>
+            <div class="thumbs">
+                <img src="../assets/images/guide-soil.jpg" alt="">
+                <img src="../assets/images/guide-leaf.jpg" alt="">
+                <img src="../assets/images/farm-deco-garden.png" alt="">
+            </div>
+            <p class="asked">Because you asked about gardening</p>
+            <div class="foot"><span class="star">★ 4.9</span><span>6 replies</span><span>6 min read</span><span class="save">Bookmark</span></div>
+        </article>
+    </div>
+    <p class="disclaimer"><span>Posts from growers near you — guidance only, not a vet diagnosis.</span></p>
+    <div class="fab" aria-hidden="true"><b>+</b>Post</div>
+    <script>
+        document.querySelectorAll(".chip").forEach((chip) => {
+            chip.addEventListener("click", () => {
+                document.querySelectorAll(".chip").forEach((c) => c.classList.remove("on"));
+                chip.classList.add("on");
+            });
+        });
+    </script>
+</body>
+</html>

@@ -174,7 +174,7 @@
         );
 
         if (!response.ok) {
-            return { greeting: "", suggestions: [] };
+            return { greeting: "", suggestions: [], askPrompts: [] };
         }
 
         const data = await parseJson(response);
@@ -185,9 +185,21 @@
             ? data.nextQuestion.suggestionChips
             : [];
 
+        const askPrompts = [];
+        const seenAsk = {};
+        (Array.isArray(data.askPrompts) ? data.askPrompts : []).forEach((item) => {
+            const text = readableString(item);
+            if (!text || seenAsk[text]) {
+                return;
+            }
+            seenAsk[text] = true;
+            askPrompts.push(text);
+        });
+
         return {
             greeting: readableString(data.greeting) || "",
             suggestions: uniqueSuggestions([].concat(data.suggestions || [], nestedChips)),
+            askPrompts: askPrompts,
             nextQuestionPrompt: nestedPrompt,
         };
     }

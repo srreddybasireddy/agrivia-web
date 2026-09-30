@@ -11,10 +11,26 @@
         "Fish & Shrimp": "Fish",
     };
 
+    const STATUS_OPTIONS = {
+        Garden: ["Active", "Growing", "Planning", "Dormant"],
+        Crops: ["Planted", "Growing", "Harvesting", "Harvested", "Planning"],
+        Cattle: ["Healthy", "Under Observation", "Milking", "Planning"],
+        "Poultry & Eggs": ["Active", "Planning"],
+        "Birds & Bees": ["Active", "Planning"],
+        "Fish & Shrimp": ["Active", "Planning"],
+    };
+    const COUNTED_KINDS = {
+        Cattle: true,
+        "Poultry & Eggs": true,
+        "Birds & Bees": true,
+        "Fish & Shrimp": true,
+    };
+
     let lastSnapshot = null;
     let lastAssets = [];
     let activeKindFilter = "";
     let profileEditorOpen = false;
+    let editingAssetKey = "";
 
     function el(id) {
         return document.getElementById(id);
@@ -143,6 +159,7 @@
             lastAssets = [];
             activeKindFilter = "";
             profileEditorOpen = false;
+            editingAssetKey = "";
             const pill = el("farmHeaderPill");
             setHidden(pill, true);
         }
@@ -254,6 +271,237 @@
         setHidden(banner, !banner.childElementCount);
     }
 
+    function assetKey(asset) {
+        return `${asset.kind}:${asset.id}`;
+    }
+
+    function statusChoices(kind, current) {
+        const options = (STATUS_OPTIONS[kind] || ["Active"]).slice();
+        const currentValue = (current || "").trim();
+        if (currentValue && !options.some((item) => item.toLowerCase() === currentValue.toLowerCase())) {
+            options.unshift(currentValue);
+        }
+        return options;
+    }
+
+    function labeledControl(labelText, control) {
+        const wrap = document.createElement("label");
+        wrap.className = "farm-asset-field";
+        const caption = document.createElement("span");
+        caption.className = "farm-label";
+        caption.textContent = labelText;
+        wrap.appendChild(caption);
+        wrap.appendChild(control);
+        return wrap;
+    }
+
+    function textInput(value, maxLength) {
+        const input = document.createElement("input");
+        input.className = "form-input";
+        input.type = "text";
+        input.maxLength = maxLength || 150;
+        input.value = value || "";
+        return input;
+    }
+
+    function numberInput(value, min) {
+        const input = document.createElement("input");
+        input.className = "form-input";
+        input.type = "number";
+        input.min = String(min == null ? 0 : min);
+        input.step = "1";
+        input.value = value == null || value === "" ? "" : String(value);
+        return input;
+    }
+
+    function statusSelect(kind, current) {
+        const select = document.createElement("select");
+        select.className = "form-input";
+        statusChoices(kind, current).forEach((value) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            if (current && value.toLowerCase() === current.toLowerCase()) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+        return select;
+    }
+
+    function countLabel(kind) {
+        if (kind === "Cattle") {
+            return "Head count";
+        }
+        if (kind === "Fish & Shrimp") {
+            return "Stock count";
+        }
+        return "Count";
+    }
+
+    function appendEditor(copy, asset) {
+        const form = document.createElement("form");
+        form.className = "farm-asset-editor";
+
+        const nameInput = textInput(
+            asset.kind === "Cattle" ? (asset.tagNumber || asset.title) : asset.title,
+            150
+        );
+        nameInput.required = true;
+        form.appendChild(labeledControl("Name", nameInput));
+
+        let breedInput = null;
+        let varietyInput = null;
+        let acresInput = null;
+        let detailsInput = null;
+        let countInput = null;
+
+        if (asset.kind === "Cattle") {
+            breedInput = textInput(asset.variety || "", 100);
+            form.appendChild(labeledControl("Breed", breedInput));
+        }
+        if (asset.kind === "Crops") {
+            varietyInput = textInput(asset.variety || "", 100);
+            acresInput = numberInput(asset.acres || "", 0);
+            acresInput.step = "0.1";
+            form.appendChild(labeledControl("Variety", varietyInput));
+            form.appendChild(labeledControl("Acres", acresInput));
+        }
+        if (asset.kind === "Garden") {
+            detailsInput = textInput(asset.subtitle || "", 255);
+            form.appendChild(labeledControl("Details", detailsInput));
+        }
+        if (COUNTED_KINDS[asset.kind]) {
+            countInput = numberInput(asset.count, 0);
+            form.appendChild(labeledControl(countLabel(asset.kind), countInput));
+        }
+
+        const statusInput = statusSelect(asset.kind, asset.status);
+        form.appendChild(labeledControl("Status", statusInput));
+
+        const error = document.createElement("p");
+        error.className = "farm-asset-error";
+        error.hidden = true;
+        form.appendChild(error);
+
+        const actions = document.createElement("div");
+        actions.className = "farm-asset-editor-actions";
+        const save = document.createElement("button");
+        save.type = "submit";
+        save.className = "btn btn-primary btn-sm";
+        save.textContent = "Save";
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.className = "btn btn-outline btn-sm";
+        cancel.textContent = "Cancel";
+        actions.appendChild(save);
+        actions.appendChild(cancel);
+        form.appendChild(actions);
+
+        cancel.addEventListener("click", () => {
+            editingAssetKey = "";
+            renderAssets(visibleAssets(lastAssets));
+        });
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const title = nameInput.value.trim();
+            if (!title) {
+                error.textContent = "Name the plant, animal, or flock first.";
+                error.hidden = false;
+                return;
+            }
+            save.disabled = true;
+            cancel.disabled = true;
+            error.hidden = true;
+            try {
+                const fields = {
+                    title: title,
+                    status: statusInput.value,
+                };
+                if (breedInput) {
+                    fields.variety = breedInput.value.trim();
+                }
+                if (varietyInput) {
+                    fields.variety = varietyInput.value.trim();
+                }
+                if (acresInput && acresInput.value !== "") {
+                    fields.acres = Number(acresInput.value);
+                }
+                if (detailsInput) {
+                    fields.subtitle = detailsInput.value.trim();
+                }
+                if (countInput && countInput.value !== "") {
+                    fields.count = Number(countInput.value);
+                }
+                await global.AgriviaFarmApi.updateAsset(asset, fields);
+                editingAssetKey = "";
+                await loadFarm();
+            } catch (err) {
+                error.textContent = err.message || "Could not save those details.";
+                error.hidden = false;
+                save.disabled = false;
+                cancel.disabled = false;
+            }
+        });
+
+        copy.appendChild(form);
+    }
+
+    function appendCardActions(copy, asset) {
+        const actions = document.createElement("div");
+        actions.className = "farm-asset-actions";
+
+        const ask = document.createElement("button");
+        ask.type = "button";
+        ask.className = "farm-asset-ask";
+        ask.textContent = "Ask Advisor →";
+        ask.addEventListener("click", () => {
+            openAdvisor({ category: asset.kind });
+        });
+
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "farm-asset-edit";
+        edit.textContent = "Edit";
+        edit.addEventListener("click", () => {
+            editingAssetKey = assetKey(asset);
+            renderAssets(visibleAssets(lastAssets));
+        });
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "farm-asset-delete";
+        remove.textContent = "Delete";
+        remove.addEventListener("click", async () => {
+            const label = asset.title || "this asset";
+            if (!window.confirm(`Remove ${label} from this farm?`)) {
+                return;
+            }
+            remove.disabled = true;
+            edit.disabled = true;
+            try {
+                await global.AgriviaFarmApi.deleteAsset(asset);
+                if (editingAssetKey === assetKey(asset)) {
+                    editingAssetKey = "";
+                }
+                await loadFarm();
+            } catch (err) {
+                remove.disabled = false;
+                edit.disabled = false;
+                const status = el("farmAssetStatus");
+                if (status) {
+                    status.textContent = err.message || "Could not remove that asset.";
+                }
+            }
+        });
+
+        actions.appendChild(ask);
+        actions.appendChild(edit);
+        actions.appendChild(remove);
+        copy.appendChild(actions);
+    }
+
     function cardFacts(asset) {
         const parts = [];
         if (asset.variety && asset.kind === "Crops") {
@@ -301,42 +549,39 @@
             title.textContent = asset.title;
             copy.appendChild(title);
 
-            const statusLine = [kindLabel(asset.kind)];
-            if (asset.status) {
-                statusLine.push(asset.status);
+            if (editingAssetKey === assetKey(asset)) {
+                card.classList.add("is-editing");
+                appendEditor(copy, asset);
+            } else {
+                const statusLine = [kindLabel(asset.kind)];
+                if (asset.status) {
+                    statusLine.push(asset.status);
+                }
+                const meta = document.createElement("p");
+                meta.className = "farm-asset-meta";
+                meta.textContent = statusLine.join(" · ");
+                copy.appendChild(meta);
+                const facts = cardFacts(asset);
+                if (facts) {
+                    const extra = document.createElement("p");
+                    extra.className = "farm-asset-roi";
+                    extra.textContent = facts;
+                    copy.appendChild(extra);
+                }
+                if (asset.roiEstimate) {
+                    const roi = document.createElement("p");
+                    roi.className = "farm-asset-roi";
+                    roi.textContent = asset.roiEstimate;
+                    copy.appendChild(roi);
+                }
+                if (asset.healthAlerts) {
+                    const alerts = document.createElement("p");
+                    alerts.className = "farm-asset-alert";
+                    alerts.textContent = asset.healthAlerts;
+                    copy.appendChild(alerts);
+                }
+                appendCardActions(copy, asset);
             }
-            const meta = document.createElement("p");
-            meta.className = "farm-asset-meta";
-            meta.textContent = statusLine.join(" · ");
-            copy.appendChild(meta);
-            const facts = cardFacts(asset);
-            if (facts) {
-                const extra = document.createElement("p");
-                extra.className = "farm-asset-roi";
-                extra.textContent = facts;
-                copy.appendChild(extra);
-            }
-            if (asset.roiEstimate) {
-                const roi = document.createElement("p");
-                roi.className = "farm-asset-roi";
-                roi.textContent = asset.roiEstimate;
-                copy.appendChild(roi);
-            }
-            if (asset.healthAlerts) {
-                const alerts = document.createElement("p");
-                alerts.className = "farm-asset-alert";
-                alerts.textContent = asset.healthAlerts;
-                copy.appendChild(alerts);
-            }
-
-            const ask = document.createElement("button");
-            ask.type = "button";
-            ask.className = "farm-asset-ask";
-            ask.textContent = "Ask Advisor →";
-            ask.addEventListener("click", () => {
-                openAdvisor({ category: asset.kind });
-            });
-            copy.appendChild(ask);
             card.appendChild(copy);
 
             if (asset.imageUrl) {

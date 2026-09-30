@@ -7,11 +7,12 @@
     <meta name="description" content="Independent equipment guides for hobby farms, gardens, and small herds, plus an on-site farm advisor. Separate iOS and Android apps are being built and are not in the public stores yet.">
     <meta name="author" content="Agrivia">
     <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://agrivia.ai/">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://agrivia.ai/">
     <meta property="og:title" content="Agrivia | Hobby farm, homestead, and livestock equipment guides">
     <meta property="og:description" content="Buying-criteria primers on soil, fencing, waterers, heat, and irrigation for gardens and small herds, plus an on-site advisor. Separate iOS and Android apps are not in the public stores yet.">
-    <meta property="og:image" content="assets/images/hero-mockup.jpg">
+    <meta property="og:image" content="https://agrivia.ai/assets/images/hero-mockup.jpg">
     <link rel="icon" href="favicon.ico" sizes="48x48">
     <link rel="icon" href="assets/icons/favicon-48.png" type="image/png" sizes="48x48">
     <link rel="icon" href="assets/icons/favicon-192.png" type="image/png" sizes="192x192">
@@ -19,19 +20,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20260908-advisor1">
+    <link rel="stylesheet" href="css/style.css?v=20260919-mwidth">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5524710580723425" crossorigin="anonymous"></script>
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "Agrivia",
-      "url": "https://agrivia.ai",
+      "url": "https://agrivia.ai/",
       "description": "Independent equipment guides and an on-site farm advisor for hobby farmers, homesteaders, and people keeping cattle, goats, sheep, or poultry. Separate iOS and Android apps are being built and are not in the public stores yet.",
       "publisher": {
         "@type": "Organization",
         "name": "Agrivia",
-        "url": "https://agrivia.ai",
+        "url": "https://agrivia.ai/",
         "email": "support@agrivia.ai"
       }
     }
@@ -42,6 +43,11 @@
     <a class="skip-link" href="#appContainer">Skip to content</a>
     <header class="site-header" id="siteHeader">
         <div class="header-container">
+            <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false" onclick="toggleMobileMenu()">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
             <a href="#home" class="logo-link" onclick="navigateTo('home')">
                 <span class="logo-mark" aria-hidden="true"></span>
                 <span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span>
@@ -63,11 +69,6 @@
                         <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
                     </div>
                 </div>
-                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false" onclick="toggleMobileMenu()">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </button>
             </div>
         </div>
     </header>
@@ -75,80 +76,92 @@
     <main id="appContainer">
         <section id="view-home" class="page-view active">
 
-            <div class="hero-section">
-                <div class="hero-wash" aria-hidden="true"></div>
-                <div class="container hero-grid">
-                    <div class="hero-content">
-                        <p class="hero-badge">For hobby farms &amp; homesteads</p>
-                        <h1 class="hero-title">Know what to buy before you buy it</h1>
-                        <p class="hero-subtitle">
-                            Independent equipment guides and an on-site farm advisor — so you can decide with confidence on a small place.
-                        </p>
-                        <div class="hero-cta-group">
-                            <a href="#ai-advisor" class="btn btn-primary btn-lg" onclick="navigateTo('ai-advisor')">Ask the advisor</a>
-                            <a href="guides/index.html" class="btn btn-outline btn-lg">Browse guides</a>
-                        </div>
+            <div class="hero-section hero-banner">
+                <div class="container hero-banner-frame">
+                    <img class="hero-scene" src="assets/images/hero-banner-complete-farm.png" width="1280" height="720" alt="Illustration of a homestead with a goat, chickens, garden beds, and a barn. Not an Agrivia field trial.">
+                    <div class="hero-copy">
+                    <p class="hero-badge" id="heroBadge">For homesteaders and new backyard growers</p>
+                    <h1 class="hero-title" id="heroTitle">Grow plants and raise animals with confidence</h1>
+                    <p class="hero-subtitle" id="heroSubtitle">How-to guides and an on-site advisor for your backyard homestead</p>
+                    <form class="hero-search" action="guides/index.html" method="get" role="search">
+                        <input type="hidden" name="tab" value="documents">
+                        <label class="visually-hidden" for="homeGuideSearch">Search growing topics</label>
+                        <span class="hero-search-field">
+                            <svg class="hero-search-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <circle cx="11" cy="11" r="6.25" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+                                <path d="M16 16.5L20 20.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                            </svg>
+                            <input class="form-input" id="homeGuideSearch" type="search" name="q" placeholder="Search guides, plants, animals, and more...">
+                        </span>
+                        <button type="submit" class="btn btn-primary btn-pill hero-search-go" aria-label="Search">
+                            <span class="hero-search-go-label">Search</span>
+                            <span class="hero-search-go-short" aria-hidden="true">Go</span>
+                            <span class="hero-search-go-arrow" aria-hidden="true">→</span>
+                        </button>
+                    </form>
+                    <div class="hero-cta-group">
+                        <a href="#ai-advisor" class="btn btn-primary btn-lg btn-pill" onclick="navigateTo('ai-advisor')">
+                            <svg class="btn-sparkle" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path fill="currentColor" d="M8.2 2.4l1.05 4.2 4.2 1.05-4.2 1.05-1.05 4.2-1.05-4.2-4.2-1.05 4.2-1.05 1.05-4.2zm8.7 7.1l.72 2.88 2.88.72-2.88.72-.72 2.88-.72-2.88-2.88-.72 2.88-.72.72-2.88z"></path>
+                            </svg>
+                            Ask <span class="cta-wide">the </span>advisor
+                        </a>
+                        <a href="#community" class="btn btn-outline btn-lg btn-pill">Browse community</a>
                     </div>
-                    <div class="hero-visual">
-                        <div class="phone-frame" aria-label="Concept preview of the Agrivia advisor chat. Not a live store listing.">
-                            <div class="phone-screen">
-                                <p class="phone-app-title">Farm Advisor</p>
-                                <p class="phone-bubble phone-bubble-user">I am setting up a small pasture for 4 goats. What fencing should I use?</p>
-                                <p class="phone-bubble phone-bubble-ai">Woven wire, about 48 inches tall, with a tight bottom so they do not crawl out. Confirm the gate swing and grounding before you buy a charger.</p>
-                                <p class="phone-composer">Ask anything about your farm…</p>
-                            </div>
-                        </div>
-                        <p class="hero-caption">Concept preview — not a live store listing.</p>
                     </div>
                 </div>
             </div>
-
-            <section class="popular-guides-section" id="start">
-                <div class="container">
-                    <div class="section-header section-header-row">
-                        <div>
-                            <span class="section-tag">Popular guides</span>
-                            <h2 class="section-title">Start with a real job</h2>
+            <section class="community-section" id="community" aria-labelledby="communityHeading">
+                <div class="container" id="communityFeed">
+                    <div class="community-head">
+                        <h2 class="community-heading" id="communityHeading">Community near you</h2>
+                        <div class="community-tabs" role="tablist" aria-label="Community ranking">
+                            <button type="button" class="community-tab is-on" data-community-rank="near" aria-pressed="true">Near you</button>
+                            <button type="button" class="community-tab" data-community-rank="top" aria-pressed="false">Top rated</button>
+                            <button type="button" class="community-tab" data-community-rank="for_you" aria-pressed="false">For you</button>
                         </div>
-                        <a href="guides/index.html" class="section-more">View all guides</a>
+                        <button type="button" class="btn btn-outline btn-pill community-share" id="communityShare">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                <path d="M4 20l3.2-10.5L20 4l-5.5 12.8L4 20z" stroke-linejoin="round"></path>
+                                <path d="M12.2 8.2L16.8 12"></path>
+                            </svg>
+                            Share your post
+                        </button>
                     </div>
-                    <div class="popular-grid">
-                        <a class="popular-card paper-card" href="guides/electric-fence-chargers.html">
-                            <span class="popular-photo">
-                                <img src="assets/images/guide-fence.jpg" alt="Woven-wire fence along a pasture. Licensed stock, not an Agrivia trial.">
-                            </span>
-                            <span class="popular-card-body">
-                                <span class="category-tag">Fence</span>
-                                <h3>Fencing for goats</h3>
-                                <p>Keep them in. Predators out.</p>
-                                <span class="popular-arrow" aria-hidden="true">→</span>
-                            </span>
-                        </a>
-                        <a class="popular-card paper-card" href="guides/livestock-waterers.html">
-                            <span class="popular-photo">
-                                <img src="assets/images/guide-waterer.jpg" alt="Poultry near a waterer. Licensed stock, not an Agrivia trial.">
-                            </span>
-                            <span class="popular-card-body">
-                                <span class="category-tag">Water</span>
-                                <h3>Waterers that work</h3>
-                                <p>Clean water in a freeze.</p>
-                                <span class="popular-arrow" aria-hidden="true">→</span>
-                            </span>
-                        </a>
-                        <a class="popular-card paper-card" href="guides/soil-moisture-sensors.html">
-                            <span class="popular-photo">
-                                <img src="assets/images/guide-soil.jpg" alt="Hands working garden soil. Licensed stock, not an Agrivia trial.">
-                            </span>
-                            <span class="popular-card-body">
-                                <span class="category-tag">Soil</span>
-                                <h3>Building better soil</h3>
-                                <p>When a finger test is enough.</p>
-                                <span class="popular-arrow" aria-hidden="true">→</span>
-                            </span>
-                        </a>
-                    </div>
+                    <p class="community-status" id="communityStatus" hidden></p>
+                    <div class="community-grid" id="communityGrid"></div>
+                    <p class="trust-line">Grower posts are not a vet diagnosis or extension visit. Photo and video storage is capped; unliked or reported media is removed first when that cap is reached, then the oldest.</p>
                 </div>
             </section>
+
+            <dialog class="community-composer" id="communityComposer">
+                <form id="communityComposerForm">
+                    <h2>Share with the community</h2>
+                    <p>Sign in, then post text, a photo (12 MB), or a 60-second video (50 MB). Captions can be 800 characters. If storage fills, unliked or reported media is removed first; otherwise the oldest media is removed.</p>
+                    <fieldset class="community-type">
+                        <legend class="visually-hidden">Post type</legend>
+                        <label><input type="radio" name="communityPostType" value="text" checked> Text</label>
+                        <label><input type="radio" name="communityPostType" value="photo"> Photo</label>
+                        <label><input type="radio" name="communityPostType" value="video"> Video</label>
+                    </fieldset>
+                    <label class="visually-hidden" for="communityCaption">Caption</label>
+                    <textarea class="form-input" id="communityCaption" maxlength="800" rows="4" required placeholder="What are you growing or raising?"></textarea>
+                    <p class="community-caption-count" id="communityCaptionCount">0 / 800</p>
+                    <label class="visually-hidden" for="communityTags">Tags</label>
+                    <input class="form-input" id="communityTags" maxlength="80" placeholder="Tags, comma separated (tomatoes, chickens)">
+                    <div id="communityFileWrap" hidden>
+                        <label class="visually-hidden" for="communityFile">Media</label>
+                        <input id="communityFile" type="file">
+                        <p class="community-file-hint" id="communityFileHint">Photos up to 12 MB. Videos up to 50 MB and 60 seconds.</p>
+                    </div>
+                    <p class="community-composer-status" id="communityComposerStatus"></p>
+                    <div class="community-composer-actions">
+                        <button type="button" class="btn btn-outline" id="communityComposerCancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="communityComposerSubmit">Post</button>
+                    </div>
+                </form>
+            </dialog>
+
 
             <section class="advisor-strip-section" id="ai-advisor-preview">
                 <div class="container">
@@ -234,7 +247,7 @@
         </section>
 
         <section id="view-ai-advisor" class="page-view">
-            <div class="container section-padding advisor-page">
+            <div class="advisor-page">
                 <div class="advisor-layout" id="advisorLayout">
                     <aside class="advisor-farm-rail paper-card" id="advisorFarmRail" hidden aria-label="Your farm">
                         <p class="advisor-farm-kicker">Your farm</p>
@@ -242,27 +255,37 @@
                         <div class="advisor-farm-assets" id="advisorFarmAssets"></div>
                         <a href="#farm" class="advisor-farm-open" onclick="navigateTo('farm')">Open Farm</a>
                     </aside>
-                    <div class="chat-shell paper-card chat-shell-wide">
-                        <div class="chat-welcome" id="chatEmpty">
-                            <div class="chat-welcome-mark" aria-hidden="true"></div>
-                            <div class="chat-welcome-copy">
-                                <p class="chat-empty-kicker">Advisor</p>
-                                <h1 class="chat-welcome-title" id="chatWelcomeTitle">What are you working on today?</h1>
-                                <p class="chat-welcome-lead" id="chatWelcomeLead" hidden>What are you working on today?</p>
-                                <p id="chatGreeting">Ask about the job in front of you. No account needed — sign in later to save a farm profile.</p>
+                    <div class="chat-shell chat-shell-wide is-empty">
+                        <div class="chat-thread">
+                            <div class="chat-welcome" id="chatEmpty">
+                                <div class="chat-welcome-mark" aria-hidden="true">
+                                    <svg class="btn-sparkle" viewBox="0 0 24 24" focusable="false">
+                                        <path fill="currentColor" d="M8.2 2.4l1.05 4.2 4.2 1.05-4.2 1.05-1.05 4.2-1.05-4.2-4.2-1.05 4.2-1.05 1.05-4.2zm8.7 7.1l.72 2.88 2.88.72-2.88.72-.72 2.88-.72-2.88-2.88-.72 2.88-.72.72-2.88z"></path>
+                                    </svg>
+                                </div>
+                                <div class="chat-welcome-copy">
+                                    <p class="chat-empty-kicker">Advisor</p>
+                                    <h1 class="chat-welcome-title" id="chatWelcomeTitle">What are you working on today?</h1>
+                                    <p class="chat-welcome-lead" id="chatWelcomeLead" hidden>What are you working on today?</p>
+                                    <p id="chatGreeting" hidden></p>
+                                </div>
+                            </div>
+                            <div class="chat-categories" id="chatCategories" hidden></div>
+                            <p class="chat-save-hint" id="chatSaveHint" hidden>Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
+                            <div class="job-chips" id="chatJobChips" hidden></div>
+                            <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
+                            <div class="chat-chips" id="chatChips" hidden></div>
+                        </div>
+                        <div class="chat-dock">
+                            <div class="chat-dock-inner">
+                                <form class="chat-form" id="chatForm">
+                                    <label class="visually-hidden" for="chatInput">Garden or livestock question</label>
+                                    <textarea id="chatInput" name="query" class="form-input chat-input" rows="1" maxlength="2000" placeholder="Ask about tomatoes, chicks, goats, or a backyard coop…" required></textarea>
+                                    <button type="submit" class="btn btn-primary" id="chatSendBtn">Send</button>
+                                </form>
+                                <p class="chat-disclaimer">Guidance only, not a vet diagnosis. <a href="about.html">How this site works</a></p>
                             </div>
                         </div>
-                        <div class="chat-categories" id="chatCategories" hidden></div>
-                        <p class="chat-save-hint" id="chatSaveHint" hidden>Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
-                        <div class="job-chips" id="chatJobChips" hidden></div>
-                        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
-                        <div class="chat-chips" id="chatChips" hidden></div>
-                        <form class="chat-form" id="chatForm">
-                            <label class="visually-hidden" for="chatInput">Garden or livestock question</label>
-                            <textarea id="chatInput" name="query" class="form-input chat-input" rows="2" maxlength="2000" placeholder="Ask anything about your farm, animals, crops, or equipment…" required></textarea>
-                            <button type="submit" class="btn btn-primary" id="chatSendBtn">Send</button>
-                        </form>
-                        <p class="chat-disclaimer">Guidance only, not a vet diagnosis. Confirm treatment with local extension or a vet. <a href="about.html">How this site works</a></p>
                     </div>
                 </div>
             </div>
@@ -282,7 +305,12 @@
                     <p class="farm-guest-lead">Start with a question. Sign in when you want to keep the place.</p>
                     <p>Chat works without an account. Google sign-in in the header saves beds, animals, and what the advisor learns — on the same farm the apps use.</p>
                     <div class="hero-cta-group">
-                        <a href="#ai-advisor" class="btn btn-primary" onclick="navigateTo('ai-advisor')">Ask the advisor first</a>
+                        <a href="#ai-advisor" class="btn btn-primary btn-pill" onclick="navigateTo('ai-advisor')">
+                            <svg class="btn-sparkle" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path fill="currentColor" d="M8.2 2.4l1.05 4.2 4.2 1.05-4.2 1.05-1.05 4.2-1.05-4.2-4.2-1.05 4.2-1.05 1.05-4.2zm8.7 7.1l.72 2.88 2.88.72-2.88.72-.72 2.88-.72-2.88-2.88-.72 2.88-.72.72-2.88z"></path>
+                            </svg>
+                            Ask the advisor first
+                        </a>
                         <a href="guides/index.html" class="btn btn-outline">Read a starter guide</a>
                     </div>
                 </div>
@@ -368,18 +396,13 @@
                 <ul class="footer-links">
                     <li><a href="#ai-advisor" onclick="navigateTo('ai-advisor')">Advisor</a></li>
                     <li><a href="#farm" onclick="navigateTo('farm')">Farm</a></li>
-                    <li><a href="#calculator" onclick="navigateTo('home', 'calculator')">Example calculator</a></li>
+                    <li><a href="#community" onclick="navigateTo('home', 'community')">Community</a></li>
                     <li><a href="guides/index.html">All guides</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Guides</h4>
-                <ul class="footer-links">
-                    <li><a href="guides/soil-moisture-sensors.html">Soil pens</a></li>
-                    <li><a href="guides/irrigation-controllers.html">Hose timers</a></li>
-                    <li><a href="guides/electric-fence-chargers.html">Livestock fencing</a></li>
-                    <li><a href="guides/livestock-waterers.html">Tanks and waterers</a></li>
-                </ul>
+                <ul class="footer-links" id="footerGuideLinks"></ul>
             </div>
             <div class="footer-col">
                 <h4>Company</h4>
@@ -399,12 +422,16 @@
         </div>
     </footer>
 
-    <script src="js/config.js?v=20260908-advisor1"></script>
-    <script src="js/chat-api.js?v=20260908-advisor1"></script>
-    <script src="js/auth.js?v=20260908-advisor1"></script>
-    <script src="js/farm-api.js?v=20260908-advisor1"></script>
-    <script src="js/farm-ui.js?v=20260908-advisor1"></script>
-    <script src="js/chat-ui.js?v=20260908-advisor1"></script>
-    <script src="js/main.js?v=20260908-advisor1"></script>
+    <script src="js/config.js?v=20260909-guides10"></script>
+    <script src="js/guides-api.js?v=20260912-like1"></script>
+    <script src="js/guides-ui.js?v=20260913-hero-m"></script>
+    <script src="js/chat-api.js?v=20260912-ask1"></script>
+    <script src="js/auth.js?v=20260909-guides10"></script>
+    <script src="js/farm-api.js?v=20260912-asset-edit"></script>
+    <script src="js/farm-ui.js?v=20260912-asset-edit"></script>
+    <script src="js/community-api.js?v=20260919-mwidth"></script>
+    <script src="js/community-ui.js?v=20260919-mwidth"></script>
+    <script src="js/chat-ui.js?v=20260912-advisor-box"></script>
+    <script src="js/main.js?v=20260915-community"></script>
 </body>
 </html>

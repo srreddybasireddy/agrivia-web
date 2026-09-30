@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advisor mobile look — now vs clearer</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #F8F5EE;
+            --raised: #FFFDF8;
+            --ink: #1A1916;
+            --ink-2: #4A453C;
+            --ink-3: #6B6458;
+            --rule: #E2D9C8;
+            --leaf: #2F5D3A;
+            --leaf-deep: #1A3026;
+            --ochre: #B26A3A;
+            --font: "Source Sans 3", "Segoe UI", sans-serif;
+            --serif: "Source Serif 4", Georgia, serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #EDE6D6;
+            color: var(--ink);
+            font-family: var(--font);
+            line-height: 1.5;
+            padding: 1.5rem 1.25rem 3rem;
+        }
+        h1 {
+            font-family: var(--serif);
+            font-size: 1.75rem;
+            margin: 0 0 0.4rem;
+        }
+        .lede {
+            color: var(--ink-2);
+            max-width: 40rem;
+            margin-bottom: 1.25rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .tabs button {
+            font: inherit;
+            font-weight: 650;
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            color: var(--ink-2);
+            border-radius: 999px;
+            padding: 0.45rem 0.95rem;
+            cursor: pointer;
+        }
+        .tabs button[aria-pressed="true"] {
+            background: var(--leaf-deep);
+            border-color: var(--leaf-deep);
+            color: #FFFDF8;
+        }
+        .pair {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .col { width: 390px; }
+        .col h2 {
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.7rem;
+        }
+        .now h2 { color: #9B2C2C; }
+        .next h2 { color: var(--leaf); }
+        .phone {
+            width: 390px;
+            height: 780px;
+            background: var(--paper);
+            border: 10px solid #1A1916;
+            border-radius: 36px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .status {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.1rem;
+            font-size: 0.75rem;
+            font-weight: 650;
+        }
+        .bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 1rem;
+            border-bottom: 1px solid var(--rule);
+            background: var(--raised);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-weight: 700;
+        }
+        .mark {
+            width: 1.15rem;
+            height: 1.15rem;
+            border-radius: 50%;
+            background: var(--leaf-deep);
+            display: inline-block;
+        }
+        .badge { color: var(--ochre); font-weight: 650; }
+        .google {
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            border-radius: 999px;
+            padding: 0.35rem 0.7rem;
+            font-size: 0.78rem;
+            color: var(--ink);
+        }
+        .body {
+            flex: 1;
+            overflow: auto;
+            padding: 1.1rem 1rem 0.6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .spark {
+            width: 2.6rem;
+            height: 2.6rem;
+            border-radius: 50%;
+            background: var(--leaf-deep);
+            flex-shrink: 0;
+        }
+        .kicker {
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ochre);
+            font-weight: 650;
+        }
+        .title {
+            font-family: var(--serif);
+            font-size: 1.65rem;
+            color: var(--leaf-deep);
+            line-height: 1.2;
+        }
+        .copy { color: var(--ink-2); font-size: 0.95rem; }
+        .muted { color: var(--ink-3); font-size: 0.88rem; }
+        .chip {
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            border-radius: 999px;
+            padding: 0.75rem 0.95rem;
+            color: var(--ochre);
+            font-weight: 650;
+            font-size: 0.95rem;
+        }
+        .chip.tight {
+            display: inline-block;
+            padding: 0.45rem 0.75rem;
+            font-size: 0.85rem;
+            margin-right: 0.4rem;
+            margin-top: 0.2rem;
+        }
+        .field {
+            border: 1px solid var(--rule);
+            background: var(--raised);
+            border-radius: 14px;
+            min-height: 4.4rem;
+            padding: 0.7rem 0.85rem;
+            color: var(--ink-3);
+        }
+        .send {
+            background: var(--leaf-deep);
+            color: #FFFDF8;
+            border: 0;
+            border-radius: 14px;
+            min-height: 3rem;
+            font-weight: 650;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .composer {
+            display: flex;
+            gap: 0.5rem;
+            align-items: stretch;
+        }
+        .composer .field {
+            flex: 1;
+            min-height: 3rem;
+        }
+        .composer .send {
+            min-width: 4.4rem;
+            border-radius: 12px;
+        }
+        .legal { font-size: 0.72rem; color: var(--ink-3); }
+        .user {
+            align-self: flex-end;
+            background: var(--leaf-deep);
+            color: #FFFDF8;
+            border-radius: 16px;
+            padding: 0.7rem 0.9rem;
+            max-width: 85%;
+            font-size: 0.95rem;
+        }
+        .answer {
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 16px;
+            padding: 0.9rem 1rem;
+            color: var(--ink);
+            font-size: 0.98rem;
+            line-height: 1.55;
+        }
+        .answer ul { padding-left: 1.1rem; }
+        .rate { font-size: 0.8rem; color: var(--ink-3); }
+        .rate b {
+            display: inline-block;
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            padding: 0.2rem 0.55rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-left: 0.25rem;
+        }
+        .grow { flex: 1; }
+        .phone.page {
+            background: var(--paper);
+        }
+        .thread {
+            flex: 1;
+            overflow: auto;
+            padding: 1.15rem 1.15rem 0.85rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .thread .suggest {
+            margin-top: 0.75rem;
+            margin-bottom: 0;
+        }
+        .ask-you {
+            font-size: 0.72rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            font-weight: 650;
+            margin-bottom: 0.3rem;
+        }
+        .ask-q {
+            font-weight: 650;
+            font-size: 1.08rem;
+            line-height: 1.35;
+            margin-bottom: 0.95rem;
+        }
+        .ask-a {
+            color: var(--ink);
+            font-size: 0.98rem;
+            line-height: 1.55;
+        }
+        .ask-a ul { padding-left: 1.15rem; }
+        .ask-a li + li { margin-top: 0.35rem; }
+        .thread .rate { margin-top: 0.95rem; }
+        .dock {
+            border-top: 1px solid var(--rule);
+            background: var(--raised);
+            padding: 0.7rem 0.85rem 0.8rem;
+        }
+        .suggest {
+            display: inline-block;
+            margin-bottom: 0.55rem;
+            border: 1px solid var(--rule);
+            background: var(--paper);
+            border-radius: 999px;
+            padding: 0.4rem 0.75rem;
+            color: var(--ochre);
+            font-weight: 650;
+            font-size: 0.85rem;
+        }
+        .bar-frame {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: 1px solid var(--rule);
+            background: #FFFDF8;
+            border-radius: 16px;
+            padding: 0.3rem 0.3rem 0.3rem 0.9rem;
+        }
+        .bar-frame .field {
+            flex: 1;
+            border: 0;
+            background: transparent;
+            min-height: 0;
+            padding: 0.55rem 0;
+            border-radius: 0;
+        }
+        .bar-frame .send {
+            min-width: 4.2rem;
+            min-height: 2.55rem;
+            border-radius: 12px;
+        }
+        .dock .legal { margin-top: 0.45rem; }
+        .note {
+            margin: 1.75rem auto 0;
+            max-width: 52rem;
+            color: var(--ink-2);
+            font-size: 0.95rem;
+        }
+        .hidden { display: none !important; }
+        .desk {
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+        .desk h2 {
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--leaf);
+            margin-bottom: 0.7rem;
+        }
+        .browser {
+            background: var(--paper);
+            border: 1px solid #C9C0AE;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .browser-top {
+            background: #E8E1D2;
+            padding: 0.45rem 0.75rem;
+            font-size: 0.75rem;
+            color: var(--ink-3);
+        }
+        .browser-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 1.25rem;
+            background: var(--raised);
+            border-bottom: 1px solid var(--rule);
+        }
+        .nav {
+            display: flex;
+            gap: 1.25rem;
+            color: var(--ink-2);
+            font-size: 0.92rem;
+        }
+        .nav strong { color: var(--leaf-deep); }
+        .desk-card {
+            max-width: 48rem;
+            margin: 1.5rem auto 1.75rem;
+            background: var(--raised);
+            border: 1px solid var(--rule);
+            border-radius: 16px;
+            padding: 1.6rem 1.85rem 1.2rem;
+        }
+        .desk-page {
+            min-height: 560px;
+            display: flex;
+            flex-direction: column;
+            background: var(--paper);
+        }
+        .desk-page .thread {
+            max-width: 52rem;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.75rem 1.25rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .desk-page .dock {
+            padding: 0.95rem 1.5rem 1.1rem;
+        }
+        .desk-page .bar-frame {
+            max-width: 52rem;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            min-height: 3.4rem;
+            padding: 0.4rem 0.4rem 0.4rem 1.05rem;
+            border-radius: 18px;
+            box-shadow: 0 1px 0 rgba(26, 25, 22, 0.04);
+        }
+        .desk-page .bar-frame .field {
+            flex: 1 1 auto;
+            min-width: 0;
+            padding: 0.65rem 0;
+            font-size: 1.02rem;
+        }
+        .desk-page .bar-frame .send {
+            flex: 0 0 auto;
+            min-width: 5.4rem;
+            min-height: 2.7rem;
+            padding: 0 1.15rem;
+            border-radius: 14px;
+        }
+        .desk-page .legal,
+        .desk-page .suggest {
+            max-width: 52rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .desk-page .title { font-size: 2rem; }
+        .desk h2 + .browser { margin-bottom: 2rem; }
+        .welcome-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .chips-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem;
+            margin: 0.85rem 0 1.1rem;
+        }
+        .chip.cardish {
+            border-radius: 14px;
+            min-height: 3.1rem;
+        }
+        @media (max-width: 860px) {
+            .col, .phone { width: min(100%, 390px); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Advisor look</h1>
+    <p class="lede">Phone tabs compare old vs new. The clearer phones keep the question and answer in one reading thread. Type and Send sit in one bar under that thread — not as extra floating cards.</p>
+    <div class="tabs">
+        <button type="button" id="tabEmpty" aria-pressed="true">Phone before ask</button>
+        <button type="button" id="tabAnswer" aria-pressed="false">Phone after answer</button>
+        <button type="button" id="tabDesk" aria-pressed="false">Computer website</button>
+    </div>
+
+    <div class="pair" id="viewEmpty">
+        <div class="col now">
+            <h2>Now — cluttered</h2>
+            <div class="phone">
+                <div class="status"><span>12:59</span><span>●●●</span></div>
+                <div class="bar">
+                    <div class="logo"><span class="mark"></span> Agrivia<span class="badge">.ai</span></div>
+                    <span class="google">Google Sign-in</span>
+                </div>
+                <div class="body">
+                    <div class="spark"></div>
+                    <p class="kicker">Advisor</p>
+                    <h3 class="title">What are you working on today?</h3>
+                    <p class="copy">Ask about beds, animals, or equipment. No account needed — sign in later to save a farm profile.</p>
+                    <p class="muted">Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
+                    <div class="chip">What farm tasks should I focus on this week?</div>
+                    <div class="chip">Give me seasonal tips for my region</div>
+                    <div class="field">Ask anything about your farm, animals, crops, or equipment…</div>
+                    <div class="send">Send</div>
+                    <p class="legal">Guidance only, not a vet diagnosis. Confirm treatment with local extension or a vet.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col next">
+            <h2>Clearer — one thread, one bar</h2>
+            <div class="phone page">
+                <div class="status"><span>12:59</span><span>●●●</span></div>
+                <div class="bar">
+                    <div class="logo"><span class="mark"></span> Agrivia<span class="badge">.ai</span></div>
+                    <span class="google">Sign in</span>
+                </div>
+                <div class="thread">
+                    <p class="kicker">Advisor</p>
+                    <h3 class="title">What are you working on today?</h3>
+                    <p class="copy">Ask about a vegetable bed, chicks, or goats.</p>
+                    <div style="margin-top:0.85rem">
+                        <span class="chip tight">This week’s farm tasks</span>
+                        <span class="chip tight">Seasonal tips</span>
+                    </div>
+                </div>
+                <div class="dock">
+                    <div class="bar-frame">
+                        <div class="field">Ask about tomatoes, chicks, or a coop…</div>
+                        <div class="send">Send</div>
+                    </div>
+                    <p class="legal">Guidance only · not a vet visit</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pair hidden" id="viewAnswer">
+        <div class="col now">
+            <h2>Now — answer is clipped</h2>
+            <div class="phone">
+                <div class="status"><span>12:37</span><span>●●●</span></div>
+                <div class="bar">
+                    <div class="logo"><span class="mark"></span> Agrivia<span class="badge">.ai</span></div>
+                    <span class="google">Google Sign-in</span>
+                </div>
+                <div class="body">
+                    <p class="muted">Sign in to save animals and beds to a farm profile. Chat still works as a guest.</p>
+                    <div class="answer">
+                        <ul>
+                            <li>Water your garden when the top 2–3 inches of soil feel dry to the touch.</li>
+                            <li>Aim to provide about 1–2 inches of water per week, either from rainfall or irrigation.</li>
+                            <li>Consider watering your garden every 2–3 days, especially during hot spells.</li>
+                        </ul>
+                    </div>
+                    <div class="user">How often should I water my garden this week?</div>
+                    <div class="field">Ask anything about your farm, animals, crops, or equipment…</div>
+                    <div class="send">Send</div>
+                    <p class="legal">Guidance only, not a vet diagnosis. Confirm treatment with local extension or a vet.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col next">
+            <h2>Clearer — one thread, one bar</h2>
+            <div class="phone page">
+                <div class="status"><span>12:37</span><span>●●●</span></div>
+                <div class="bar">
+                    <div class="logo"><span class="mark"></span> Agrivia<span class="badge">.ai</span></div>
+                    <span class="google">Sign in</span>
+                </div>
+                <div class="thread">
+                    <p class="ask-you">You asked</p>
+                    <p class="ask-q">How often should I water my garden this week?</p>
+                    <div class="ask-a">
+                        <ul>
+                            <li>Water when the top 2–3 inches of soil feel dry.</li>
+                            <li>Aim for about 1–2 inches a week, rain plus irrigation.</li>
+                            <li>In a hot spell, check every 2–3 days.</li>
+                        </ul>
+                    </div>
+                    <p class="rate">Was this useful? <b>Helpful</b> <b>Not helpful</b></p>
+                    <div class="grow"></div>
+                    <span class="suggest">What if it rained yesterday?</span>
+                </div>
+                <div class="dock">
+                    <div class="bar-frame">
+                        <div class="field">Ask a follow-up…</div>
+                        <div class="send">Send</div>
+                    </div>
+                    <p class="legal">Guidance only · not a vet visit</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="desk hidden" id="viewDesk">
+        <h2>Computer — before ask</h2>
+        <div class="browser">
+            <div class="browser-top">agrivia.ai/#ai-advisor</div>
+            <div class="browser-bar">
+                <div class="logo"><span class="mark"></span> Agrivia<span class="badge">.ai</span></div>
+                <div class="nav"><span>Guides</span><strong>Advisor</strong><span>Farm</span></div>
+                <span class="google">Sign in</span>
+            </div>
+            <div class="desk-page">
+                <div class="thread">
+                    <p class="kicker">Advisor</p>
+                    <h3 class="title">What are you working on today?</h3>
+                    <p class="copy">Ask about a vegetable bed, chicks, or goats.</p>
+                    <div style="margin-top:0.9rem">
+                        <span class="chip tight">This week’s farm tasks</span>
+                        <span class="chip tight">Seasonal tips</span>
+                    </div>
+                </div>
+                <div class="dock">
+                    <div class="bar-frame">
+                        <div class="field">Ask about tomatoes, chicks, or a coop…</div>
+                        <div class="send">Send</div>
+                    </div>
+                    <p class="legal">Guidance only · not a vet visit</p>
+                </div>
+            </div>
+        </div>
+        <h2>Computer — after answer</h2>
+        <div class="browser">
+            <div class="browser-top">agrivia.ai/#ai-advisor</div>
+            <div class="browser-bar">
+                <div class="logo"><span class="mark"></span> Agrivia<span class="badge">.ai</span></div>
+                <div class="nav"><span>Guides</span><strong>Advisor</strong><span>Farm</span></div>
+                <span class="google">Sign in</span>
+            </div>
+            <div class="desk-page">
+                <div class="thread">
+                    <p class="ask-you">You asked</p>
+                    <p class="ask-q">How often should I water my garden this week?</p>
+                    <div class="ask-a">
+                        <ul>
+                            <li>Water when the top 2–3 inches of soil feel dry.</li>
+                            <li>Aim for about 1–2 inches a week, rain plus irrigation.</li>
+                            <li>In a hot spell, check every 2–3 days.</li>
+                        </ul>
+                    </div>
+                    <p class="rate">Was this useful? <b>Helpful</b> <b>Not helpful</b></p>
+                    <div class="grow"></div>
+                    <span class="suggest">What if it rained yesterday?</span>
+                </div>
+                <div class="dock">
+                    <div class="bar-frame">
+                        <div class="field">Ask a follow-up…</div>
+                        <div class="send">Send</div>
+                    </div>
+                    <p class="legal">Guidance only · not a vet visit</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="note">Phone and computer now use the same idea: one reading thread for the question and answer, and one bottom bar for Type + Send. These are look mocks only — say if this should go on the live site.</p>
+    <script>
+        const empty = document.getElementById("viewEmpty");
+        const answer = document.getElementById("viewAnswer");
+        const desk = document.getElementById("viewDesk");
+        const tabEmpty = document.getElementById("tabEmpty");
+        const tabAnswer = document.getElementById("tabAnswer");
+        const tabDesk = document.getElementById("tabDesk");
+        function show(which) {
+            empty.classList.toggle("hidden", which !== "empty");
+            answer.classList.toggle("hidden", which !== "answer");
+            desk.classList.toggle("hidden", which !== "desk");
+            tabEmpty.setAttribute("aria-pressed", which === "empty" ? "true" : "false");
+            tabAnswer.setAttribute("aria-pressed", which === "answer" ? "true" : "false");
+            tabDesk.setAttribute("aria-pressed", which === "desk" ? "true" : "false");
+        }
+        tabEmpty.addEventListener("click", () => show("empty"));
+        tabAnswer.addEventListener("click", () => show("answer"));
+        tabDesk.addEventListener("click", () => show("desk"));
+    </script>
+</body>
+</html>
