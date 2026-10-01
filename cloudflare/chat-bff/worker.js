@@ -118,9 +118,17 @@ function isFarmPath(path) {
         /^\/users\/[0-9a-f-]+\/profile$/i.test(path)
         || /^\/users\/[0-9a-f-]+\/pending-details$/i.test(path)
         || /^\/users\/[0-9a-f-]+\/asset-profile-answer$/i.test(path)
-        || /^\/generic_assets\/[0-9a-f-]+\//i.test(path)
+        ||         /^\/generic_assets\/[0-9a-f-]+\//i.test(path)
         || /^\/cattle\/[0-9a-f-]+$/i.test(path)
         || /^\/crops\/[0-9a-f-]+$/i.test(path)
+        || /^\/assets\/[^/]+\/care-plan$/i.test(path)
+        || /^\/assets\/[^/]+\/care-view$/i.test(path)
+        || /^\/assets\/[^/]+\/reminders$/i.test(path)
+        || /^\/reminders\/[^/]+\/(complete|snooze)$/i.test(path)
+        || path === "/notifications"
+        || path === "/notifications/unread-count"
+        || /^\/notifications\/[^/]+\/(read|complete|snooze)$/i.test(path)
+        || path === "/farm/today"
     );
 }
 

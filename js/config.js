@@ -11,6 +11,9 @@
 
     global.AgriviaConfig = {
         apiBasePath: useWorker ? "/api" : "https://api.agrivia.ai/api",
+        // Local and other non-production hosts can open Farm without Google.
+        // agrivia.ai always requires a real session.
+        farmPreview: !useWorker,
         category: "General",
         // Same names the farm API accepts. Advisor infers one from chat; do not show this as a picker.
         chatCategories: [

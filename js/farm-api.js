@@ -37,10 +37,118 @@
         });
         const data = await parseJson(response);
         if (!response.ok) {
-            const detail = data.detail || data.error || data.message;
-            throw new Error(typeof detail === "string" ? detail : "The farm API could not complete that request.");
+            const error = new Error(errorMessage(data));
+            error.status = response.status;
+            throw error;
         }
         return data;
+    }
+
+    function errorMessage(data) {
+        const detail = data && (data.detail || data.error || data.message);
+        if (typeof detail === "string" && detail.trim()) {
+            return detail.trim();
+        }
+        if (Array.isArray(detail)) {
+            const parts = detail.map((item) => {
+                if (!item || typeof item !== "object") {
+                    return "";
+                }
+                const loc = Array.isArray(item.loc)
+                    ? item.loc.filter((part) => part !== "body" && part !== "query").join(".")
+                    : "";
+                return [loc, item.msg].filter(Boolean).join(": ");
+            }).filter(Boolean);
+            if (parts.length) {
+                return parts.join(". ");
+            }
+        }
+        return "The farm API could not complete that request.";
+    }
+
+    function farmUuid() {
+        const auth = global.AgriviaAuth;
+        return (auth && auth.getFarmUuid && auth.getFarmUuid()) || "";
+    }
+
+    function profileZip() {
+        const ui = global.AgriviaFarmUi;
+        const snapshot = ui && ui.getSnapshot && ui.getSnapshot();
+        const zip = snapshot && snapshot.profile && snapshot.profile.zipCode;
+        return readText(zip);
+    }
+
+    function careIdentity(fields) {
+        const source = fields || {};
+        const category = readText(source.category || source.kind);
+        if (!category) {
+            throw new Error("This asset is missing a category.");
+        }
+        const body = { category: category };
+        const deviceUuid = farmUuid();
+        if (deviceUuid) {
+            body.deviceUuid = deviceUuid;
+        }
+        const title = readText(source.assetTitle || source.title);
+        if (title) {
+            body.assetTitle = title;
+        }
+        const subjectKey = readText(source.subjectKey);
+        if (subjectKey) {
+            body.subjectKey = subjectKey;
+        }
+        const zip = readText(source.zipCode) || profileZip();
+        if (zip) {
+            body.zipCode = zip;
+        }
+        const quantity = Number(source.quantity != null ? source.quantity : source.count);
+        if (Number.isFinite(quantity) && quantity > 0) {
+            body.quantity = quantity;
+        }
+        return body;
+    }
+
+    function careQuery(fields) {
+        const params = new URLSearchParams();
+        const category = readText(fields && (fields.category || fields.kind));
+        if (!category) {
+            throw new Error("This asset is missing a category.");
+        }
+        params.set("category", category);
+        const deviceUuid = farmUuid();
+        if (deviceUuid) {
+            params.set("deviceUuid", deviceUuid);
+        }
+        return `?${params.toString()}`;
+    }
+
+    function withDevice(path) {
+        const deviceUuid = farmUuid();
+        if (!deviceUuid) {
+            return path;
+        }
+        const join = path.indexOf("?") === -1 ? "?" : "&";
+        return `${path}${join}deviceUuid=${encodeURIComponent(deviceUuid)}`;
+    }
+
+    function snoozeMinutes(preset) {
+        if (typeof preset === "number" && preset > 0) {
+            return Math.round(preset);
+        }
+        const value = readText(preset) || "1h";
+        const hours = value.match(/^(\d+)h$/);
+        if (hours) {
+            return Number(hours[1]) * 60;
+        }
+        return 60;
+    }
+
+    function previewCall(name, args) {
+        const preview = global.AgriviaFarmPreview;
+        if (!preview || !preview.enabled() || typeof preview[name] !== "function") {
+            return null;
+        }
+        return Promise.resolve(preview[name].apply(preview, args || []));
     }
 
     function requireFarmUuid() {
@@ -188,6 +296,8 @@
             imageUrl: readImageUrl(crop, ops),
             healthAlerts: "",
             careItems: cropTimelineCare(crop),
+            count: readCount(crop, ""),
+            careSummary: careSummaryOf(crop),
         };
     }
 
@@ -223,6 +333,14 @@
         return items;
     }
 
+    function careSummaryOf(raw) {
+        const source = raw && (raw.care_summary || raw.careSummary);
+        if (global.AgriviaFarmCare) {
+            return global.AgriviaFarmCare.normalizeSummary(source);
+        }
+        return source && typeof source === "object" ? source : null;
+    }
+
     function readCount(extra, subtitle) {
         if (extra && typeof extra === "object") {
             const raw = extra.count;
@@ -253,6 +371,7 @@
             imageUrl: readImageUrl(asset, extra),
             healthAlerts: "",
             careItems: [],
+            careSummary: careSummaryOf(asset),
         };
     }
 
@@ -278,6 +397,7 @@
                     imageUrl: readImageUrl(row, operationalOf(row)),
                     healthAlerts: "",
                     careItems: [],
+                    careSummary: careSummaryOf(row),
                     count: 0,
                 });
             }
@@ -341,6 +461,10 @@
     }
 
     async function getPortfolio() {
+        const previewed = previewCall("portfolio");
+        if (previewed) {
+            return previewed;
+        }
         requireFarmUuid();
         const settled = await Promise.allSettled([
             getProfile(),
@@ -541,5 +665,157 @@
         updateAsset: updateAsset,
         deleteAsset: deleteAsset,
         genericCategories: GENERIC_CATEGORIES,
+        saveCarePlan: saveCarePlan,
+        getCareView: getCareView,
+        getReminders: getReminders,
+        saveReminders: saveReminders,
+        completeReminder: completeReminder,
+        snoozeReminder: snoozeReminder,
+        getToday: getToday,
+        listNotifications: listNotifications,
+        unreadCount: unreadCount,
+        readNotification: readNotification,
+        completeNotification: completeNotification,
+        snoozeNotification: snoozeNotification,
     };
+
+    function assetPath(id) {
+        return `/assets/${encodeURIComponent(id)}`;
+    }
+
+    function saveCarePlan(assetId, fields) {
+        const previewed = previewCall("saveCarePlan", [assetId, fields]);
+        if (previewed) {
+            return previewed;
+        }
+        const body = careIdentity(fields);
+        if (fields && fields.anchorDate) {
+            body.anchorDate = fields.anchorDate;
+        }
+        if (fields && fields.ageWeeks != null && fields.ageWeeks !== "") {
+            body.ageWeeks = Number(fields.ageWeeks);
+        }
+        return request(`${assetPath(assetId)}/care-plan`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+    }
+
+    function getCareView(assetId, asset) {
+        const previewed = previewCall("careView", [assetId]);
+        if (previewed) {
+            return previewed;
+        }
+        return request(`${assetPath(assetId)}/care-view${careQuery(asset)}`, { method: "GET" }).catch((err) => {
+            if (err && err.status === 404) {
+                return { has_plan: false };
+            }
+            throw err;
+        });
+    }
+
+    function getReminders(assetId, asset) {
+        const previewed = previewCall("reminders", [assetId]);
+        if (previewed) {
+            return previewed;
+        }
+        return request(`${assetPath(assetId)}/reminders${careQuery(asset)}`, { method: "GET" });
+    }
+
+    function saveReminders(assetId, reminders, asset) {
+        const previewed = previewCall("saveReminders", [assetId, reminders]);
+        if (previewed) {
+            return previewed;
+        }
+        const care = global.AgriviaFarmCare;
+        const rows = care ? care.reminderBody(reminders) : { reminders: reminders };
+        const body = Object.assign(careIdentity(asset), rows);
+        return request(`${assetPath(assetId)}/reminders`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+    }
+
+    function completeReminder(reminderId) {
+        const previewed = previewCall("completeReminder", [reminderId]);
+        if (previewed) {
+            return previewed;
+        }
+        return request(`/reminders/${encodeURIComponent(reminderId)}/complete`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: "{}",
+        });
+    }
+
+    function snoozeReminder(reminderId, preset) {
+        const previewed = previewCall("snoozeReminder", [reminderId, preset]);
+        if (previewed) {
+            return previewed;
+        }
+        return request(`/reminders/${encodeURIComponent(reminderId)}/snooze`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ minutes: snoozeMinutes(preset) }),
+        });
+    }
+
+    function getToday() {
+        const previewed = previewCall("today");
+        if (previewed) {
+            return previewed;
+        }
+        return request(withDevice("/farm/today"), { method: "GET" });
+    }
+
+    function listNotifications(status) {
+        const previewed = previewCall("listNotifications", [status]);
+        if (previewed) {
+            return previewed;
+        }
+        const query = status ? `?status=${encodeURIComponent(status)}` : "";
+        return request(withDevice(`/notifications${query}`), { method: "GET" });
+    }
+
+    function unreadCount() {
+        const previewed = previewCall("unreadCount");
+        if (previewed) {
+            return previewed;
+        }
+        return request(withDevice("/notifications/unread-count"), { method: "GET" });
+    }
+
+    function notificationAction(id, action, preset) {
+        return request(`/notifications/${encodeURIComponent(id)}/${action}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(action === "snooze" ? { minutes: snoozeMinutes(preset) } : {}),
+        });
+    }
+
+    function readNotification(id) {
+        const previewed = previewCall("readNotification", [id]);
+        if (previewed) {
+            return previewed;
+        }
+        return notificationAction(id, "read");
+    }
+
+    function completeNotification(id) {
+        const previewed = previewCall("completeNotification", [id]);
+        if (previewed) {
+            return previewed;
+        }
+        return notificationAction(id, "complete");
+    }
+
+    function snoozeNotification(id, preset) {
+        const previewed = previewCall("snoozeNotification", [id, preset]);
+        if (previewed) {
+            return previewed;
+        }
+        return notificationAction(id, "snooze", preset);
+    }
 })(window);
