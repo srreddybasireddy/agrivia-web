@@ -3128,7 +3128,7 @@ input[type="range"] {
 
 .farm-asset-card.has-image {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 10.5rem;
+    grid-template-columns: minmax(0, 1fr) 9rem;
     gap: 0.5rem;
     padding: 1.25rem 1.1rem 1.15rem 1.35rem;
     min-height: 14.5rem;
@@ -4570,5 +4570,199 @@ body.advisor-open .site-footer {
     #view-ai-advisor .chat-welcome {
         flex-direction: column;
         gap: 0.65rem;
+    }
+}
+
+.farm-asset-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.farm-status-pill,
+.farm-type-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.1rem 0.55rem;
+    font-size: 0.78rem;
+    color: var(--ink-2);
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: 600;
+}
+
+.farm-status-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--leaf);
+}
+
+.farm-status-pill.is-planning .farm-status-dot {
+    background: var(--ochre);
+}
+
+.farm-facts,
+.farm-keyfacts,
+.farm-milestones {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0.35rem 0 0.2rem;
+}
+
+.farm-facts > div,
+.farm-keyfacts > div,
+.farm-milestones > div {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: start;
+}
+
+.farm-facts dt,
+.farm-keyfacts dt,
+.farm-milestones dt {
+    color: var(--ink-3);
+    font-size: 0.82rem;
+}
+
+.farm-facts dd,
+.farm-keyfacts dd,
+.farm-milestones dd {
+    margin: 0;
+    color: var(--ink);
+    font-size: 0.92rem;
+}
+
+.farm-fact-add,
+.farm-fact-hint {
+    color: var(--leaf-deep);
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.farm-fact-hint {
+    color: var(--ink-2);
+    cursor: default;
+}
+
+.farm-stage-mini {
+    display: flex;
+    gap: 0.2rem;
+    margin-top: 0.3rem;
+}
+
+.farm-stage-mini span {
+    height: 0.28rem;
+    flex: 1;
+    border-radius: 999px;
+    background: var(--rule);
+}
+
+.farm-stage-mini span.is-on {
+    background: var(--leaf);
+}
+
+.farm-detail-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 8.5rem;
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.farm-detail-copy {
+    min-width: 0;
+}
+
+.farm-detail-hero h2 {
+    margin: 0.35rem 0 0;
+}
+
+.farm-detail-art {
+    width: 8.5rem;
+    max-height: 10rem;
+    object-fit: contain;
+    justify-self: end;
+}
+
+.farm-detail-sub {
+    color: var(--ink-2);
+    margin: 0.2rem 0 0.8rem;
+}
+
+.farm-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.8fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.farm-section h3,
+.farm-ask-card h3 {
+    margin-bottom: 0.45rem;
+}
+
+.farm-stage-track {
+    display: flex;
+    gap: 0.35rem;
+    margin: 0.6rem 0;
+}
+
+.farm-stage-track span {
+    height: 0.45rem;
+    flex: 1;
+    border-radius: 999px;
+    background: var(--rule);
+}
+
+.farm-stage-track span.is-current {
+    background: var(--leaf);
+}
+
+.farm-guidance + .farm-guidance {
+    border-top: 1px solid var(--rule);
+    margin-top: 0.7rem;
+    padding-top: 0.7rem;
+}
+
+.farm-climate-note {
+    color: var(--ochre);
+}
+
+.farm-reminder-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.45rem 0;
+    border-top: 1px solid var(--rule);
+}
+
+.farm-reminder-row input[type="checkbox"] {
+    width: 2.4rem;
+    height: 1.35rem;
+    accent-color: var(--leaf-deep);
+}
+
+.farm-ask-card {
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .farm-asset-card.has-image,
+    .farm-detail-hero,
+    .farm-detail-grid,
+    .farm-facts > div,
+    .farm-keyfacts > div {
+        grid-template-columns: 1fr;
     }
 }

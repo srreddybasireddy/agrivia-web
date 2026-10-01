@@ -37,7 +37,9 @@
         });
         const data = await parseJson(response);
         if (!response.ok) {
-            throw new Error(errorMessage(data));
+            const error = new Error(errorMessage(data));
+            error.status = response.status;
+            throw error;
         }
         return data;
     }
@@ -705,7 +707,12 @@
         if (previewed) {
             return previewed;
         }
-        return request(`${assetPath(assetId)}/care-view${careQuery(asset)}`, { method: "GET" });
+        return request(`${assetPath(assetId)}/care-view${careQuery(asset)}`, { method: "GET" }).catch((err) => {
+            if (err && err.status === 404) {
+                return { has_plan: false };
+            }
+            throw err;
+        });
     }
 
     function getReminders(assetId, asset) {

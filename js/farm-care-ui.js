@@ -161,11 +161,13 @@
         check.type = "checkbox";
         check.setAttribute("aria-label", "Done");
         const copy = document.createElement("span");
-        copy.textContent = text(task.label || task.title) || care.taskLine({
-            type: task.type,
+        const taskType = text(task.task_type || task.taskType || task.type);
+        const assetName = text(task.asset_name || task.assetName || task.asset_title);
+        copy.textContent = text(task.label || task.title) || [care.taskLine({
+            type: taskType,
             label: "",
             dueAt: task.due_at || task.dueAt,
-        });
+        }), assetName].filter(Boolean).join(" · ");
         const snooze = button("Snooze", "farm-care-link");
         const reminderId = task.reminder_id || task.reminderId || task.id;
         check.addEventListener("change", () => runTodayAction(row, () => api().completeReminder(reminderId), check));
@@ -194,42 +196,77 @@
     }
 
     function appendCardCare(copy, asset) {
-        const model = care.cardModel(asset.careSummary);
-        const block = document.createElement("div");
-        block.className = "farm-care-rows";
-        const count = document.createElement("p");
-        count.className = "farm-asset-meta";
-        count.textContent = care.quantityLabel(asset.count);
-        block.appendChild(count);
-        if (model.mode === "cta") {
-            const cta = button(model.prompt, "btn btn-outline btn-sm farm-care-cta");
-            cta.addEventListener("click", (event) => {
-                event.stopPropagation();
-                openAnchor(asset);
-            });
-            block.appendChild(cta);
-        } else {
-            if (model.stage) {
-                block.appendChild(line(model.stage, "farm-care-stage"));
+        const model = care.normalizeAsset(asset);
+        const list = document.createElement("dl");
+        list.className = "farm-facts";
+        care.factRows(model, "card").forEach((row) => {
+            const item = document.createElement("div");
+            const term = document.createElement("dt");
+            term.textContent = row.label;
+            const value = document.createElement("dd");
+            if (row.kind === "add") {
+                const add = button(row.value, "farm-fact-add");
+                add.setAttribute("aria-label", `${row.value.replace(/^\+\s*/, "")} for ${model.name}`);
+                add.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (global.AgriviaFarmUi && global.AgriviaFarmUi.editAsset) {
+                        global.AgriviaFarmUi.editAsset(asset, true);
+                    }
+                });
+                value.appendChild(add);
+            } else if (row.kind === "cta") {
+                const cta = button(row.value, "btn btn-outline btn-sm farm-care-cta");
+                cta.setAttribute("aria-label", `${row.value} for ${model.name}`);
+                cta.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    openAnchor(asset);
+                });
+                value.appendChild(cta);
+            } else if (row.kind === "hint") {
+                value.className = "farm-fact-hint";
+                value.textContent = row.value;
+            } else if (row.kind === "reminders") {
+                value.appendChild(document.createTextNode(row.value));
+                if (row.action) {
+                    const turn = button(row.action, "farm-care-link");
+                    turn.setAttribute("aria-label", `${row.action} reminders for ${model.name}`);
+                    turn.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        global.location.hash = `farm/asset/${encodeURIComponent(asset.id)}`;
+                    });
+                    value.appendChild(document.createTextNode(" · "));
+                    value.appendChild(turn);
+                }
+            } else if (row.kind === "stage" && row.total > 1) {
+                value.textContent = row.value;
+                const bar = document.createElement("span");
+                bar.className = "farm-stage-mini";
+                bar.setAttribute("aria-hidden", "true");
+                for (let index = 0; index < row.total; index += 1) {
+                    const segment = document.createElement("span");
+                    if (index <= row.index) {
+                        segment.className = "is-on";
+                    }
+                    bar.appendChild(segment);
+                }
+                value.appendChild(bar);
+            } else {
+                value.textContent = row.value;
             }
-            if (model.task) {
-                block.appendChild(line(model.task, "farm-care-task"));
-            }
-            if (model.milestone) {
-                block.appendChild(line(model.milestone, "farm-care-milestone"));
-            }
-            const bell = document.createElement("p");
-            bell.className = model.reminderCount ? "farm-care-bell" : "farm-care-bell is-muted";
-            bell.textContent = model.reminderCount ? `Reminders ${model.reminderCount}` : "Reminders off";
-            block.appendChild(bell);
-        }
-        const open = button("Care plan", "farm-care-link");
-        open.addEventListener("click", (event) => {
-            event.stopPropagation();
-            global.location.hash = `farm/asset/${encodeURIComponent(asset.id)}`;
+            item.appendChild(term);
+            item.appendChild(value);
+            list.appendChild(item);
         });
-        block.appendChild(open);
-        copy.appendChild(block);
+        copy.appendChild(list);
+        const open = document.createElement("a");
+        open.className = "farm-care-link farm-care-plan-link";
+        open.href = `#farm/asset/${encodeURIComponent(asset.id)}`;
+        open.textContent = "Care plan →";
+        open.addEventListener("click", (event) => event.stopPropagation());
+        copy.appendChild(open);
     }
 
     function line(value, className) {
@@ -345,12 +382,17 @@
     }
 
     function closeAsset() {
+        const returnId = openAssetId;
         openAssetId = "";
         showDetail(false);
         if (global.location.hash.indexOf("farm/asset/") === 0) {
             global.location.hash = "farm";
         }
         renderToday();
+        const card = returnId && document.querySelector(`[data-asset-id="${returnId}"] .farm-care-plan-link`);
+        if (card) {
+            card.focus();
+        }
     }
 
     function assetById(id) {
@@ -362,157 +404,303 @@
 
     function paintDetail(body, asset, view, reminderPayload) {
         clear(body);
-        const shown = view.asset || view;
-        const header = document.createElement("header");
-        header.className = "farm-detail-head";
+        const saved = listFrom(reminderPayload, ["reminders"]);
+        const plan = Object.assign({}, view || {}, { reminders: saved });
+        const model = care.normalizeAsset(asset, plan);
+        const hero = document.createElement("header");
+        hero.className = "farm-detail-hero paper-card";
+        const copy = document.createElement("div");
+        copy.className = "farm-detail-copy";
+        const chips = document.createElement("div");
+        chips.className = "farm-asset-head";
+        const type = document.createElement("span");
+        type.className = "farm-type-chip";
+        type.textContent = model.kindLabel;
+        chips.appendChild(type);
+        if (model.status) {
+            const pill = document.createElement("span");
+            pill.className = model.status === "Planning" ? "farm-status-pill is-planning" : "farm-status-pill";
+            const dot = document.createElement("span");
+            dot.className = "farm-status-dot";
+            dot.setAttribute("aria-hidden", "true");
+            pill.appendChild(dot);
+            pill.appendChild(document.createTextNode(model.status));
+            chips.appendChild(pill);
+        }
+        copy.appendChild(chips);
         const title = document.createElement("h2");
-        title.textContent = text(shown.name || shown.title) || "Asset";
-        header.appendChild(title);
-        const meta = document.createElement("p");
-        const bits = [text(shown.category), care.quantityLabel(shown.quantity != null ? shown.quantity : shown.count)];
-        const anchor = shown.anchor_date || shown.anchorDate;
-        if (anchor) {
-            bits.push(new Date(anchor).toLocaleDateString());
-        }
-        meta.textContent = bits.filter(Boolean).join(" · ");
-        header.appendChild(meta);
-        body.appendChild(header);
-
-        const stages = listFrom(view, ["stages"]);
-        if (stages.length) {
-            const stepper = document.createElement("ol");
-            stepper.className = "farm-stage-stepper";
-            stages.forEach((stage) => {
-                const item = document.createElement("li");
-                item.textContent = text(stage.label || stage.stage_label);
-                if (stage.current || stage.is_current) {
-                    item.className = "is-current";
-                }
-                stepper.appendChild(item);
-            });
-            body.appendChild(stepper);
-        }
-
-        const milestones = listFrom(view, ["milestones"]);
-        if (milestones.length) {
-            const list = document.createElement("ul");
-            list.className = "farm-milestone-list";
-            milestones.forEach((item) => {
-                const row = document.createElement("li");
-                row.textContent = care.cardModel({
-                    has_anchor: true,
-                    next_milestone: item,
-                }).milestone || text(item.label);
-                list.appendChild(row);
-            });
-            body.appendChild(list);
-        }
-
-        listFrom(view, ["sections", "care_cards", "cards"]).forEach((section) => {
-            const card = document.createElement("section");
-            card.className = "paper-card farm-care-card";
-            const heading = document.createElement("h3");
-            heading.textContent = text(section.title || section.label);
-            card.appendChild(heading);
-            const note = text(section.note || section.climate_note || section.climateNote);
-            if (note) {
-                const copy = document.createElement("p");
-                copy.textContent = note;
-                card.appendChild(copy);
+        title.id = "farmAssetTitle";
+        title.tabIndex = -1;
+        title.textContent = model.name || model.kindLabel || "Care plan";
+        copy.appendChild(title);
+        const sub = document.createElement("p");
+        sub.className = "farm-detail-sub";
+        const subject = model.displayName || model.name;
+        const place = [subject && `${subject} care plan`, model.zip && `ZIP ${model.zip}`, model.climate].filter(Boolean).join(" · ");
+        sub.textContent = place;
+        copy.appendChild(sub);
+        const facts = document.createElement("dl");
+        facts.className = "farm-keyfacts";
+        care.factRows(model, "detail").forEach((row) => {
+            if (row.kind === "hint" || row.kind === "reminders") {
+                return;
             }
-            listFrom(section, ["items"]).forEach((item) => {
-                const row = document.createElement("p");
-                row.textContent = [text(item.label), text(item.body || item.detail)].filter(Boolean).join(" — ");
-                card.appendChild(row);
-            });
-            body.appendChild(card);
+            const item = document.createElement("div");
+            const term = document.createElement("dt");
+            term.textContent = row.label;
+            const value = document.createElement("dd");
+            if (row.kind === "cta") {
+                const cta = button(row.value, "btn btn-outline btn-sm");
+                cta.addEventListener("click", () => openAnchor(asset));
+                value.appendChild(cta);
+            } else if (row.kind === "add") {
+                const add = button(row.value, "farm-fact-add");
+                add.addEventListener("click", () => {
+                    if (global.AgriviaFarmUi && global.AgriviaFarmUi.editAsset) {
+                        global.location.hash = "farm";
+                        global.AgriviaFarmUi.editAsset(asset, true);
+                    }
+                });
+                value.appendChild(add);
+            } else {
+                value.textContent = row.value;
+            }
+            item.appendChild(term);
+            item.appendChild(value);
+            facts.appendChild(item);
         });
+        copy.appendChild(facts);
+        hero.appendChild(copy);
+        const imageUrl = care.illustrationFor(asset);
+        if (imageUrl) {
+            const art = document.createElement("img");
+            art.className = "farm-detail-art";
+            art.src = imageUrl;
+            art.alt = "";
+            hero.appendChild(art);
+        }
+        body.appendChild(hero);
 
-        body.appendChild(reminderEditor(asset, listFrom(reminderPayload, ["reminders"]).concat(listFrom(view, ["reminders"]))));
+        const grid = document.createElement("div");
+        grid.className = "farm-detail-grid";
+        const main = document.createElement("div");
+        if (model.stage && model.stage.stages && model.stage.stages.length) {
+            main.appendChild(stageSection(model));
+        }
+        if (model.anchor.date && model.milestones.length) {
+            main.appendChild(milestoneSection(model));
+        } else if (!model.anchor.date) {
+            const empty = document.createElement("section");
+            empty.className = "paper-card farm-section";
+            const heading = document.createElement("h3");
+            heading.textContent = "Estimated milestones";
+            empty.appendChild(heading);
+            const note = document.createElement("p");
+            note.textContent = "Add a planting date to see estimates.";
+            empty.appendChild(note);
+            const cta = button(care.ctaLabel(model.anchor.promptKey, model.kind, model.status), "btn btn-outline btn-sm");
+            cta.addEventListener("click", () => openAnchor(asset));
+            empty.appendChild(cta);
+            main.appendChild(empty);
+        }
+        if (model.guidance.length) {
+            main.appendChild(guidanceSection(model));
+        }
+        const side = document.createElement("div");
+        side.appendChild(reminderEditor(asset, model));
+        side.appendChild(askCard(model));
+        grid.appendChild(main);
+        grid.appendChild(side);
+        body.appendChild(grid);
+        title.focus();
+    }
 
-        const disclaimer = document.createElement("p");
-        disclaimer.className = "farm-care-status";
-        disclaimer.textContent = text(view.disclaimer) || "Guidance only — not a vet diagnosis or extension visit.";
-        body.appendChild(disclaimer);
+    function stageSection(model) {
+        const section = document.createElement("section");
+        section.className = "paper-card farm-section";
+        const heading = document.createElement("h3");
+        heading.textContent = "Growth stage";
+        section.appendChild(heading);
+        const track = document.createElement("div");
+        track.className = "farm-stage-track";
+        track.setAttribute("role", "img");
+        const day = model.stage.day != null ? model.stage.day : "";
+        track.setAttribute("aria-label", `Day ${day}, ${model.stage.label}, stage ${model.stage.index + 1} of ${model.stage.total}`);
+        model.stage.stages.forEach((stage) => {
+            const bar = document.createElement("span");
+            bar.className = stage.is_current || stage.isCurrent ? "is-current" : "";
+            track.appendChild(bar);
+        });
+        section.appendChild(track);
+        if (model.stage.summary) {
+            const summary = document.createElement("p");
+            summary.textContent = model.stage.summary;
+            section.appendChild(summary);
+        }
+        if (model.stage.nextLabel) {
+            const next = document.createElement("p");
+            next.textContent = `Next stage: ${model.stage.nextLabel}` + (model.stage.nextStartsDay != null ? ` from about day ${model.stage.nextStartsDay}` : "");
+            section.appendChild(next);
+        }
+        return section;
+    }
 
-        const ask = button("Ask Advisor about this", "btn btn-primary");
+    function milestoneSection(model) {
+        const section = document.createElement("section");
+        section.className = "paper-card farm-section";
+        const heading = document.createElement("h3");
+        heading.textContent = "Estimated milestones";
+        section.appendChild(heading);
+        const note = document.createElement("p");
+        note.className = "farm-care-status";
+        note.textContent = "Estimated ranges, not guarantees.";
+        section.appendChild(note);
+        const list = document.createElement("dl");
+        list.className = "farm-milestones";
+        model.milestones.forEach((item) => {
+            const row = document.createElement("div");
+            const term = document.createElement("dt");
+            term.textContent = item.label;
+            const value = document.createElement("dd");
+            value.textContent = care.formatRange(item.from, item.to, { year: true });
+            row.appendChild(term);
+            row.appendChild(value);
+            list.appendChild(row);
+        });
+        section.appendChild(list);
+        return section;
+    }
+
+    function guidanceSection(model) {
+        const section = document.createElement("section");
+        section.className = "paper-card farm-section";
+        const heading = document.createElement("h3");
+        heading.textContent = "Care plan";
+        section.appendChild(heading);
+        model.guidance.filter((item) => item.optional !== true).forEach((item) => {
+            const row = document.createElement("article");
+            row.className = "farm-guidance";
+            const title = document.createElement("h4");
+            title.textContent = text(item.label) || text(item.task_type || item.taskType);
+            const when = document.createElement("p");
+            when.textContent = care.intervalText(item.interval_days || item.intervalDays);
+            const copy = document.createElement("p");
+            copy.textContent = text(item.guidance_text || item.guidanceText);
+            row.appendChild(title);
+            row.appendChild(when);
+            row.appendChild(copy);
+            const climate = text(item.climate_note || item.climateNote);
+            if (climate) {
+                const note = document.createElement("p");
+                note.className = "farm-climate-note";
+                note.textContent = climate;
+                row.appendChild(note);
+            }
+            section.appendChild(row);
+        });
+        return section;
+    }
+
+    function askCard(model) {
+        const card = document.createElement("section");
+        card.className = "paper-card farm-ask-card";
+        const heading = document.createElement("h3");
+        heading.textContent = `Questions about your ${model.name.toLowerCase()}?`;
+        card.appendChild(heading);
+        const ask = button(`Ask Advisor about ${model.name}`, "btn btn-primary");
         ask.addEventListener("click", () => {
-            const name = text(shown.name || shown.title);
+            const bits = [`About ${model.name}`];
+            if (model.count != null) {
+                bits.push(`${model.count} ${model.countLabel.toLowerCase()}`);
+            }
+            if (model.stage && model.stage.day != null) {
+                bits.push(`day ${model.stage.day}`);
+            }
+            if (model.stage && model.stage.label) {
+                bits.push(model.stage.label);
+            }
             global.dispatchEvent(new CustomEvent("agrivia-chat-ask", {
-                detail: { query: name ? `About ${name}` : "" },
+                detail: { query: bits.join(", ") },
             }));
             if (typeof global.navigateTo === "function") {
                 global.navigateTo("ai-advisor");
             }
         });
-        body.appendChild(ask);
+        card.appendChild(ask);
+        const disclaimer = document.createElement("p");
+        disclaimer.className = "farm-care-status";
+        disclaimer.textContent = model.disclaimer || "Guidance only — estimated ranges, not guarantees.";
+        card.appendChild(disclaimer);
+        return card;
     }
 
-    function reminderEditor(asset, rows) {
-        const assetId = asset && asset.id;
-        const seen = new Set();
-        const unique = [];
-        rows.forEach((row) => {
-            const key = row.id || row.task_type || row.taskType;
-            if (!key || seen.has(key)) {
-                return;
-            }
-            seen.add(key);
-            unique.push(row);
-        });
+    function reminderEditor(asset, model) {
         const form = document.createElement("form");
-        form.className = "paper-card farm-care-card";
+        form.className = "paper-card farm-section";
         const heading = document.createElement("h3");
         heading.textContent = "Reminders";
         form.appendChild(heading);
-        if (!unique.length) {
-            const empty = document.createElement("p");
-            empty.className = "farm-care-status";
-            empty.textContent = "No reminder types yet.";
-            form.appendChild(empty);
-            return form;
-        }
-        const state = unique.map((row) => ({
+        const lead = document.createElement("p");
+        lead.className = "farm-care-status";
+        lead.textContent = "Nothing is sent until you turn a reminder on.";
+        form.appendChild(lead);
+        const rows = (model.reminders.rows || []).map((row) => ({
             id: row.id || "",
             taskType: row.task_type || row.taskType || "",
+            label: text(row.label) || row.task_type || row.taskType || "Task",
             enabled: Boolean(row.enabled),
-            timeLocal: row.time_local || row.timeLocal || "18:00",
-            frequency: row.frequency || "daily",
-            channel: "in_app",
-        }));
-        state.forEach((row, index) => {
-            const line = document.createElement("label");
+            timeOfDay: text(row.time_of_day || row.timeOfDay || row.time_local || row.timeLocal) || "07:00",
+            intervalDays: Number(row.interval_days || row.intervalDays) || 1,
+        })).concat((model.reminders.suggested || []).map((row) => ({
+            id: "",
+            taskType: row.task_type,
+            label: row.label,
+            enabled: false,
+            timeOfDay: row.time_of_day || "08:00",
+            intervalDays: row.interval_days || 1,
+        })));
+        rows.forEach((row, index) => {
+            const line = document.createElement("div");
             line.className = "farm-reminder-row";
-            const toggle = document.createElement("input");
-            toggle.type = "checkbox";
-            toggle.checked = row.enabled;
-            toggle.addEventListener("change", () => {
-                state[index].enabled = toggle.checked;
-            });
-            const name = document.createElement("span");
-            name.textContent = row.taskType || "Task";
+            const copy = document.createElement("div");
+            const name = document.createElement("strong");
+            name.textContent = row.label;
+            const freq = document.createElement("p");
+            freq.textContent = care.intervalText(row.intervalDays);
+            copy.appendChild(name);
+            copy.appendChild(freq);
             const time = document.createElement("input");
             time.type = "time";
-            time.value = row.timeLocal.slice(0, 5);
+            time.value = row.timeOfDay.slice(0, 5);
+            time.setAttribute("aria-label", `${row.label} time`);
             time.addEventListener("change", () => {
-                state[index].timeLocal = time.value;
+                rows[index].timeOfDay = time.value;
             });
-            line.appendChild(toggle);
-            line.appendChild(name);
+            const toggle = document.createElement("input");
+            toggle.type = "checkbox";
+            toggle.setAttribute("role", "switch");
+            toggle.setAttribute("aria-label", `${row.label} reminder`);
+            toggle.checked = row.enabled;
+            toggle.addEventListener("change", () => {
+                rows[index].enabled = toggle.checked;
+            });
+            line.appendChild(copy);
             line.appendChild(time);
+            line.appendChild(toggle);
             form.appendChild(line);
         });
-        const save = button("Save", "btn btn-primary btn-sm");
+        const save = button("Save reminders", "btn btn-primary btn-sm");
         const status = document.createElement("p");
         status.className = "farm-care-status";
+        status.setAttribute("aria-live", "polite");
         save.addEventListener("click", async (event) => {
             event.preventDefault();
             save.disabled = true;
             try {
-                await api().saveReminders(assetId, state, asset);
+                await api().saveReminders(asset.id, rows, asset);
                 status.textContent = "Saved.";
-                if (global.AgriviaFarmUi) {
-                    global.AgriviaFarmUi.refresh();
+                if (global.AgriviaFarmUi && global.AgriviaFarmUi.refresh) {
+                    await global.AgriviaFarmUi.refresh();
                 }
             } catch (err) {
                 status.textContent = err.message || "Could not save reminders.";
@@ -560,7 +748,15 @@
             const data = await api().listNotifications("");
             const items = listFrom(data, ["notifications", "items"]);
             paintNotifications(body, items);
-            const unreadItems = items.filter((item) => item.read === false || item.status === "unread");
+            const unreadItems = items.filter((item) => {
+                if (item.read_at) {
+                    return false;
+                }
+                if (Object.prototype.hasOwnProperty.call(item, "read_at")) {
+                    return true;
+                }
+                return item.read === false || item.status === "unread";
+            });
             await Promise.all(unreadItems.map((item) => api().readNotification(item.id).catch(() => null)));
             if (unreadItems.length) {
                 setUnread(Math.max(0, unread - unreadItems.length));
@@ -606,9 +802,9 @@
         const row = document.createElement("article");
         row.className = "farm-notify-row";
         const title = document.createElement("strong");
-        title.textContent = text(item.title);
+        title.textContent = text(item.title_text || item.title);
         const body = document.createElement("p");
-        body.textContent = text(item.body);
+        body.textContent = text(item.body_text || item.body);
         const done = button("Done", "farm-care-link");
         const snooze = button("Snooze", "farm-care-link");
         done.addEventListener("click", () => notifyAction(row, "complete", item.id));

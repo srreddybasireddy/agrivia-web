@@ -32,11 +32,14 @@
                 count: 4,
                 careSummary: {
                     hasAnchor: true,
-                    anchorPromptKey: "",
+                    anchorPromptKey: "plant_date",
+                    anchorDate: "2026-09-01",
                     stageLabel: "Grower",
-                    ageLabel: "~6 weeks",
-                    nextTask: { type: "Water", label: "Water · today 6 PM", dueAt: new Date().toISOString() },
-                    nextMilestone: { label: "Harvest expected ~Oct 20 – Nov 8", estimatedFrom: "", estimatedTo: "" },
+                    ageLabel: "day 42",
+                    nextTask: { task_type: "water", label: "Water · today 6 PM" },
+                    milestones: [
+                        { label: "Estimated first fruit (range)", estimated_from: "2026-10-20", estimated_to: "2026-11-08" },
+                    ],
                     remindersEnabledCount: 0,
                 },
             },
@@ -97,9 +100,15 @@
                 anchor_date: summary.hasAnchor ? new Date().toISOString() : "",
             },
             stages: summary.hasAnchor
-                ? [{ label: "Seedling", current: false }, { label: summary.stageLabel || "Grower", current: true }, { label: "Harvest", current: false }]
+                ? [
+                    { label: "Seedling", start_day: 0, end_day: 20, is_current: false },
+                    { label: summary.stageLabel || "Grower", start_day: 21, end_day: 50, is_current: true },
+                    { label: "Harvest", start_day: 51, end_day: null, is_current: false },
+                ]
                 : [],
-            milestones: summary.nextMilestone ? [summary.nextMilestone] : [],
+            current_stage: summary.hasAnchor ? { label: summary.stageLabel || "Grower", day: 42, start_day: 21, end_day: 50, summary: "Local preview stage note." } : null,
+            milestones: summary.milestones || [],
+            guidance: summary.hasAnchor ? [{ task_type: "water", label: "Water", interval_days: 1, guidance_text: summary.nextTask && summary.nextTask.label }] : [],
             sections: summary.hasAnchor
                 ? [{ title: "Water", note: "Local preview climate note for ZIP 85041.", items: [{ label: "Water", body: summary.nextTask && summary.nextTask.label }] }]
                 : [],

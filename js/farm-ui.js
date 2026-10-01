@@ -20,6 +20,7 @@
         "Fish & Shrimp": ["Active", "Planning"],
     };
     const COUNTED_KINDS = {
+        Garden: true,
         Cattle: true,
         "Poultry & Eggs": true,
         "Birds & Bees": true,
@@ -31,6 +32,7 @@
     let activeKindFilter = "";
     let profileEditorOpen = false;
     let editingAssetKey = "";
+    let focusCountOnEdit = false;
 
     function el(id) {
         return document.getElementById(id);
@@ -93,8 +95,10 @@
 
     function placeLine(profile) {
         const auth = global.AgriviaAuth;
-        const name = (profile && profile.userName) || (auth && auth.getName()) || "";
-        const place = (profile && (profile.address || profile.zipCode)) || "";
+        const rawName = (profile && profile.userName) || (auth && auth.getName()) || "";
+        const care = global.AgriviaFarmCare;
+        const name = care && care.displayName ? care.displayName(rawName) : rawName;
+        const place = (profile && profile.zipCode) || (profile && profile.address) || "";
         if (name && place) {
             return `${name} · ${place}`;
         }
@@ -330,11 +334,17 @@
     }
 
     function countLabel(kind) {
+        if (kind === "Garden" || kind === "Crops") {
+            return "Plants";
+        }
         if (kind === "Cattle") {
             return "Head count";
         }
+        if (kind === "Poultry & Eggs") {
+            return "Birds";
+        }
         if (kind === "Fish & Shrimp") {
-            return "Stock count";
+            return "Fish";
         }
         return "Count";
     }
@@ -371,8 +381,9 @@
             detailsInput = textInput(asset.subtitle || "", 255);
             form.appendChild(labeledControl("Details", detailsInput));
         }
-        if (COUNTED_KINDS[asset.kind]) {
+        if (COUNTED_KINDS[asset.kind] || asset.kind === "Crops") {
             countInput = numberInput(asset.count, 0);
+            countInput.dataset.count = "1";
             form.appendChild(labeledControl(countLabel(asset.kind), countInput));
         }
 
@@ -446,6 +457,10 @@
         });
 
         copy.appendChild(form);
+        if (focusCountOnEdit && countInput) {
+            global.setTimeout(() => countInput.focus(), 0);
+            focusCountOnEdit = false;
+        }
     }
 
     function appendCardActions(copy, asset) {
@@ -456,14 +471,18 @@
         ask.type = "button";
         ask.className = "farm-asset-ask";
         ask.textContent = "Ask Advisor →";
+        const care = global.AgriviaFarmCare;
+        const shownName = care && care.displayName ? (care.displayName(asset.title) || asset.title) : asset.title;
+        ask.setAttribute("aria-label", `Ask Advisor about ${shownName}`);
         ask.addEventListener("click", () => {
-            openAdvisor({ category: asset.kind });
+            openAdvisor({ query: shownName ? `About ${shownName}` : "", category: asset.kind });
         });
 
         const edit = document.createElement("button");
         edit.type = "button";
         edit.className = "farm-asset-edit";
         edit.textContent = "Edit";
+        edit.setAttribute("aria-label", `Edit ${shownName}`);
         edit.addEventListener("click", () => {
             editingAssetKey = assetKey(asset);
             renderAssets(visibleAssets(lastAssets));
@@ -473,6 +492,7 @@
         remove.type = "button";
         remove.className = "farm-asset-delete";
         remove.textContent = "Delete";
+        remove.setAttribute("aria-label", `Delete ${shownName}`);
         remove.addEventListener("click", async () => {
             const label = asset.title || "this asset";
             if (!window.confirm(`Remove ${label} from this farm?`)) {
@@ -503,22 +523,21 @@
     }
 
     function cardFacts(asset) {
+        if (asset.kind !== "Crops") {
+            return "";
+        }
         const parts = [];
-        if (asset.variety && asset.kind === "Crops") {
+        if (asset.variety && !/^standard/i.test(asset.variety)) {
             parts.push(asset.variety);
         }
         const acres = formatAcres(asset.acres);
         if (acres) {
             parts.push(acres);
         }
-        if (asset.subtitle) {
-            parts.push(asset.subtitle);
-        }
-        const planted = formatDate(asset.plantedDate);
-        if (planted) {
-            parts.push(`Planted ${planted}`);
-        }
-        const harvest = formatDate(asset.harvestDate);
+        const care = global.AgriviaFarmCare;
+        const harvest = care && care.formatDate
+            ? care.formatDate(asset.harvestDate, { year: true })
+            : formatDate(asset.harvestDate);
         if (harvest) {
             parts.push(`Harvest ${harvest}`);
         }
@@ -534,33 +553,51 @@
         grid.replaceChildren();
         setHidden(empty, lastAssets.length > 0);
         assets.forEach((asset) => {
+            const careApi = global.AgriviaFarmCare;
+            const imageUrl = careApi && careApi.illustrationFor ? careApi.illustrationFor(asset) : asset.imageUrl;
+            const shownName = careApi && careApi.displayName ? (careApi.displayName(asset.title) || asset.title) : asset.title;
             const card = document.createElement("article");
-            card.className = asset.imageUrl ? "farm-asset-card has-image" : "farm-asset-card";
+            card.className = imageUrl ? "farm-asset-card has-image" : "farm-asset-card";
+            if (asset.id) {
+                card.dataset.assetId = asset.id;
+            }
 
             const copy = document.createElement("div");
             copy.className = "farm-asset-copy";
 
+            const head = document.createElement("div");
+            head.className = "farm-asset-head";
             const kind = document.createElement("span");
             kind.className = "farm-asset-kind";
             kind.textContent = kindLabel(asset.kind);
-            copy.appendChild(kind);
+            head.appendChild(kind);
+            if (asset.status) {
+                const pill = document.createElement("span");
+                pill.className = asset.status === "Planning" ? "farm-status-pill is-planning" : "farm-status-pill";
+                const dot = document.createElement("span");
+                dot.className = "farm-status-dot";
+                dot.setAttribute("aria-hidden", "true");
+                pill.appendChild(dot);
+                pill.appendChild(document.createTextNode(asset.status));
+                head.appendChild(pill);
+            }
+            copy.appendChild(head);
 
             const title = document.createElement("h3");
-            title.textContent = asset.title;
+            title.textContent = shownName;
             copy.appendChild(title);
 
             if (editingAssetKey === assetKey(asset)) {
                 card.classList.add("is-editing");
                 appendEditor(copy, asset);
             } else {
-                const statusLine = [kindLabel(asset.kind)];
-                if (asset.status) {
-                    statusLine.push(asset.status);
+                const model = careApi && careApi.normalizeAsset ? careApi.normalizeAsset(asset) : null;
+                if (model && model.variety) {
+                    const variety = document.createElement("p");
+                    variety.className = "farm-asset-variety";
+                    variety.textContent = model.variety;
+                    copy.appendChild(variety);
                 }
-                const meta = document.createElement("p");
-                meta.className = "farm-asset-meta";
-                meta.textContent = statusLine.join(" · ");
-                copy.appendChild(meta);
                 const facts = cardFacts(asset);
                 if (facts) {
                     const extra = document.createElement("p");
@@ -596,11 +633,11 @@
             }
             card.appendChild(copy);
 
-            if (asset.imageUrl) {
+            if (imageUrl) {
                 const deco = document.createElement("div");
                 deco.className = "farm-asset-deco";
                 const art = document.createElement("img");
-                art.src = asset.imageUrl;
+                art.src = imageUrl;
                 art.alt = "";
                 art.addEventListener("error", () => {
                     deco.remove();
@@ -875,5 +912,10 @@
         hasAdvisorFarmContext: hasAdvisorFarmContext,
         placeLine: placeLine,
         kindLabel: kindLabel,
+        editAsset: function (asset, focusCount) {
+            editingAssetKey = assetKey(asset);
+            focusCountOnEdit = Boolean(focusCount);
+            renderAssets(visibleAssets(lastAssets));
+        },
     };
 })(window);
