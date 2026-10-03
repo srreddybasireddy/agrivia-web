@@ -69,6 +69,8 @@ test("a date-only string stays on that calendar day", () => {
 test("ranges use the API dates", () => {
     assert.equal(care.formatRange("2026-10-11", "2026-10-31"), "Oct 11 – 31");
     assert.equal(care.formatRange("2026-11-05", "2026-12-10"), "Nov 5 – Dec 10");
+    assert.equal(care.formatRange("2027-03-30", "2027-10-01"), "Mar 30, 2027 – Oct 1, 2027");
+    assert.equal(care.formatRange("2026-12-20", "2027-01-10"), "Dec 20, 2026 – Jan 10, 2027");
     assert.equal(care.shortMilestoneLabel({ label: "Estimated first flowers (range)" }), "First flowers");
 });
 
@@ -115,8 +117,87 @@ test("a garden bed without a plan asks for a count and a date", () => {
     const rows = care.factRows(model, "card");
     assert.equal(rows.find((row) => row.kind === "add").value, "+ Add plant count");
     assert.equal(rows.find((row) => row.kind === "cta").value, "Set planting date");
+    assert.equal(rows.find((row) => row.kind === "cta").label, "Planted");
     assert.equal(rows.some((row) => row.value === "Count not set"), false);
     assert.equal(model.milestones.length, 0);
+});
+
+test("a pending schedule does not show stages or milestones", () => {
+    const model = care.normalizeAsset({
+        id: "b",
+        kind: "Garden",
+        title: "Banana",
+        status: "Growing",
+        subtitle: "This is an estimate. The banana may not fruit in 56 days.",
+        count: 9,
+        careSummary: {
+            has_anchor: true,
+            anchor_date: "2026-08-07",
+            stage_label: "Fruiting",
+            age_label: "day 56",
+            schedule_status: "processing",
+            schedule_status_label: "Calculating care timing…",
+            next_task: { label: "Check soil moisture before watering." },
+            milestones: [
+                { label: "First flowers", short_label: "First flowers", estimated_from: "2026-09-16", estimated_to: "2026-10-06" },
+            ],
+        },
+    });
+    assert.equal(model.variety, null);
+    assert.equal(model.milestones.length, 0);
+    const rows = care.factRows(model, "card");
+    assert.equal(rows.find((row) => row.label === "Stage").value, "Calculating care timing…");
+    assert.equal(rows.some((row) => row.label === "First flowers"), false);
+    assert.equal(rows.some((row) => row.label === "Next"), false);
+});
+
+test("a care view updates only that asset summary", () => {
+    const summary = care.summaryFromView({
+        has_anchor: true,
+        anchor_date: "2026-08-07",
+        schedule_status: "processing",
+        reminders_enabled_count: 1,
+    }, {
+        has_anchor: true,
+        anchor_date: "2026-08-07",
+        schedule_status: "ready",
+        age_label: "day 270",
+        current_stage: { label: "Flowering" },
+        milestones: [{ label: "First flower", estimated_from: "2027-05-04", estimated_to: "2027-11-01" }],
+        guidance: [{ task_type: "water", guidance_text: "Check soil moisture before watering.", optional: false }],
+    });
+    assert.equal(summary.schedule_status, "ready");
+    assert.equal(summary.stage_label, "Flowering");
+    assert.equal(summary.reminders_enabled_count, 1);
+    assert.equal(summary.milestones.length, 1);
+});
+
+test("a failed schedule shows the backend message", () => {
+    const model = care.normalizeAsset({
+        id: "p",
+        kind: "Garden",
+        title: "Papaya",
+        status: "Growing",
+        careSummary: {
+            has_anchor: true,
+            anchor_date: "2026-10-01",
+            schedule_status: "failed",
+            schedule_status_label: "Could not load care timing",
+        },
+    });
+    const rows = care.factRows(model, "card");
+    assert.equal(rows.find((row) => row.label === "Stage").value, "Could not load care timing");
+});
+
+test("reminder suggestions stay empty when the API sends none", () => {
+    const model = care.normalizeAsset({
+        id: "c",
+        kind: "Poultry & Eggs",
+        title: "chicken",
+        status: "Active",
+        careSummary: { has_anchor: false },
+    });
+    assert.equal(model.reminders.suggested.length, 0);
 });
 
 test("done and snooze lower the unread count", () => {

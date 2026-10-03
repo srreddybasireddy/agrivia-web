@@ -113,11 +113,14 @@
     }
 
     function openAdvisor(detail) {
-        if (detail && detail.query) {
-            global.dispatchEvent(new CustomEvent("agrivia-chat-ask", { detail: detail }));
-        } else if (detail && detail.category) {
+        const payload = detail || {};
+        if (payload.assetId) {
+            global.dispatchEvent(new CustomEvent("agrivia-chat-open-asset", { detail: payload }));
+        } else if (payload.query) {
+            global.dispatchEvent(new CustomEvent("agrivia-chat-ask", { detail: payload }));
+        } else if (payload.category) {
             global.dispatchEvent(new CustomEvent("agrivia-chat-category", {
-                detail: { category: detail.category },
+                detail: { category: payload.category },
             }));
         }
         if (typeof global.navigateTo === "function") {
@@ -475,7 +478,11 @@
         const shownName = care && care.displayName ? (care.displayName(asset.title) || asset.title) : asset.title;
         ask.setAttribute("aria-label", `Ask Advisor about ${shownName}`);
         ask.addEventListener("click", () => {
-            openAdvisor({ query: shownName ? `About ${shownName}` : "", category: asset.kind });
+            openAdvisor({
+                assetId: asset.id,
+                category: asset.kind,
+                title: shownName,
+            });
         });
 
         const edit = document.createElement("button");
@@ -627,7 +634,12 @@
                         if (event.target.closest("button, a, input, select, textarea, label")) {
                             return;
                         }
-                        global.location.hash = `farm/asset/${encodeURIComponent(asset.id)}`;
+                        const next = `farm/asset/${encodeURIComponent(asset.id)}`;
+                        if (String(global.location.hash || "").replace(/^#/, "") === next) {
+                            global.AgriviaFarmCareUi.openAsset(asset.id);
+                            return;
+                        }
+                        global.location.hash = next;
                     });
                 }
             }
@@ -729,7 +741,7 @@
             address: "",
             zipCode: "",
         }, true);
-        if (loadStatus) {
+        if (loadStatus && !lastAssets.length) {
             loadStatus.textContent = "Loading your farm…";
             setHidden(loadStatus, false);
         }
@@ -864,19 +876,41 @@
             assetForm.addEventListener("submit", async (event) => {
                 event.preventDefault();
                 const status = el("farmAssetStatus");
-                try {
-                    await global.AgriviaFarmApi.addAsset(
-                        el("farmAssetKind").value,
-                        el("farmAssetTitle").value
-                    );
-                    el("farmAssetTitle").value = "";
+                const titleInput = el("farmAssetTitle");
+                const kindInput = el("farmAssetKind");
+                const submitButton = event.submitter || assetForm.querySelector("button[type='submit']");
+                const name = titleInput ? titleInput.value.trim() : "";
+                if (!name) {
                     if (status) {
-                        status.textContent = "Saved. Advisor can use this on the next question.";
+                        status.textContent = "Name the plant, animal, or flock first.";
+                    }
+                    if (titleInput) {
+                        titleInput.focus();
+                    }
+                    return;
+                }
+                if (submitButton) {
+                    submitButton.disabled = true;
+                }
+                if (status) {
+                    status.textContent = "Saving…";
+                }
+                try {
+                    await global.AgriviaFarmApi.addAsset(kindInput ? kindInput.value : "", name);
+                    if (titleInput) {
+                        titleInput.value = "";
+                    }
+                    if (status) {
+                        status.textContent = "Saved.";
                     }
                     await loadFarm();
                 } catch (err) {
                     if (status) {
                         status.textContent = err.message || "Could not save that asset.";
+                    }
+                } finally {
+                    if (submitButton) {
+                        submitButton.disabled = false;
                     }
                 }
             });
@@ -912,6 +946,16 @@
         hasAdvisorFarmContext: hasAdvisorFarmContext,
         placeLine: placeLine,
         kindLabel: kindLabel,
+        patchCareSummary: function (assetId, summary) {
+            const asset = lastAssets.find((item) => item.id === assetId);
+            if (!asset || !summary) {
+                return;
+            }
+            asset.careSummary = summary;
+            if (global.AgriviaFarmCareUi && global.AgriviaFarmCareUi.refreshCardFacts) {
+                global.AgriviaFarmCareUi.refreshCardFacts(asset);
+            }
+        },
         editAsset: function (asset, focusCount) {
             editingAssetKey = assetKey(asset);
             focusCountOnEdit = Boolean(focusCount);

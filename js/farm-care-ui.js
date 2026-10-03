@@ -6,6 +6,8 @@
     const care = global.AgriviaFarmCare;
     let unread = 0;
     let pollTimer = 0;
+    let scheduleTimer = 0;
+    let scheduleTries = 0;
     let openAssetId = "";
 
     function el(id) {
@@ -195,7 +197,7 @@
         }
     }
 
-    function appendCardCare(copy, asset) {
+    function cardFacts(asset) {
         const model = care.normalizeAsset(asset);
         const list = document.createElement("dl");
         list.className = "farm-facts";
@@ -216,7 +218,7 @@
                 });
                 value.appendChild(add);
             } else if (row.kind === "cta") {
-                const cta = button(row.value, "btn btn-outline btn-sm farm-care-cta");
+                const cta = button(row.value, "farm-fact-add");
                 cta.setAttribute("aria-label", `${row.value} for ${model.name}`);
                 cta.addEventListener("click", (event) => {
                     event.preventDefault();
@@ -235,7 +237,7 @@
                     turn.addEventListener("click", (event) => {
                         event.preventDefault();
                         event.stopPropagation();
-                        global.location.hash = `farm/asset/${encodeURIComponent(asset.id)}`;
+                        showAsset(asset.id);
                     });
                     value.appendChild(document.createTextNode(" · "));
                     value.appendChild(turn);
@@ -260,13 +262,34 @@
             item.appendChild(value);
             list.appendChild(item);
         });
-        copy.appendChild(list);
+        return list;
+    }
+
+    function appendCardCare(copy, asset) {
+        copy.appendChild(cardFacts(asset));
         const open = document.createElement("a");
         open.className = "farm-care-link farm-care-plan-link";
-        open.href = `#farm/asset/${encodeURIComponent(asset.id)}`;
+        open.href = `#${assetHash(asset.id)}`;
         open.textContent = "Care plan →";
-        open.addEventListener("click", (event) => event.stopPropagation());
+        open.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            showAsset(asset.id);
+        });
         copy.appendChild(open);
+    }
+
+    function refreshCardFacts(asset) {
+        if (!asset || !asset.id) {
+            return;
+        }
+        const escaped = global.CSS && CSS.escape ? CSS.escape(asset.id) : String(asset.id).replace(/"/g, "");
+        const card = document.querySelector(`[data-asset-id="${escaped}"]`);
+        const facts = card && card.querySelector(".farm-facts");
+        if (!facts) {
+            return;
+        }
+        facts.replaceWith(cardFacts(asset));
     }
 
     function line(value, className) {
@@ -349,20 +372,26 @@
         }
     }
 
-    async function openAsset(id) {
+    async function openAsset(id, options) {
+        const quiet = Boolean(options && options.quiet && openAssetId === id && el("farmDetailBody") && el("farmDetailBody").querySelector(".farm-detail-hero"));
         openAssetId = id || "";
         const body = el("farmDetailBody");
         showDetail(true);
         if (!body) {
             return;
         }
-        clear(body);
-        const status = document.createElement("p");
-        status.className = "farm-care-status";
-        status.textContent = "Loading care plan…";
-        body.appendChild(status);
+        let statusNode = null;
+        if (!quiet) {
+            clear(body);
+            statusNode = document.createElement("p");
+            statusNode.className = "farm-care-status";
+            statusNode.textContent = "Loading care plan…";
+            body.appendChild(statusNode);
+        }
         if (!signedIn()) {
-            status.textContent = "Sign in to see this care plan.";
+            if (statusNode) {
+                statusNode.textContent = "Sign in to see this care plan.";
+            }
             return;
         }
         try {
@@ -381,11 +410,25 @@
         }
     }
 
+    function assetHash(id) {
+        return `farm/asset/${encodeURIComponent(id)}`;
+    }
+
+    function showAsset(id) {
+        const next = assetHash(id);
+        const current = String(global.location.hash || "").replace(/^#/, "");
+        if (current === next) {
+            openAsset(id);
+            return;
+        }
+        global.location.hash = next;
+    }
+
     function closeAsset() {
         const returnId = openAssetId;
         openAssetId = "";
         showDetail(false);
-        if (global.location.hash.indexOf("farm/asset/") === 0) {
+        if (String(global.location.hash || "").indexOf("farm/asset/") !== -1) {
             global.location.hash = "farm";
         }
         renderToday();
@@ -436,7 +479,12 @@
         const sub = document.createElement("p");
         sub.className = "farm-detail-sub";
         const subject = model.displayName || model.name;
-        const place = [subject && `${subject} care plan`, model.zip && `ZIP ${model.zip}`, model.climate].filter(Boolean).join(" · ");
+        const mismatch = model.displayName && model.name && model.displayName.toLowerCase() !== model.name.toLowerCase();
+        const place = [
+            mismatch ? `Schedule uses ${model.displayName}` : (subject && `${subject} care plan`),
+            model.zip && `ZIP ${model.zip}`,
+            model.climate,
+        ].filter(Boolean).join(" · ");
         sub.textContent = place;
         copy.appendChild(sub);
         const facts = document.createElement("dl");
@@ -450,7 +498,8 @@
             term.textContent = row.label;
             const value = document.createElement("dd");
             if (row.kind === "cta") {
-                const cta = button(row.value, "btn btn-outline btn-sm");
+                const cta = button(row.value, "farm-fact-add");
+                cta.setAttribute("aria-label", `${row.value} for ${model.name}`);
                 cta.addEventListener("click", () => openAnchor(asset));
                 value.appendChild(cta);
             } else if (row.kind === "add") {
@@ -470,6 +519,12 @@
             facts.appendChild(item);
         });
         copy.appendChild(facts);
+        if (model.schedule && model.schedule.confidence === "low") {
+            copy.appendChild(line("Low confidence estimate", "farm-care-status"));
+        }
+        if (model.schedule && model.schedule.notes) {
+            copy.appendChild(line(model.schedule.notes, "farm-care-status"));
+        }
         hero.appendChild(copy);
         const imageUrl = care.illustrationFor(asset);
         if (imageUrl) {
@@ -498,7 +553,9 @@
             const note = document.createElement("p");
             note.textContent = "Add a planting date to see estimates.";
             empty.appendChild(note);
-            const cta = button(care.ctaLabel(model.anchor.promptKey, model.kind, model.status), "btn btn-outline btn-sm");
+            const ctaLabel = care.ctaLabel(model.anchor.promptKey, model.kind, model.status);
+            const cta = button(ctaLabel, "farm-fact-add");
+            cta.setAttribute("aria-label", `${ctaLabel} for ${model.name}`);
             cta.addEventListener("click", () => openAnchor(asset));
             empty.appendChild(cta);
             main.appendChild(empty);
@@ -609,18 +666,12 @@
         card.appendChild(heading);
         const ask = button(`Ask Advisor about ${model.name}`, "btn btn-primary");
         ask.addEventListener("click", () => {
-            const bits = [`About ${model.name}`];
-            if (model.count != null) {
-                bits.push(`${model.count} ${model.countLabel.toLowerCase()}`);
-            }
-            if (model.stage && model.stage.day != null) {
-                bits.push(`day ${model.stage.day}`);
-            }
-            if (model.stage && model.stage.label) {
-                bits.push(model.stage.label);
-            }
-            global.dispatchEvent(new CustomEvent("agrivia-chat-ask", {
-                detail: { query: bits.join(", ") },
+            global.dispatchEvent(new CustomEvent("agrivia-chat-open-asset", {
+                detail: {
+                    assetId: model.id,
+                    category: model.kind,
+                    title: model.name,
+                },
             }));
             if (typeof global.navigateTo === "function") {
                 global.navigateTo("ai-advisor");
@@ -837,7 +888,13 @@
         const hash = String(global.location.hash || "").replace("#", "");
         const match = hash.match(/^farm\/asset\/([^/?#]+)$/);
         if (match) {
-            openAsset(decodeURIComponent(match[1]));
+            const id = decodeURIComponent(match[1]);
+            const body = el("farmDetailBody");
+            if (openAssetId === id && body && body.querySelector(".farm-detail-hero")) {
+                showDetail(true);
+                return;
+            }
+            openAsset(id);
             return;
         }
         if (openAssetId) {
@@ -847,6 +904,62 @@
         if (hash === "notifications") {
             openNotifications(true);
         }
+    }
+
+    function pendingSchedules() {
+        const ui = global.AgriviaFarmUi;
+        const snapshot = ui && ui.getSnapshot && ui.getSnapshot();
+        return ((snapshot && snapshot.assets) || []).filter((asset) => {
+            const summary = asset.careSummary || {};
+            const status = summary.schedule_status || summary.scheduleStatus || "";
+            return status === "processing" || status === "pending";
+        });
+    }
+
+    async function refreshPendingSchedules() {
+        const pending = pendingSchedules();
+        if (!pending.length || !api() || !care.summaryFromView) {
+            return;
+        }
+        await Promise.all(pending.map(async (asset) => {
+            try {
+                const view = await api().getCareView(asset.id, asset);
+                const summary = care.summaryFromView(asset.careSummary, view || {});
+                if (global.AgriviaFarmUi && global.AgriviaFarmUi.patchCareSummary) {
+                    global.AgriviaFarmUi.patchCareSummary(asset.id, summary);
+                }
+                const status = summary.schedule_status || summary.scheduleStatus || "";
+                if (openAssetId === asset.id && status !== "processing" && status !== "pending") {
+                    openAsset(asset.id, { quiet: true });
+                }
+            } catch (err) {
+                // Leave the card as it is and try on the next tick.
+            }
+        }));
+    }
+
+    function watchSchedules() {
+        if (!pendingSchedules().length || !api()) {
+            scheduleTries = 0;
+            if (scheduleTimer) {
+                global.clearInterval(scheduleTimer);
+                scheduleTimer = 0;
+            }
+            return;
+        }
+        if (scheduleTimer) {
+            return;
+        }
+        scheduleTries = 0;
+        scheduleTimer = global.setInterval(() => {
+            scheduleTries += 1;
+            if (scheduleTries > 15 || !pendingSchedules().length) {
+                global.clearInterval(scheduleTimer);
+                scheduleTimer = 0;
+                return;
+            }
+            refreshPendingSchedules();
+        }, 4000);
     }
 
     function init() {
@@ -890,6 +1003,7 @@
             startPoll();
             renderToday();
             syncRoute();
+            watchSchedules();
         });
         startPoll();
         renderToday();
@@ -899,6 +1013,7 @@
 
     global.AgriviaFarmCareUi = {
         appendCardCare: appendCardCare,
+        refreshCardFacts: refreshCardFacts,
         renderToday: renderToday,
         openAsset: openAsset,
         openNotifications: openNotifications,
