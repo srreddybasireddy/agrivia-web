@@ -296,7 +296,7 @@
             imageUrl: readImageUrl(crop, ops),
             healthAlerts: "",
             careItems: cropTimelineCare(crop),
-            count: readCount(crop, ""),
+            count: readCount(crop, ops, "", careSummaryOf(crop)),
             careSummary: careSummaryOf(crop),
         };
     }
@@ -341,21 +341,34 @@
         return source && typeof source === "object" ? source : null;
     }
 
-    function readCount(extra, subtitle) {
-        if (extra && typeof extra === "object") {
-            const raw = extra.count;
-            const parsed = Number(raw);
-            if (Number.isFinite(parsed) && parsed >= 0) {
-                return parsed;
+    function firstCount(values) {
+        const list = Array.isArray(values) ? values : [];
+        for (let index = 0; index < list.length; index += 1) {
+            const parsed = Number(list[index]);
+            if (Number.isFinite(parsed) && parsed > 0) {
+                return Math.round(parsed);
             }
         }
-        const match = String(subtitle || "").match(/(\d+)/);
-        return match ? Number(match[1]) : null;
+        return null;
+    }
+
+    function readCount(asset, extra, subtitle, summary) {
+        const numericSubtitle = /^\d+$/.test(String(subtitle || "").trim()) ? subtitle : null;
+        return firstCount([
+            asset && asset.count,
+            asset && asset.quantity,
+            asset && (asset.plant_count || asset.plantCount || asset.asset_count || asset.assetCount),
+            extra && extra.count,
+            extra && extra.quantity,
+            summary && summary.quantity,
+            numericSubtitle,
+        ]);
     }
 
     function mapGeneric(asset, kind) {
         const extra = operationalOf(asset);
         const subtitle = readText(asset.subtitle);
+        const summary = careSummaryOf(asset);
         return {
             id: String(asset.id || ""),
             kind: kind,
@@ -366,7 +379,7 @@
             plantedDate: "",
             harvestDate: "",
             subtitle: subtitle,
-            count: readCount(extra, subtitle),
+            count: readCount(asset, extra, subtitle, summary),
             roiEstimate: readRoi(extra),
             imageUrl: readImageUrl(asset, extra),
             healthAlerts: "",
@@ -629,7 +642,9 @@
                 title: fields.title,
                 subtitle: fields.subtitle,
                 status: fields.status,
-                count: fields.count,
+                count: Number.isFinite(Number(fields.count)) && Number(fields.count) > 0
+                    ? Math.round(Number(fields.count))
+                    : null,
             }),
         });
     }

@@ -184,23 +184,22 @@ async function currentUser(request, env, fetchOrigin) {
     if (!farmUuid) {
         return null;
     }
-    let name = pickDisplayName(data.userName, data.name, data.givenName, data.displayName);
-    if (!name) {
-        const profileRes = await fetchOrigin(env, `/users/${farmUuid}/profile`, {
-            method: "GET",
-            headers: {
-                Accept: "application/json",
-                Authorization: authorization,
-            },
-        });
-        if (profileRes.ok) {
-            const profile = await profileRes.json().catch(() => ({}));
-            name = pickDisplayName(profile.userName, profile.name, profile.email);
-        }
+    let profileName = "";
+    const profileRes = await fetchOrigin(env, `/users/${farmUuid}/profile`, {
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+            Authorization: authorization,
+        },
+    });
+    if (profileRes.ok) {
+        const profile = await profileRes.json().catch(() => ({}));
+        profileName = pickDisplayName(profile.userName, profile.name);
     }
-    if (!name) {
-        name = pickDisplayName(data.email) || "Grower";
-    }
+    const name = profileName
+        || pickDisplayName(data.userName, data.name, data.givenName, data.displayName)
+        || pickDisplayName(data.email)
+        || "Grower";
     return {
         id: String(farmUuid),
         name: name,
@@ -484,15 +483,22 @@ export async function handleCommunity(request, env, fetchOrigin) {
             if ((post.reports || []).length >= HIDE_AFTER_REPORTS) {
                 continue;
             }
-            if (
-                viewer
-                && post.authorId === viewer.id
-                && viewer.name
-                && !/^grower$/i.test(viewer.name)
-                && (!post.authorName || /^grower$/i.test(String(post.authorName)))
-            ) {
-                post.authorName = viewer.name;
-                await writePost(kv, post);
+            if (viewer && viewer.name && !/^grower$/i.test(viewer.name)) {
+                let renamed = false;
+                if (post.authorId === viewer.id && post.authorName !== viewer.name) {
+                    post.authorName = viewer.name;
+                    renamed = true;
+                }
+                const comments = Array.isArray(post.comments) ? post.comments : [];
+                comments.forEach((row) => {
+                    if (row && row.authorId === viewer.id && row.authorName !== viewer.name) {
+                        row.authorName = viewer.name;
+                        renamed = true;
+                    }
+                });
+                if (renamed) {
+                    await writePost(kv, post);
+                }
             }
             loaded.push(post);
         }

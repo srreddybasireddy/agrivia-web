@@ -78,15 +78,15 @@
     }
 
     function authorLabel(post) {
-        const stored = String(post && post.authorName || "").trim();
-        if (stored && !/^grower$/i.test(stored)) {
-            return stored;
-        }
         if (post && post.mine) {
             const mine = pickDisplayName(viewer.name);
             if (mine) {
                 return mine;
             }
+        }
+        const stored = String(post && post.authorName || "").trim();
+        if (stored && !/^grower$/i.test(stored)) {
+            return stored;
         }
         return stored || "Grower";
     }
@@ -641,11 +641,20 @@
             grid.addEventListener("submit", onGridSubmit);
         }
         syncComposerType();
-        loadViewerPlace();
-        loadFeed();
+        loadViewerPlace().then(() => loadFeed());
         global.addEventListener("agrivia-auth-changed", () => {
-            loadViewerPlace();
-            loadFeed();
+            loadViewerPlace().then(() => loadFeed());
+        });
+        global.addEventListener("agrivia-farm-changed", (event) => {
+            const profile = event && event.detail && event.detail.snapshot && event.detail.snapshot.profile;
+            const next = profile && String(profile.userName || "").trim();
+            if (!next || next === viewer.name) {
+                return;
+            }
+            viewer.name = next;
+            if (posts.length) {
+                renderPosts();
+            }
         });
     }
 

@@ -109,7 +109,23 @@
         return new Error("The advisor could not answer that request.");
     }
 
-    async function getAdvisoryResponse(deviceUuid, category, query) {
+    async function getAdvisoryResponse(deviceUuid, category, query, focus) {
+        const body = {
+            deviceUuid: deviceUuid,
+            category: category,
+            query: query,
+            summarize: false,
+        };
+        const asset = focus || {};
+        if (asset.assetId) {
+            body.assetId = asset.assetId;
+        }
+        if (asset.assetTitle) {
+            body.assetTitle = asset.assetTitle;
+        }
+        if (asset.assetContext) {
+            body.assetContext = asset.assetContext;
+        }
         const response = await fetchWithTimeout(
             apiUrl("/chat"),
             {
@@ -118,12 +134,7 @@
                     "Content-Type": "application/json",
                     Accept: "application/json",
                 },
-                body: JSON.stringify({
-                    deviceUuid: deviceUuid,
-                    category: category,
-                    query: query,
-                    summarize: false,
-                }),
+                body: JSON.stringify(body),
             },
             config.chatTimeoutMs
         );

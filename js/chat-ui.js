@@ -83,6 +83,7 @@
         row.className = "advisor-asset-row";
         row.setAttribute("data-kind", asset.kind || "");
         row.setAttribute("data-title", asset.title || "");
+        row.setAttribute("data-asset-id", asset.id || "");
 
         if (asset.imageUrl) {
             const thumb = document.createElement("img");
@@ -304,6 +305,7 @@
         }
 
         let selectedCategory = config.category || "General";
+        let activeAsset = null;
         let isSending = false;
         let lastWelcomeGreeting = "";
         const defaultTitle = welcomeTitle ? welcomeTitle.textContent : "What are you working on today?";
@@ -311,6 +313,146 @@
         const askLines = [];
         let askIndex = 0;
         let askRotateTimer = 0;
+
+        function threadStorageKey(assetId) {
+            const auth = global.AgriviaAuth;
+            const farmUuid = auth && auth.getFarmUuid ? auth.getFarmUuid() : "";
+            return `agrivia_asset_chat_v1:${farmUuid || "guest"}:${assetId || "general"}`;
+        }
+
+        function readThread(assetId) {
+            try {
+                const raw = global.localStorage.getItem(threadStorageKey(assetId));
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (err) {
+                return [];
+            }
+        }
+
+        function writeThread(assetId, turns) {
+            try {
+                global.localStorage.setItem(threadStorageKey(assetId), JSON.stringify((turns || []).slice(-30)));
+            } catch (err) {
+                // private mode
+            }
+        }
+
+        function captureThread() {
+            const turns = [];
+            messages.querySelectorAll(".chat-message").forEach((node) => {
+                if (node.classList.contains("chat-message-user")) {
+                    const question = node.querySelector(".chat-ask-q");
+                    if (question && question.textContent) {
+                        turns.push({ role: "user", text: question.textContent });
+                    }
+                } else if (node.classList.contains("chat-message-assistant")) {
+                    const answer = node.querySelector(".chat-message-text");
+                    if (answer && answer.textContent) {
+                        turns.push({ role: "assistant", text: answer.textContent });
+                    }
+                }
+            });
+            return turns.slice(-30);
+        }
+
+        function persistActiveThread() {
+            const id = activeAsset && activeAsset.assetId ? activeAsset.assetId : "general";
+            writeThread(id, captureThread());
+        }
+
+        function assetRecord(assetId) {
+            const farmUi = global.AgriviaFarmUi;
+            const snapshot = farmUi && farmUi.getSnapshot ? farmUi.getSnapshot() : null;
+            const assets = (snapshot && snapshot.assets) || [];
+            return assets.find((item) => item.id === assetId) || null;
+        }
+
+        function describeAsset(asset) {
+            if (!asset) {
+                return "";
+            }
+            const summary = asset.careSummary || {};
+            const lines = [];
+            if (asset.title) {
+                lines.push(`Name: ${asset.title}`);
+            }
+            if (asset.kind) {
+                lines.push(`Kind: ${asset.kind}`);
+            }
+            if (asset.status) {
+                lines.push(`Status: ${asset.status}`);
+            }
+            if (asset.count != null) {
+                lines.push(`Count: ${asset.count}`);
+            }
+            if (asset.subtitle) {
+                lines.push(`Details: ${asset.subtitle}`);
+            }
+            if (summary.anchorDate) {
+                lines.push(`Anchor date: ${summary.anchorDate}`);
+            }
+            if (summary.stageLabel) {
+                lines.push(`Stage: ${summary.stageLabel}${summary.ageLabel ? ` ${summary.ageLabel}` : ""}`);
+            }
+            if (summary.nextTask && summary.nextTask.label) {
+                lines.push(`Next care: ${summary.nextTask.label}`);
+            }
+            (summary.milestones || []).slice(0, 3).forEach((item) => {
+                if (item && item.label) {
+                    lines.push(`Milestone: ${item.label}`);
+                }
+            });
+            return lines.join("\n").slice(0, 1500);
+        }
+
+        function chatFocus() {
+            if (!activeAsset || !activeAsset.assetId) {
+                return null;
+            }
+            const record = assetRecord(activeAsset.assetId);
+            return {
+                assetId: activeAsset.assetId,
+                assetTitle: activeAsset.title || (record && record.title) || "",
+                assetContext: describeAsset(record),
+            };
+        }
+
+        function renderThread(turns) {
+            messages.replaceChildren();
+            (turns || []).forEach((turn) => {
+                if (!turn || (turn.role !== "user" && turn.role !== "assistant") || !turn.text) {
+                    return;
+                }
+                messages.appendChild(createMessage(turn.role, turn.text));
+            });
+            const hasTurns = messages.childElementCount > 0;
+            showEmpty(!hasTurns);
+            if (hasTurns) {
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }
+
+        function focusAsset(detail) {
+            const payload = detail || {};
+            const assetId = payload.assetId || "";
+            if (!assetId) {
+                return;
+            }
+            persistActiveThread();
+            const record = assetRecord(assetId);
+            activeAsset = {
+                assetId: assetId,
+                category: payload.category || (record && record.kind) || "",
+                title: payload.title || (record && record.title) || "",
+            };
+            setChatCategory(activeAsset.category);
+            input.placeholder = activeAsset.title ? `Ask about ${activeAsset.title}…` : defaultPlaceholder;
+            renderThread(readThread(assetId));
+            applyWelcomeCopy();
+            highlightFarmRail();
+            input.focus();
+        }
 
         function setAskLines(prompts) {
             askLines.length = 0;
@@ -502,9 +644,9 @@
             if (!assetsEl) {
                 return;
             }
-            const active = isKnownCategory(selectedCategory) ? selectedCategory : "";
+            const activeId = activeAsset && activeAsset.assetId ? activeAsset.assetId : "";
             assetsEl.querySelectorAll(".advisor-asset-row").forEach((row) => {
-                row.classList.toggle("is-active", Boolean(active) && row.getAttribute("data-kind") === active);
+                row.classList.toggle("is-active", Boolean(activeId) && row.getAttribute("data-asset-id") === activeId);
             });
         }
 
@@ -520,7 +662,9 @@
                 return;
             }
             let text = "";
-            if (ctx) {
+            if (activeAsset && activeAsset.title) {
+                text = `Ask about ${activeAsset.title}. Answers use the details saved for this item.`;
+            } else if (ctx) {
                 text = farmAskLine(ctx.assets);
             }
             if (!text) {
@@ -610,9 +754,11 @@
 
             try {
                 const deviceUuid = currentDeviceUuid();
-                const category = categoryForQuery(query);
+                const category = activeAsset && activeAsset.category
+                    ? activeAsset.category
+                    : categoryForQuery(query);
                 renderActiveCategory();
-                const result = await api.getAdvisoryResponse(deviceUuid, category, query);
+                const result = await api.getAdvisoryResponse(deviceUuid, category, query, chatFocus());
                 pending.remove();
                 const answerText = answerWithFollowUp(result);
                 if (!answerText) {
@@ -643,6 +789,7 @@
                 appendNode(createStatus(message, "error"));
                 showDefaultChips();
             } finally {
+                persistActiveThread();
                 setBusy(false);
                 input.focus();
             }
@@ -760,11 +907,11 @@
                 if (!row || isSending) {
                     return;
                 }
-                const kind = row.getAttribute("data-kind") || "";
-                const title = row.getAttribute("data-title") || "";
-                setChatCategory(kind);
-                input.placeholder = title ? `Ask about ${title}…` : defaultPlaceholder;
-                input.focus();
+                focusAsset({
+                    assetId: row.getAttribute("data-asset-id") || "",
+                    category: row.getAttribute("data-kind") || "",
+                    title: row.getAttribute("data-title") || "",
+                });
             });
         }
 
@@ -790,6 +937,10 @@
         global.addEventListener("agrivia-chat-category", (event) => {
             const name = event && event.detail && event.detail.category;
             setChatCategory(name);
+        });
+        global.addEventListener("agrivia-chat-open-asset", (event) => {
+            const detail = event && event.detail ? event.detail : {};
+            focusAsset(detail);
         });
         global.addEventListener("agrivia-chat-ask", (event) => {
             const detail = event && event.detail ? event.detail : {};

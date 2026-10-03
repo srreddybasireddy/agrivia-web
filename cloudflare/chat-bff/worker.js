@@ -119,8 +119,8 @@ function isFarmPath(path) {
         || /^\/users\/[0-9a-f-]+\/pending-details$/i.test(path)
         || /^\/users\/[0-9a-f-]+\/asset-profile-answer$/i.test(path)
         ||         /^\/generic_assets\/[0-9a-f-]+\//i.test(path)
-        || /^\/cattle\/[0-9a-f-]+$/i.test(path)
-        || /^\/crops\/[0-9a-f-]+$/i.test(path)
+        || /^\/cattle\/[0-9a-f-]+(?:\/[0-9a-f-]+)?$/i.test(path)
+        || /^\/crops\/[0-9a-f-]+(?:\/[0-9a-f-]+)?$/i.test(path)
         || /^\/assets\/[^/]+\/care-plan$/i.test(path)
         || /^\/assets\/[^/]+\/care-view$/i.test(path)
         || /^\/assets\/[^/]+\/reminders$/i.test(path)
@@ -200,18 +200,28 @@ async function proxyChat(request, env) {
     }
 
     const deviceUuid = isUuid(payload.deviceUuid) ? payload.deviceUuid : crypto.randomUUID();
+    const body = {
+        deviceUuid: deviceUuid,
+        category: normalizeCategory(payload.category),
+        query: query.slice(0, MAX_QUERY_LENGTH),
+        summarize: false,
+    };
+    if (isUuid(payload.assetId)) {
+        body.assetId = payload.assetId;
+    }
+    if (typeof payload.assetTitle === "string" && payload.assetTitle.trim()) {
+        body.assetTitle = payload.assetTitle.trim().slice(0, 150);
+    }
+    if (typeof payload.assetContext === "string" && payload.assetContext.trim()) {
+        body.assetContext = payload.assetContext.trim().slice(0, 1500);
+    }
     const originRes = await fetchOrigin(env, "/chat", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
         },
-        body: JSON.stringify({
-            deviceUuid: deviceUuid,
-            category: normalizeCategory(payload.category),
-            query: query.slice(0, MAX_QUERY_LENGTH),
-            summarize: false,
-        }),
+        body: JSON.stringify(body),
     });
     return passOrigin(originRes);
 }

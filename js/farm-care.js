@@ -54,8 +54,13 @@
             nextTask: taskOf(raw.next_task || raw.nextTask),
             nextMilestone: milestoneOf(Array.isArray(milestones) ? milestones[0] : milestones),
             milestones: (Array.isArray(milestones) ? milestones : []).map(milestoneOf).filter(Boolean),
-            quantity: positiveCount(raw.quantity),
+            quantity: positiveCount(raw.quantity != null ? raw.quantity : (raw.asset_count != null ? raw.asset_count : raw.count)),
             remindersEnabledCount: Number.isFinite(count) && count > 0 ? count : 0,
+            scheduleStatus: text(raw.schedule_status || raw.scheduleStatus),
+            scheduleStatusLabel: text(raw.schedule_status_label || raw.scheduleStatusLabel),
+            scheduleError: text(raw.schedule_error || raw.scheduleError),
+            confidence: text(raw.confidence).toLowerCase(),
+            notes: text(raw.notes),
         };
     }
 
@@ -104,13 +109,13 @@
     function ctaLabel(promptKey, kind, status) {
         const key = text(promptKey).toLowerCase();
         const planning = text(status).toLowerCase() === "planning";
-        if (kind === "Poultry & Eggs" || key === "hatch_date" || key === "acquired_age") {
-            return "Set hatch or acquired date";
+        if (kind === "Poultry & Eggs" || key === "hatch_date") {
+            return "Set hatch date";
         }
-        if (planning && (kind === "Garden" || kind === "Crops" || !kind)) {
-            return "Set planned date";
+        if (kind === "Cattle" || key === "acquired_age") {
+            return "Set acquired date";
         }
-        if (key === "plant_date" || key === "transplant_date" || key === "set_plant_date" || kind === "Garden" || kind === "Crops") {
+        if (key === "plant_date" || key === "transplant_date" || key === "set_plant_date" || kind === "Garden" || kind === "Crops" || planning) {
             return "Set planting date";
         }
         const value = text(promptKey);
@@ -168,19 +173,32 @@
             return "";
         }
         if (start && end && start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth()) {
-            const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(start);
-            if (withYear) {
-                const right = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(end);
-                return `${month} ${start.getDate()} – ${right}`;
+            if (rangeNeedsYear(start, end, withYear)) {
+                return `${formatDate(start, { year: true })} – ${formatDate(end, { year: true })}`;
             }
+            const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(start);
             return `${month} ${start.getDate()} – ${end.getDate()}`;
         }
-        const left = formatDate(start || end, { year: false });
-        const right = formatDate(end || start, { year: withYear });
+        const showYear = rangeNeedsYear(start, end, withYear);
+        const left = formatDate(start || end, { year: showYear });
+        const right = formatDate(end || start, { year: showYear });
         if (!end || !start) {
             return formatDate(start || end, { year: withYear });
         }
         return `${left} – ${right}`;
+    }
+
+    function rangeNeedsYear(start, end, force) {
+        if (force) {
+            return true;
+        }
+        if (!start || !end) {
+            return false;
+        }
+        const year = new Date().getFullYear();
+        return start.getFullYear() !== end.getFullYear()
+            || start.getFullYear() !== year
+            || end.getFullYear() !== year;
     }
 
     function formatDay(value) {
@@ -350,15 +368,6 @@
         harvest_check: "08:00",
     };
 
-    const DEFAULT_TASKS = {
-        Garden: [["water", 2], ["fertilize", 14], ["pest_check", 7]],
-        Crops: [["water", 2], ["fertilize", 14], ["pest_check", 7]],
-        "Poultry & Eggs": [["water", 1], ["feed", 1], ["health_check", 7]],
-        Cattle: [["water", 1], ["health_check", 7]],
-        "Birds & Bees": [["health_check", 7]],
-        "Fish & Shrimp": [["feed", 1], ["health_check", 7]],
-    };
-
     function displayName(value) {
         const raw = text(value);
         if (!raw) {
@@ -415,6 +424,9 @@
             return null;
         }
         if (text(asset.title) && raw.toLowerCase() === text(asset.title).toLowerCase()) {
+            return null;
+        }
+        if (raw.length > 48 || /[.!?]/.test(raw)) {
             return null;
         }
         return raw;
@@ -505,10 +517,7 @@
             });
         }
         if (!source.length) {
-            source = (DEFAULT_TASKS[model && model.kind] || []).map((pair) => ({
-                task_type: pair[0],
-                interval_days: pair[1],
-            }));
+            return [];
         }
         return source.map((item) => {
             const type = text(item.task_type || item.taskType).toLowerCase();
@@ -521,14 +530,36 @@
         }).filter((item) => item.task_type && !saved.has(item.task_type));
     }
 
-    function hintFor(kind) {
-        if (kind === "Poultry & Eggs") {
-            return "Add hatch date to see estimate (usually 20–26 weeks after hatch)";
-        }
-        if (kind === "Garden" || kind === "Crops") {
-            return "Add planting date to see first-fruit estimate";
-        }
+    function hintFor() {
         return "Add a date to see estimates";
+    }
+
+    function summaryFromView(previous, view) {
+        const prior = previous && typeof previous === "object" ? previous : {};
+        const source = view && typeof view === "object" ? view : {};
+        const status = text(source.schedule_status || source.scheduleStatus);
+        const waiting = status === "processing" || status === "pending" || status === "failed";
+        const stage = source.current_stage || source.currentStage;
+        const guidance = Array.isArray(source.guidance) ? source.guidance : [];
+        const next = guidance.find((item) => item && item.optional !== true && item.is_optional !== true) || guidance[0];
+        return Object.assign({}, prior, {
+            has_anchor: Boolean(source.has_anchor ?? source.hasAnchor ?? prior.has_anchor ?? prior.hasAnchor),
+            anchor_date: source.anchor_date || source.anchorDate || prior.anchor_date || prior.anchorDate || "",
+            anchor_prompt_key: source.anchor_prompt_key || source.anchorPromptKey || prior.anchor_prompt_key || prior.anchorPromptKey || "",
+            stage_label: waiting ? "" : text(stage && stage.label),
+            age_label: waiting ? "" : text(source.age_label || source.ageLabel),
+            next_task: !waiting && next ? {
+                task_type: next.task_type || next.taskType || next.type || "",
+                label: next.guidance_text || next.guidanceText || next.label || "",
+            } : null,
+            milestones: waiting ? [] : (source.milestones || []),
+            schedule_status: status,
+            schedule_status_label: text(source.schedule_status_label || source.scheduleStatusLabel),
+            schedule_error: text(source.schedule_error || source.scheduleError),
+            confidence: text(source.confidence),
+            notes: text(source.notes),
+            subject_key: text(source.subject_key || source.subjectKey) || prior.subject_key || prior.subjectKey || "",
+        });
     }
 
     function normalizeAsset(listAsset, careView) {
@@ -581,7 +612,19 @@
             climate: text(view && (view.climate_band || view.climateBand)),
             zip: text(view && (view.zip_code || view.zipCode)),
             displayName: text(view && view.display_name),
+            schedule: {
+                status: text((view && (view.schedule_status || view.scheduleStatus)) || summary.scheduleStatus),
+                label: text((view && (view.schedule_status_label || view.scheduleStatusLabel)) || summary.scheduleStatusLabel),
+                error: text((view && (view.schedule_error || view.scheduleError)) || summary.scheduleError),
+                confidence: text((view && view.confidence) || summary.confidence).toLowerCase(),
+                notes: text((view && view.notes) || summary.notes),
+            },
         };
+        if (model.schedule.status === "processing" || model.schedule.status === "pending" || model.schedule.status === "failed") {
+            model.stage = null;
+            model.nextTask = null;
+            model.milestones = [];
+        }
         if (!model.anchor.date) {
             model.milestones = [];
             model.stage = null;
@@ -621,7 +664,14 @@
                 rows.push({ label: "Age", value: age, kind: "value" });
             }
         }
-        if (model.stage && model.stage.label) {
+        const waiting = model.schedule && (model.schedule.status === "processing" || model.schedule.status === "pending" || model.schedule.status === "failed");
+        if (waiting) {
+            rows.push({
+                label: "Stage",
+                value: model.schedule.label || (model.schedule.status === "failed" ? "Could not load care timing" : "Calculating care timing…"),
+                kind: "status",
+            });
+        } else if (model.stage && model.stage.label) {
             const bits = [model.stage.label];
             if (model.stage.day != null) {
                 bits.push(`day ${model.stage.day}`);
@@ -634,10 +684,10 @@
                 total: model.stage.total,
             });
         }
-        if (scope !== "detail" && model.nextTask && model.nextTask.label) {
+        if (!waiting && scope !== "detail" && model.nextTask && model.nextTask.label) {
             rows.push({ label: "Next", value: model.nextTask.label, kind: "value" });
         }
-        if (scope !== "detail") {
+        if (!waiting && scope !== "detail") {
             model.milestones.slice(0, 2).forEach((item) => {
                 const range = formatRange(item.from, item.to);
                 if (item.label && range) {
@@ -647,6 +697,8 @@
             if (!model.anchor.date) {
                 rows.push({ label: "Estimates", value: hintFor(model.kind), kind: "hint" });
             }
+        }
+        if (scope !== "detail") {
             const on = model.reminders.enabledCount > 0;
             rows.push({
                 label: "Reminders",
@@ -688,6 +740,7 @@
         subjectKeyOf: subjectKeyOf,
         displayName: displayName,
         factRows: factRows,
+        summaryFromView: summaryFromView,
         suggestedReminders: suggestedReminders,
         intervalText: intervalText,
         shortMilestoneLabel: shortMilestoneLabel,
