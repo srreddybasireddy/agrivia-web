@@ -69,21 +69,22 @@
     }
 
     async function fetchAuthConfig() {
+        const fallbackId = config.googleClientId || "";
         try {
             const response = await fetch(apiUrl("/auth/config"), {
                 headers: { Accept: "application/json" },
             });
             if (!response.ok) {
-                return { enabled: false, clientId: config.googleClientId || "" };
+                return { enabled: Boolean(fallbackId), clientId: fallbackId };
             }
             const data = await response.json();
-            const clientId = data.clientId || config.googleClientId || "";
+            const clientId = data.clientId || fallbackId;
             return {
                 enabled: Boolean(data.enabled) || Boolean(clientId),
                 clientId: clientId,
             };
         } catch (err) {
-            return { enabled: Boolean(config.googleClientId), clientId: config.googleClientId || "" };
+            return { enabled: Boolean(fallbackId), clientId: fallbackId };
         }
     }
 
@@ -117,7 +118,7 @@
         clearSession();
     }
 
-    function loadGis(callback) {
+    function loadGis(callback, onError) {
         if (global.google && global.google.accounts && global.google.accounts.id) {
             callback();
             return;
@@ -125,6 +126,9 @@
         const existing = document.querySelector("script[data-agrivia-gis]");
         if (existing) {
             existing.addEventListener("load", callback, { once: true });
+            if (onError) {
+                existing.addEventListener("error", onError, { once: true });
+            }
             return;
         }
         const script = document.createElement("script");
@@ -133,6 +137,9 @@
         script.defer = true;
         script.setAttribute("data-agrivia-gis", "true");
         script.addEventListener("load", callback, { once: true });
+        if (onError) {
+            script.addEventListener("error", onError, { once: true });
+        }
         document.head.appendChild(script);
     }
 
@@ -160,6 +167,12 @@
                 text: "signin_with",
                 shape: "pill",
             });
+        }, () => {
+            const hint = document.getElementById("authUnavailable");
+            if (hint) {
+                hint.hidden = false;
+                hint.textContent = "Google sign-in could not load. Refresh and try again.";
+            }
         });
     }
 

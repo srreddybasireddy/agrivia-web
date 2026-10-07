@@ -700,14 +700,14 @@
             taskType: row.task_type || row.taskType || "",
             label: text(row.label) || row.task_type || row.taskType || "Task",
             enabled: Boolean(row.enabled),
-            timeOfDay: text(row.time_of_day || row.timeOfDay || row.time_local || row.timeLocal) || "07:00",
+            timeOfDay: care.timeOfDayValue(row.time_of_day || row.timeOfDay || row.time_local || row.timeLocal, "07:00"),
             intervalDays: Number(row.interval_days || row.intervalDays) || 1,
         })).concat((model.reminders.suggested || []).map((row) => ({
             id: "",
             taskType: row.task_type,
             label: row.label,
             enabled: false,
-            timeOfDay: row.time_of_day || "08:00",
+            timeOfDay: care.timeOfDayValue(row.time_of_day || row.timeOfDay, "08:00"),
             intervalDays: row.interval_days || 1,
         })));
         rows.forEach((row, index) => {
@@ -722,7 +722,7 @@
             copy.appendChild(freq);
             const time = document.createElement("input");
             time.type = "time";
-            time.value = row.timeOfDay.slice(0, 5);
+            time.value = row.timeOfDay;
             time.setAttribute("aria-label", `${row.label} time`);
             time.addEventListener("change", () => {
                 rows[index].timeOfDay = time.value;
@@ -938,6 +938,68 @@
         }));
     }
 
+    const scheduleStarts = new Set();
+
+    function anchorDateOf(asset) {
+        const summary = asset && asset.careSummary ? asset.careSummary : {};
+        const raw = summary.anchorDate || summary.anchor_date || (asset && asset.plantedDate) || "";
+        const match = String(raw).match(/^(\d{4}-\d{2}-\d{2})/);
+        return match ? match[1] : "";
+    }
+
+    function scheduleStatusOf(asset) {
+        const summary = asset && asset.careSummary ? asset.careSummary : {};
+        return summary.scheduleStatus || summary.schedule_status || "";
+    }
+
+    async function ensureCareSchedules() {
+        const ui = global.AgriviaFarmUi;
+        const snapshot = ui && ui.getSnapshot && ui.getSnapshot();
+        const assets = (snapshot && snapshot.assets) || [];
+        const client = api();
+        const preview = global.AgriviaFarmPreview;
+        const auth = global.AgriviaAuth;
+        const signedIn = Boolean(auth && auth.getFarmUuid && auth.getFarmUuid());
+        const canStart = Boolean(client && client.saveCarePlan && signedIn && !(preview && preview.enabled && preview.enabled()));
+        const waiting = canStart ? assets.filter((asset) => {
+            if (!asset || !asset.id || scheduleStarts.has(asset.id)) {
+                return false;
+            }
+            const status = scheduleStatusOf(asset);
+            if (status === "ready" || status === "failed") {
+                return false;
+            }
+            if (care.harvestLine && care.harvestLine(asset.careSummary)) {
+                return false;
+            }
+            return Boolean(anchorDateOf(asset));
+        }) : [];
+        await Promise.all(waiting.map(async (asset) => {
+            scheduleStarts.add(asset.id);
+            try {
+                const saved = await client.saveCarePlan(asset.id, {
+                    category: asset.kind,
+                    assetTitle: asset.title,
+                    anchorDate: anchorDateOf(asset),
+                    quantity: asset.count,
+                });
+                const view = saved && (saved.careView || saved.care_view);
+                const summary = care.summaryFromView(asset.careSummary, view || {
+                    has_anchor: true,
+                    anchor_date: anchorDateOf(asset),
+                    schedule_status: "processing",
+                    schedule_status_label: "Calculating care timing…",
+                });
+                if (ui.patchCareSummary) {
+                    ui.patchCareSummary(asset.id, summary);
+                }
+            } catch (err) {
+                scheduleStarts.delete(asset.id);
+            }
+        }));
+        watchSchedules();
+    }
+
     function watchSchedules() {
         if (!pendingSchedules().length || !api()) {
             scheduleTries = 0;
@@ -1003,7 +1065,7 @@
             startPoll();
             renderToday();
             syncRoute();
-            watchSchedules();
+            ensureCareSchedules();
         });
         startPoll();
         renderToday();

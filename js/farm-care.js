@@ -36,7 +36,13 @@
         if (!label && !from && !to) {
             return null;
         }
-        return { label: label, estimatedFrom: from, estimatedTo: to };
+        return {
+            key: text(raw.milestone_key || raw.milestoneKey || raw.key),
+            label: label,
+            shortLabel: text(raw.short_label || raw.shortLabel),
+            estimatedFrom: from,
+            estimatedTo: to,
+        };
     }
 
     function normalizeSummary(raw) {
@@ -219,16 +225,128 @@
         return task.type || when;
     }
 
+    const MILESTONE_LABELS = {
+        first_flower: "First flower",
+        first_fruit: "First fruit",
+        first_harvest: "First harvest",
+        first_egg: "First egg",
+    };
+
+    function isWeakShortLabel(value) {
+        const raw = text(value);
+        if (!raw) {
+            return true;
+        }
+        if (/^[A-Z]{1,3}$/.test(raw)) {
+            return true;
+        }
+        return raw.length <= 3 && !/\s/.test(raw);
+    }
+
     function shortMilestoneLabel(raw) {
-        const explicit = text(raw && (raw.short_label || raw.shortLabel));
-        if (explicit) {
-            return explicit;
+        const key = text(raw && (raw.key || raw.milestone_key || raw.milestoneKey)).toLowerCase();
+        if (MILESTONE_LABELS[key]) {
+            return MILESTONE_LABELS[key];
         }
         const source = text(raw && raw.label).replace(/^Estimated\s+/i, "").replace(/\s*\(range[^)]*\)\s*$/i, "").trim();
-        if (!source) {
+        const lower = source.toLowerCase();
+        if (/\bfruit\b/.test(lower)) {
+            return MILESTONE_LABELS.first_fruit;
+        }
+        if (/\bharvest\b/.test(lower)) {
+            return MILESTONE_LABELS.first_harvest;
+        }
+        if (/\begg\b/.test(lower)) {
+            return MILESTONE_LABELS.first_egg;
+        }
+        if (/\bflower/.test(lower)) {
+            return MILESTONE_LABELS.first_flower;
+        }
+        const explicit = text(raw && (raw.short_label || raw.shortLabel));
+        if (explicit && !isWeakShortLabel(explicit)) {
+            return explicit.charAt(0).toUpperCase() + explicit.slice(1);
+        }
+        if (!source || isWeakShortLabel(source)) {
             return "";
         }
         return source.charAt(0).toUpperCase() + source.slice(1);
+    }
+
+    const HARVEST_KEYS = ["first_harvest", "first_fruit", "first_egg"];
+
+    function isHarvestMilestone(item) {
+        if (!item) {
+            return false;
+        }
+        const key = text(item.key || item.milestone_key || item.milestoneKey).toLowerCase();
+        if (HARVEST_KEYS.indexOf(key) !== -1 || key === "harvest" || /_harvest$/.test(key)) {
+            return true;
+        }
+        const label = text(item.shortLabel || item.short_label || item.label).toLowerCase();
+        return /\bharvest\b/.test(label) || /\bfruit\b/.test(label);
+    }
+
+    function harvestMilestone(milestones, kind) {
+        const rows = Array.isArray(milestones) ? milestones : [];
+        // Layers are for eggs; a meat "harvest" window should not win on poultry cards.
+        const prefer = kind === "Poultry & Eggs"
+            ? ["first_egg", "first_harvest", "first_fruit"]
+            : HARVEST_KEYS;
+        let index = 0;
+        for (index = 0; index < prefer.length; index += 1) {
+            const key = prefer[index];
+            const found = rows.find((item) => text(item && (item.key || item.milestone_key || item.milestoneKey)).toLowerCase() === key);
+            if (found) {
+                return found;
+            }
+        }
+        return rows.find(isHarvestMilestone) || null;
+    }
+
+    /** Card row label for the primary outcome milestone (crop harvest vs poultry eggs). */
+    function outcomeRowLabel(milestone) {
+        const key = text(milestone && (milestone.key || milestone.milestone_key || milestone.milestoneKey)).toLowerCase();
+        if (key === "first_egg") {
+            return "First egg";
+        }
+        if (key === "first_fruit") {
+            return "First fruit";
+        }
+        if (key === "first_harvest" || key === "harvest" || /_harvest$/.test(key)) {
+            return "Harvest";
+        }
+        const short = shortMilestoneLabel(milestone);
+        if (short) {
+            return short;
+        }
+        return "Harvest";
+    }
+
+    function harvestLine(summary) {
+        const normalized = normalizeSummary(summary);
+        if (!normalized) {
+            return "";
+        }
+        const status = normalized.scheduleStatus;
+        if (status === "processing" || status === "pending" || status === "failed") {
+            return "";
+        }
+        const match = harvestMilestone(normalized.milestones);
+        if (!match) {
+            return "";
+        }
+        return formatRange(match.estimatedFrom || match.from, match.estimatedTo || match.to);
+    }
+
+    function timeOfDayValue(value, fallback) {
+        const raw = text(value);
+        const match = raw.match(/^(\d{1,2}):(\d{2})/);
+        if (!match) {
+            return text(fallback) || "08:00";
+        }
+        const hour = Math.min(23, Math.max(0, Number(match[1])));
+        const minute = Math.min(59, Math.max(0, Number(match[2])));
+        return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
     }
 
     function milestoneLine(milestone) {
@@ -341,7 +459,7 @@
 
     const COUNT_LABELS = {
         Garden: "Plants",
-        Crops: "Plants",
+        Crops: "Acres",
         "Poultry & Eggs": "Birds",
         Cattle: "Head",
         "Birds & Bees": "Hives",
@@ -537,6 +655,9 @@
     function summaryFromView(previous, view) {
         const prior = previous && typeof previous === "object" ? previous : {};
         const source = view && typeof view === "object" ? view : {};
+        if (source.has_plan === false && !source.milestones && !source.schedule_status && !source.scheduleStatus) {
+            return prior;
+        }
         const status = text(source.schedule_status || source.scheduleStatus);
         const waiting = status === "processing" || status === "pending" || status === "failed";
         const stage = source.current_stage || source.currentStage;
@@ -593,7 +714,10 @@
             rawName: text(asset.title),
             status: text(asset.status),
             variety: varietyOf(asset, name),
-            count: positiveCount(asset.count != null ? asset.count : (view && (view.asset_count != null ? view.asset_count : view.quantity))) || summary.quantity,
+            count: asset.kind === "Crops"
+                ? null
+                : (positiveCount(asset.count != null ? asset.count : (view && (view.asset_count != null ? view.asset_count : view.quantity))) || summary.quantity),
+            acres: asset.kind === "Crops" && Number(asset.acres) > 0 ? Number(asset.acres) : null,
             countLabel: countLabelOf(asset.kind),
             anchor: anchor,
             stage: summary.hasAnchor || (view && view.current_stage) ? stageOf(summary, view) : stageOf(summary, view),
@@ -639,7 +763,14 @@
         if (!model) {
             return rows;
         }
-        if (model.count != null) {
+        if (model.kind === "Crops") {
+            if (model.acres != null) {
+                const acres = model.acres % 1 === 0 ? String(model.acres) : String(Number(model.acres.toFixed(1)));
+                rows.push({ label: "Acres", value: acres, kind: "value" });
+            } else {
+                rows.push({ label: "Acres", value: "+ Add acres", kind: "add" });
+            }
+        } else if (model.count != null) {
             rows.push({ label: model.countLabel, value: String(model.count), kind: "value" });
         } else {
             const noun = model.countLabel === "Plants" ? "plant count" : model.countLabel.toLowerCase();
@@ -688,7 +819,14 @@
             rows.push({ label: "Next", value: model.nextTask.label, kind: "value" });
         }
         if (!waiting && scope !== "detail") {
-            model.milestones.slice(0, 2).forEach((item) => {
+            const outcome = harvestMilestone(model.milestones, model.kind);
+            if (outcome) {
+                const outcomeRange = formatRange(outcome.from || outcome.estimatedFrom, outcome.to || outcome.estimatedTo);
+                if (outcomeRange) {
+                    rows.push({ label: outcomeRowLabel(outcome), value: outcomeRange, kind: "value" });
+                }
+            }
+            model.milestones.filter((item) => item !== outcome).slice(0, 2).forEach((item) => {
                 const range = formatRange(item.from, item.to);
                 if (item.label && range) {
                     rows.push({ label: item.label, value: range, kind: "value" });
@@ -734,6 +872,10 @@
         formatWhen: formatWhen,
         formatDate: formatDate,
         formatRange: formatRange,
+        harvestLine: harvestLine,
+        harvestMilestone: harvestMilestone,
+        outcomeRowLabel: outcomeRowLabel,
+        timeOfDayValue: timeOfDayValue,
         parseLocalDate: parseLocalDate,
         isOverdue: isOverdue,
         taskLine: taskLine,

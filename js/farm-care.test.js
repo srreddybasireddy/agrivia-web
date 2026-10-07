@@ -71,7 +71,21 @@ test("ranges use the API dates", () => {
     assert.equal(care.formatRange("2026-11-05", "2026-12-10"), "Nov 5 – Dec 10");
     assert.equal(care.formatRange("2027-03-30", "2027-10-01"), "Mar 30, 2027 – Oct 1, 2027");
     assert.equal(care.formatRange("2026-12-20", "2027-01-10"), "Dec 20, 2026 – Jan 10, 2027");
-    assert.equal(care.shortMilestoneLabel({ label: "Estimated first flowers (range)" }), "First flowers");
+    assert.equal(care.shortMilestoneLabel({ label: "Estimated first flowers (range)" }), "First flower");
+    assert.equal(care.shortMilestoneLabel({
+        milestone_key: "first_flower",
+        short_label: "FF",
+        label: "First flowering",
+    }), "First flower");
+    assert.equal(care.shortMilestoneLabel({
+        milestone_key: "first_fruit",
+        short_label: "FF",
+        label: "First fruiting",
+    }), "First fruit");
+    assert.equal(care.shortMilestoneLabel({
+        short_label: "FF",
+        label: "First flowering window",
+    }), "First flower");
 });
 
 test("the card shows one count and does not invent estimates without a date", () => {
@@ -101,7 +115,7 @@ test("the card shows one count and does not invent estimates without a date", ()
     assert.equal(rows.filter((row) => row.value === "10").length, 1);
     assert.equal(rows.find((row) => row.label === "Planted").value, "Sep 1, 2026");
     assert.equal(rows.find((row) => row.label === "Stage").value, "Vegetative · day 28");
-    assert.equal(rows.find((row) => row.label === "First flowers").value, "Oct 11 – 31");
+    assert.equal(rows.find((row) => row.label === "First flower").value, "Oct 11 – 31");
 });
 
 test("a garden bed without a plan asks for a count and a date", () => {
@@ -198,6 +212,179 @@ test("reminder suggestions stay empty when the API sends none", () => {
         careSummary: { has_anchor: false },
     });
     assert.equal(model.reminders.suggested.length, 0);
+});
+
+test("harvest line uses the care reply dates", () => {
+    const line = care.harvestLine({
+        schedule_status: "ready",
+        milestones: [
+            {
+                milestone_key: "first_flower",
+                label: "First flowers",
+                estimated_from: "2026-11-14",
+                estimated_to: "2026-11-28",
+            },
+            {
+                milestone_key: "first_harvest",
+                label: "First harvest",
+                estimated_from: "2026-11-14",
+                estimated_to: "2026-12-05",
+            },
+        ],
+    });
+    assert.equal(line, "Nov 14 – Dec 5");
+});
+
+test("harvest line uses fruit dates when the reply has no harvest key", () => {
+    assert.equal(care.harvestLine({
+        schedule_status: "ready",
+        milestones: [
+            {
+                milestone_key: "first_fruit",
+                label: "First fruit",
+                estimated_from: "2026-12-01",
+                estimated_to: "2026-12-20",
+            },
+        ],
+    }), "Dec 1 – 20");
+});
+
+test("crop cards use acres and show a harvest timeline row", () => {
+    const model = care.normalizeAsset({
+        id: "w",
+        kind: "Crops",
+        title: "Wheat",
+        status: "Planted",
+        acres: 0,
+        careSummary: {
+            has_anchor: true,
+            anchor_date: "2026-10-03",
+            stage_label: "Germination",
+            age_label: "day 0",
+            schedule_status: "ready",
+            milestones: [
+                {
+                    milestone_key: "first_flower",
+                    label: "First flower",
+                    estimated_from: "2026-11-28",
+                    estimated_to: "2026-12-05",
+                },
+                {
+                    milestone_key: "first_harvest",
+                    label: "First harvest",
+                    estimated_from: "2027-01-01",
+                    estimated_to: "2027-01-31",
+                },
+            ],
+        },
+    });
+    const rows = care.factRows(model, "card");
+    assert.equal(rows.find((row) => row.label === "Acres").value, "+ Add acres");
+    assert.equal(rows.find((row) => row.label === "Harvest").value, "Jan 1, 2027 – Jan 31, 2027");
+    assert.equal(rows.find((row) => row.label === "First flower").value, "Nov 28 – Dec 5");
+    assert.equal(rows.some((row) => row.label === "Plants"), false);
+});
+
+test("poultry cards label first_egg as First egg, not Harvest", () => {
+    const model = care.normalizeAsset({
+        id: "c",
+        kind: "Poultry & Eggs",
+        title: "chicken",
+        status: "Active",
+        count: 6,
+        careSummary: {
+            has_anchor: true,
+            anchor_date: "2026-09-26",
+            stage_label: "Brooding",
+            age_label: "day 7",
+            schedule_status: "ready",
+            milestones: [
+                {
+                    milestone_key: "first_egg",
+                    label: "First Egg",
+                    estimated_from: "2027-03-25",
+                    estimated_to: "2027-05-24",
+                },
+            ],
+        },
+    });
+    const rows = care.factRows(model, "card");
+    assert.equal(rows.find((row) => row.label === "First egg").value, "Mar 25, 2027 – May 24, 2027");
+    assert.equal(rows.some((row) => row.label === "Harvest"), false);
+});
+
+test("a missing care plan does not erase a schedule that is still calculating", () => {
+    const summary = care.summaryFromView({
+        has_anchor: true,
+        anchor_date: "2026-10-03",
+        schedule_status: "processing",
+        schedule_status_label: "Calculating care timing…",
+    }, { has_plan: false });
+    assert.equal(summary.schedule_status, "processing");
+    assert.equal(summary.schedule_status_label, "Calculating care timing…");
+});
+
+test("harvest line stays blank without a harvest milestone", () => {
+    assert.equal(care.harvestLine({
+        milestones: [
+            {
+                milestone_key: "germination",
+                label: "Germination",
+                estimated_from: "2026-10-06",
+                estimated_to: "2026-10-20",
+            },
+        ],
+    }), "");
+    assert.equal(care.harvestLine({
+        schedule_status: "pending",
+        milestones: [
+            {
+                milestone_key: "first_harvest",
+                label: "First harvest",
+                estimated_from: "2026-11-14",
+                estimated_to: "2026-12-05",
+            },
+        ],
+    }), "");
+});
+
+test("poultry cards prefer first egg over a meat harvest window", () => {
+    const model = care.normalizeAsset({
+        id: "h",
+        kind: "Poultry & Eggs",
+        title: "Chicken",
+        status: "Active",
+        count: 6,
+        careSummary: {
+            has_anchor: true,
+            anchor_date: "2026-09-26",
+            schedule_status: "ready",
+            milestones: [
+                {
+                    milestone_key: "first_harvest",
+                    label: "Harvest",
+                    estimated_from: "2027-03-25",
+                    estimated_to: "2027-05-24",
+                },
+                {
+                    milestone_key: "first_egg",
+                    label: "First egg",
+                    estimated_from: "2026-12-25",
+                    estimated_to: "2027-01-24",
+                },
+            ],
+        },
+    });
+    const rows = care.factRows(model, "card");
+    assert.equal(rows.find((row) => row.label === "First egg").value, "Dec 25, 2026 – Jan 24, 2027");
+    assert.equal(rows.some((row) => row.label === "Harvest"), false);
+});
+
+test("reminder times normalize to HH:MM for the time input", () => {
+    assert.equal(care.timeOfDayValue("8:00", "08:00"), "08:00");
+    assert.equal(care.timeOfDayValue("08:00:00", "07:00"), "08:00");
+    assert.equal(care.timeOfDayValue("", "07:00"), "07:00");
+    assert.equal(care.timeOfDayValue("morning", "08:00"), "08:00");
 });
 
 test("done and snooze lower the unread count", () => {

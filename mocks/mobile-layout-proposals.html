@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agrivia — mobile layout proposals</title>
+  <style>
+    :root {
+      --paper: #FAF8F4;
+      --raised: #FFFEFC;
+      --ink: #1A1916;
+      --ink-2: #4A453C;
+      --ink-3: #6B6458;
+      --rule: #E7E3D8;
+      --leaf: #2F5D3A;
+      --leaf-deep: #1A3026;
+      --ochre: #B26A3A;
+      --danger: #9B2C2C;
+      --font: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+      --serif: "Source Serif 4", Georgia, serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: #EDE9DF;
+      color: var(--ink);
+      padding: 2rem 1.25rem 4rem;
+      line-height: 1.45;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: 1.65rem;
+      font-weight: 600;
+      max-width: 52rem;
+      margin: 0 auto 0.4rem;
+    }
+    .lede {
+      max-width: 52rem;
+      margin: 0 auto 1.75rem;
+      color: var(--ink-2);
+      font-size: 0.95rem;
+    }
+    .phase {
+      max-width: 72rem;
+      margin: 0 auto 2.5rem;
+    }
+    .phase h2 {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+    .phase p.note {
+      color: var(--ink-3);
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
+      max-width: 40rem;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .phone-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .label {
+      font-size: 0.78rem;
+      font-weight: 650;
+      color: var(--ink-2);
+      letter-spacing: 0.01em;
+    }
+    .sub {
+      font-size: 0.72rem;
+      color: var(--ink-3);
+      max-width: 22rem;
+    }
+    .phone {
+      width: 360px;
+      height: 720px;
+      background: var(--paper);
+      border: 1px solid #C9C3B4;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(26, 25, 22, 0.12);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .notch {
+      height: 28px;
+      background: var(--raised);
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: var(--ink-3);
+      flex-shrink: 0;
+    }
+    .scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .hdr {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.75rem;
+      background: var(--raised);
+      border-bottom: 1px solid var(--rule);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .burger {
+      width: 28px;
+      height: 28px;
+      border: 0;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      padding: 4px;
+    }
+    .burger span {
+      display: block;
+      height: 2px;
+      background: var(--ink);
+      border-radius: 1px;
+    }
+    .burger.big {
+      width: 44px;
+      height: 44px;
+      padding: 12px 10px;
+    }
+    .logo {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-right: auto;
+    }
+    .g-btn {
+      font-size: 0.68rem;
+      padding: 0.35rem 0.55rem;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: #fff;
+      white-space: nowrap;
+      color: var(--ink-2);
+    }
+    .g-btn.clip {
+      max-width: 7.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hero-img {
+      height: 200px;
+      background:
+        linear-gradient(160deg, rgba(26,48,38,0.35), rgba(26,48,38,0.55)),
+        linear-gradient(120deg, #6B8F71, #3D5C45);
+      display: flex;
+      align-items: flex-end;
+      padding: 1rem;
+      color: #FFFDF8;
+    }
+    .hero-img strong {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 600;
+      line-height: 1.15;
+      display: block;
+    }
+    .hero-img span {
+      font-size: 0.78rem;
+      opacity: 0.9;
+    }
+    .cta-row {
+      display: flex;
+      gap: 0.45rem;
+      padding: 0.85rem 0.9rem 0.4rem;
+    }
+    .cta-row.stack {
+      flex-direction: column;
+    }
+    .cta {
+      flex: 1;
+      text-align: center;
+      padding: 0.7rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 650;
+      border: 0;
+      white-space: nowrap;
+    }
+    .cta.stack-full {
+      width: 100%;
+      white-space: normal;
+    }
+    .cta.primary {
+      background: var(--leaf);
+      color: #FFFDF8;
+    }
+    .cta.ghost {
+      background: transparent;
+      border: 1px solid var(--rule);
+      color: var(--ink);
+    }
+    .warn {
+      margin: 0.35rem 0.9rem;
+      padding: 0.35rem 0.5rem;
+      background: #F8E8E4;
+      color: var(--danger);
+      font-size: 0.68rem;
+      border-radius: 6px;
+    }
+    .sec {
+      padding: 0.85rem 0.9rem 0.2rem;
+    }
+    .sec h3 {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .sec .meta {
+      font-size: 0.75rem;
+      color: var(--ink-3);
+      margin-top: 0.15rem;
+    }
+    .empty {
+      margin: 0.55rem 0.9rem 0.9rem;
+      padding: 0.85rem;
+      border: 1px dashed var(--rule);
+      border-radius: 12px;
+      font-size: 0.8rem;
+      color: var(--ink-3);
+      background: var(--raised);
+    }
+    .empty.plain {
+      border: 0;
+      background: transparent;
+      padding: 0.4rem 0;
+    }
+    .post {
+      margin: 0.65rem 0.75rem 1rem;
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .post.edge {
+      margin-left: 0;
+      margin-right: 0;
+      border-radius: 0;
+      border-left: 0;
+      border-right: 0;
+    }
+    .post-head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 0.85rem 0.45rem;
+    }
+    .av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #C5D4C0;
+      flex-shrink: 0;
+    }
+    .who { font-size: 0.82rem; font-weight: 650; }
+    .when { font-size: 0.7rem; color: var(--ink-3); }
+    .caption {
+      padding: 0 0.85rem 0.55rem;
+      font-size: 0.84rem;
+      color: var(--ink-2);
+    }
+    .caption .tag { color: var(--leaf); font-weight: 600; }
+    .media-wide {
+      aspect-ratio: 16 / 10;
+      background:
+        linear-gradient(45deg, #8A9E78 25%, transparent 25%) -8px 0 / 16px 16px,
+        linear-gradient(-45deg, #8A9E78 25%, transparent 25%) -8px 0 / 16px 16px,
+        #5C7A52;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,253,248,0.85);
+      font-size: 0.75rem;
+      font-weight: 650;
+    }
+    .media-45 {
+      aspect-ratio: 4 / 5;
+      background:
+        radial-gradient(circle at 40% 35%, #A8B896 0%, transparent 45%),
+        linear-gradient(180deg, #6B8F5A, #3E5A38);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,253,248,0.9);
+      font-size: 0.75rem;
+      font-weight: 650;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      padding: 0.55rem 0.85rem 0.15rem;
+    }
+    .tags span {
+      font-size: 0.68rem;
+      color: var(--ink-3);
+      background: var(--paper);
+      border-radius: 999px;
+      padding: 0.1rem 0.45rem;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      border-top: 1px solid var(--rule);
+      margin-top: 0.2rem;
+    }
+    .actions.two {
+      grid-template-columns: 1fr 1fr;
+    }
+    .actions button {
+      border: 0;
+      background: none;
+      min-height: 44px;
+      font-size: 0.82rem;
+      font-weight: 650;
+      color: var(--ink-2);
+      cursor: pointer;
+    }
+    .actions .like { color: #B42318; }
+    .actions .report { color: var(--ink-3); }
+    .likes-line {
+      padding: 0.45rem 0.85rem 0;
+      font-size: 0.78rem;
+      font-weight: 650;
+    }
+    .preview-c {
+      padding: 0.35rem 0.85rem 0.75rem;
+      font-size: 0.78rem;
+      color: var(--ink-2);
+    }
+    .preview-c .u { font-weight: 650; color: var(--ink); }
+    .icon-row {
+      display: flex;
+      gap: 1.1rem;
+      padding: 0.45rem 0.85rem 0.2rem;
+      align-items: center;
+    }
+    .icon-row button {
+      border: 0;
+      background: none;
+      font-size: 0.78rem;
+      font-weight: 650;
+      color: var(--ink);
+      min-height: 36px;
+      padding: 0;
+      cursor: pointer;
+    }
+    .icon-row .muted { color: var(--ink-3); margin-left: auto; }
+    .cookie {
+      position: absolute;
+      left: 0.65rem;
+      right: 0.65rem;
+      bottom: 0.65rem;
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      padding: 0.7rem;
+      font-size: 0.72rem;
+      color: var(--ink-2);
+      z-index: 10;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .cookie .btns {
+      display: flex;
+      gap: 0.35rem;
+      margin-top: 0.45rem;
+    }
+    .cookie button {
+      flex: 1;
+      min-height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      font-size: 0.72rem;
+      font-weight: 650;
+    }
+    .cookie button.ok {
+      background: var(--leaf);
+      color: #FFFDF8;
+      border-color: var(--leaf);
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .tabs a {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--rule);
+      background: var(--raised);
+      color: var(--ink-2);
+      text-decoration: none;
+      font-weight: 650;
+    }
+    .tabs a:hover { border-color: var(--leaf); color: var(--leaf); }
+  </style>
+</head>
+<body>
+  <h1>Mobile layout proposals</h1>
+  <p class="lede">
+    Phone frames for what I’d change vs Grok. Open this file locally.
+    Phase A = health + honesty. Phase B = feed media. Phase C = social post structure (no fake Save/Share).
+  </p>
+
+  <nav class="tabs">
+    <a href="#phase-a">Phase A — health</a>
+    <a href="#phase-b">Phase B — media</a>
+    <a href="#phase-c">Phase C — post</a>
+  </nav>
+
+  <section class="phase" id="phase-a">
+    <h2>Phase A — Mobile health</h2>
+    <p class="note">Stacked CTAs, larger menu hit target, clipped Google button, shorter cookie, honest empty copy. No Instagram chrome yet.</p>
+    <div class="row">
+      <div class="phone-wrap">
+        <div class="label">Today (pain)</div>
+        <div class="sub">Side-by-side CTAs wrap awkwardly; cookie covers content; empty state claims “25 miles”.</div>
+        <div class="phone">
+          <div class="notch">9:41</div>
+          <div class="scroll">
+            <div class="hdr">
+              <button class="burger" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+              <div class="logo">Agrivia</div>
+              <span class="g-btn">Sign in with Google</span>
+            </div>
+            <div class="hero-img">
+              <div>
+                <strong>Grow with your neighbors</strong>
+                <span>Guides, advisor, and farm care</span>
+              </div>
+            </div>
+            <div class="cta-row">
+              <button class="cta primary" type="button">Ask the advisor</button>
+              <button class="cta ghost" type="button">Browse community</button>
+            </div>
+            <div class="warn">CTAs fight for width · cookie covers fold</div>
+            <div class="sec">
+              <h3>Near you</h3>
+              <div class="meta">Within 25 miles</div>
+            </div>
+            <div class="empty">No posts near you yet. Be the first within 25 miles.</div>
+          </div>
+          <div class="cookie">
+            We use cookies for sign-in and basic analytics. You can accept or decline non-essential cookies.
+            <div class="btns">
+              <button type="button">Decline</button>
+              <button class="ok" type="button">Accept</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="label">Proposed Phase A</div>
+        <div class="sub">Full-width CTAs, 44px menu, clipped auth chip, compact cookie, truthful empty state.</div>
+        <div class="phone">
+          <div class="notch">9:41</div>
+          <div class="scroll">
+            <div class="hdr">
+              <button class="burger big" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+              <div class="logo">Agrivia</div>
+              <span class="g-btn clip">Sign in with Google</span>
+            </div>
+            <div class="hero-img">
+              <div>
+                <strong>Grow with your neighbors</strong>
+                <span>Guides, advisor, and farm care</span>
+              </div>
+            </div>
+            <div class="cta-row stack">
+              <button class="cta primary stack-full" type="button">Ask the advisor</button>
+              <button class="cta ghost stack-full" type="button">Browse community</button>
+            </div>
+            <div class="sec">
+              <h3>From the community</h3>
+              <div class="meta">Recent posts from growers</div>
+            </div>
+            <div class="empty plain">No community posts yet. Share a photo from your farm to start the feed.</div>
+            <div style="height:4.5rem"></div>
+          </div>
+          <div class="cookie" style="padding:0.55rem 0.65rem">
+            Cookies help with sign-in. Essential only unless you accept.
+            <div class="btns">
+              <button type="button">Essential</button>
+              <button class="ok" type="button">Accept all</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase" id="phase-b">
+    <h2>Phase B — Feed media (4:5)</h2>
+    <p class="note">Same post chrome for now. Only change aspect ratio and stop the 1.91 desktop clamp. Biggest visual win for “this feels like a feed.”</p>
+    <div class="row">
+      <div class="phone-wrap">
+        <div class="label">Today</div>
+        <div class="sub">Landscape ~16:10 card. Caption above media. Pill tags. Three text actions.</div>
+        <div class="phone">
+          <div class="notch">9:41</div>
+          <div class="scroll">
+            <div class="hdr">
+              <button class="burger big" type="button"><span></span><span></span><span></span></button>
+              <div class="logo">Agrivia</div>
+            </div>
+            <div class="sec"><h3>Community</h3></div>
+            <article class="post">
+              <div class="post-head">
+                <div class="av"></div>
+                <div>
+                  <div class="who">S Reddy</div>
+                  <div class="when">2h · 1 mi away</div>
+                </div>
+              </div>
+              <p class="caption">First flush looking good after the cool nights.</p>
+              <div class="media-wide">16 : 10</div>
+              <div class="tags"><span>saffron</span><span>fall</span></div>
+              <div class="actions">
+                <button class="like" type="button">Like</button>
+                <button type="button">Comment</button>
+                <button class="report" type="button">Report</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="label">Proposed Phase B</div>
+        <div class="sub">4:5 media, edge-to-edge optional later. Caption still above until Phase C.</div>
+        <div class="phone">
+          <div class="notch">9:41</div>
+          <div class="scroll">
+            <div class="hdr">
+              <button class="burger big" type="button"><span></span><span></span><span></span></button>
+              <div class="logo">Agrivia</div>
+            </div>
+            <div class="sec"><h3>Community</h3></div>
+            <article class="post">
+              <div class="post-head">
+                <div class="av"></div>
+                <div>
+                  <div class="who">S Reddy</div>
+                  <div class="when">2h · 1 mi away</div>
+                </div>
+              </div>
+              <p class="caption">First flush looking good after the cool nights.</p>
+              <div class="media-45">4 : 5</div>
+              <div class="tags"><span>saffron</span><span>fall</span></div>
+              <div class="actions">
+                <button class="like" type="button">Like</button>
+                <button type="button">Comment</button>
+                <button class="report" type="button">Report</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase" id="phase-c">
+    <h2>Phase C — Social post structure</h2>
+    <p class="note">Closer to Grok / Instagram, but only real actions: Like + Comment. Report in overflow. No Save/Share icons without APIs. Caption under media; one comment preview.</p>
+    <div class="row">
+      <div class="phone-wrap">
+        <div class="label">Grok-style (full)</div>
+        <div class="sub">What Grok sketched — includes Save/Share. I’d skip those until backed.</div>
+        <div class="phone">
+          <div class="notch">9:41</div>
+          <div class="scroll">
+            <div class="hdr">
+              <button class="burger big" type="button"><span></span><span></span><span></span></button>
+              <div class="logo">Agrivia</div>
+            </div>
+            <article class="post edge">
+              <div class="post-head">
+                <div class="av"></div>
+                <div>
+                  <div class="who">S Reddy</div>
+                  <div class="when">Sonoma · 2h</div>
+                </div>
+                <span class="muted" style="margin-left:auto;font-size:0.9rem;color:var(--ink-3)">···</span>
+              </div>
+              <div class="media-45">4 : 5</div>
+              <div class="icon-row">
+                <button type="button">♥ Like</button>
+                <button type="button">💬</button>
+                <button type="button">↗ Share</button>
+                <button class="muted" type="button">Bookmark</button>
+              </div>
+              <div class="likes-line">12 likes</div>
+              <p class="caption" style="padding-top:0.25rem">
+                <span class="u" style="font-weight:650;color:var(--ink)">S Reddy</span>
+                First flush looking good after the cool nights.
+                <span class="tag">#saffron</span>
+              </p>
+              <div class="preview-c"><span class="u">Maya</span> Looking strong — keep nights cool.</div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="label">My Phase C (ship)</div>
+        <div class="sub">Same hierarchy. Like + Comment only. Report via ···. Miles stay until city exists.</div>
+        <div class="phone">
+          <div class="notch">9:41</div>
+          <div class="scroll">
+            <div class="hdr">
+              <button class="burger big" type="button"><span></span><span></span><span></span></button>
+              <div class="logo">Agrivia</div>
+            </div>
+            <article class="post edge">
+              <div class="post-head">
+                <div class="av"></div>
+                <div>
+                  <div class="who">S Reddy</div>
+                  <div class="when">2h · 1 mi away</div>
+                </div>
+                <button type="button" style="margin-left:auto;border:0;background:none;color:var(--ink-3);font-size:1.1rem;min-width:44px;min-height:44px" aria-label="More">···</button>
+              </div>
+              <div class="media-45">4 : 5</div>
+              <div class="actions two">
+                <button class="like" type="button">Like · 12</button>
+                <button type="button">Comment · 1</button>
+              </div>
+              <p class="caption" style="padding-top:0.55rem">
+                <span style="font-weight:650;color:var(--ink)">S Reddy</span>
+                First flush looking good after the cool nights.
+                <span class="tag"> #saffron</span>
+              </p>
+              <div class="preview-c"><span class="u">Maya</span> Looking strong — keep nights cool.</div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
