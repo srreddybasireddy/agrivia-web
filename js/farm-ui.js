@@ -337,8 +337,11 @@
     }
 
     function countLabel(kind) {
-        if (kind === "Garden" || kind === "Crops") {
+        if (kind === "Garden") {
             return "Plants";
+        }
+        if (kind === "Crops") {
+            return "Acres";
         }
         if (kind === "Cattle") {
             return "Head count";
@@ -384,7 +387,7 @@
             detailsInput = textInput(asset.subtitle || "", 255);
             form.appendChild(labeledControl("Details", detailsInput));
         }
-        if (COUNTED_KINDS[asset.kind] || asset.kind === "Crops") {
+        if (COUNTED_KINDS[asset.kind]) {
             countInput = numberInput(asset.count, 0);
             countInput.dataset.count = "1";
             form.appendChild(labeledControl(countLabel(asset.kind), countInput));
@@ -460,8 +463,11 @@
         });
 
         copy.appendChild(form);
-        if (focusCountOnEdit && countInput) {
-            global.setTimeout(() => countInput.focus(), 0);
+        if (focusCountOnEdit) {
+            const focus = countInput || acresInput;
+            if (focus) {
+                global.setTimeout(() => focus.focus(), 0);
+            }
             focusCountOnEdit = false;
         }
     }
@@ -541,13 +547,6 @@
         if (acres) {
             parts.push(acres);
         }
-        const care = global.AgriviaFarmCare;
-        const harvest = care && care.formatDate
-            ? care.formatDate(asset.harvestDate, { year: true })
-            : formatDate(asset.harvestDate);
-        if (harvest) {
-            parts.push(`Harvest ${harvest}`);
-        }
         return parts.join(" · ");
     }
 
@@ -606,12 +605,12 @@
                     copy.appendChild(variety);
                 }
                 const facts = cardFacts(asset);
-                if (facts) {
-                    const extra = document.createElement("p");
-                    extra.className = "farm-asset-roi";
-                    extra.textContent = facts;
-                    copy.appendChild(extra);
-                }
+                const extra = document.createElement("p");
+                extra.className = "farm-asset-roi";
+                extra.dataset.cardFacts = "1";
+                extra.textContent = facts;
+                extra.hidden = !facts;
+                copy.appendChild(extra);
                 if (asset.roiEstimate) {
                     const roi = document.createElement("p");
                     roi.className = "farm-asset-roi";
@@ -952,6 +951,12 @@
                 return;
             }
             asset.careSummary = summary;
+            const card = assetId && document.querySelector(`[data-asset-id="${CSS.escape(assetId)}"] [data-card-facts]`);
+            if (card) {
+                const next = cardFacts(asset);
+                card.textContent = next;
+                card.hidden = !next;
+            }
             if (global.AgriviaFarmCareUi && global.AgriviaFarmCareUi.refreshCardFacts) {
                 global.AgriviaFarmCareUi.refreshCardFacts(asset);
             }

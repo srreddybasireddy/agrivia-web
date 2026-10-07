@@ -5,7 +5,6 @@
 const HOME_SECTIONS = {
     start: 'community',
     community: 'community',
-    calculator: 'calculator',
     'ai-advisor-preview': 'ai-advisor-preview',
 };
 
@@ -15,6 +14,8 @@ const STANDALONE_PAGES = {
     terms: 'terms.html',
     'affiliate-disclosure': 'affiliate-disclosure.html',
     contact: 'contact.html',
+    calculator: 'worksheet.html',
+    worksheet: 'worksheet.html',
 };
 
 // Initialize Page Navigation
@@ -22,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('appContainer')) {
         handleHashRouting();
         window.addEventListener('hashchange', handleHashRouting);
+    }
+    if (document.getElementById('acreageInput')) {
         initFarmCalculatorPrefill();
         updateROICalculation();
     }

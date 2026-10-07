@@ -56,6 +56,7 @@
                 <a href="guides/index.html" class="nav-item" id="nav-guides">Guides</a>
                 <a href="#ai-advisor" class="nav-item" id="nav-ai-advisor" onclick="navigateTo('ai-advisor')">Advisor</a>
                 <a href="#farm" class="nav-item" id="nav-farm" onclick="navigateTo('farm')">Farm</a>
+                <a href="worksheet.html" class="nav-item" id="nav-worksheet">Worksheet</a>
             </nav>
             <div class="header-actions">
                 <div class="auth-slot" id="authSlot">
@@ -188,73 +189,6 @@
                 </div>
             </section>
 
-            <section class="calculator-section" id="calculator">
-                <div class="container">
-                    <div class="section-header">
-                        <span class="section-tag">Illustrative worksheet</span>
-                        <h2 class="section-title">Example arithmetic for beds and livestock</h2>
-                        <p class="section-desc">A scratch pad for raised beds plus cattle, goats, sheep, pigs, horses, or poultry. It is not a forecast, not your harvest, and not Agrivia customer results.</p>
-                    </div>
-                    <div class="calculator-card paper-card">
-                        <div class="calc-grid">
-                            <div class="calc-controls">
-                                <label class="calc-use-farm" id="calcUseFarmWrap" hidden>
-                                    <input type="checkbox" id="calcUseFarm">
-                                    Use counts from my farm
-                                </label>
-                                <div class="form-group">
-                                    <div class="label-row">
-                                        <label for="acreageInput">Raised beds (or equivalent plots)</label>
-                                        <span class="calc-val" id="acreageVal">6 beds</span>
-                                    </div>
-                                    <input type="range" id="acreageInput" min="0" max="40" value="6" step="1" oninput="updateROICalculation()">
-                                </div>
-                                <div class="form-group">
-                                    <div class="label-row">
-                                        <label for="cattleInput">Livestock (cattle, goats, sheep, pigs, horses, or poultry)</label>
-                                        <span class="calc-val" id="cattleVal">6 head</span>
-                                    </div>
-                                    <input type="range" id="cattleInput" min="0" max="80" value="6" step="1" oninput="updateROICalculation()">
-                                </div>
-                                <div class="form-group">
-                                    <label for="cropTypeSelect">What you run</label>
-                                    <select id="cropTypeSelect" class="form-select" onchange="updateROICalculation()">
-                                        <option value="specialty">Garden plus a few animals</option>
-                                        <option value="wheat">Mixed homestead (beds, cattle, poultry)</option>
-                                        <option value="soybeans">Pasture: cattle, goats, or sheep</option>
-                                        <option value="corn">Berries or a few fruit trees</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="calc-results">
-                                <div class="result-box primary-result">
-                                    <span class="res-title">Worksheet total</span>
-                                    <span class="res-amount" id="totalSavings">$672 / yr</span>
-                                    <p class="res-note">Example math only — not a savings claim or ROI from other farms.</p>
-                                </div>
-                                <div class="result-breakdown">
-                                    <div class="res-item">
-                                        <span>Garden produce (per bed)</span>
-                                        <strong id="waterSavings">$360</strong>
-                                    </div>
-                                    <div class="res-item">
-                                        <span>Livestock water and feed ($40 / head)</span>
-                                        <strong id="lossSavings">$240</strong>
-                                    </div>
-                                    <div class="res-item">
-                                        <span>Drip vs hose ($12 / bed)</span>
-                                        <strong id="feedSavings">$72</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="calc-formula">
-                            Formula: beds × a crop factor (garden $60, mixed homestead $50, berries $40, pasture $25) + livestock head × $40 + beds × $12 for drip. Rounded. Head count is cattle, goats, sheep, pigs, horses, or birds — pick what you keep. This is arithmetic, not a forecast for your place.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
         </section>
 
         <section id="view-ai-advisor" class="page-view">
@@ -373,7 +307,7 @@
                     <div class="farm-asset-grid" id="farmAssetGrid"></div>
                     <p class="farm-empty" id="farmEmpty" hidden>Nothing saved yet. <a href="#ai-advisor" onclick="navigateTo('ai-advisor')">Ask Advisor</a> about what you keep, or add one below.</p>
                     <form class="paper-card farm-card farm-add-card" id="farmAssetForm">
-                        <h2>Add an asset</h2>
+                        <h2>Add to your farm</h2>
                         <p class="farm-status" id="farmAssetStatus"></p>
                         <div class="farm-add-row">
                             <label class="visually-hidden" for="farmAssetKind">Kind</label>
@@ -387,7 +321,7 @@
                             </select>
                             <label class="visually-hidden" for="farmAssetTitle">Name</label>
                             <input class="form-input farm-add-name" id="farmAssetTitle" maxlength="150" placeholder="Asset name (e.g., Blueberries)">
-                            <button type="submit" class="btn btn-primary">Save asset</button>
+                            <button type="submit" class="btn btn-primary">Add to farm</button>
                         </div>
                     </form>
                     </div>
@@ -434,6 +368,7 @@
                     <li><a href="#farm" onclick="navigateTo('farm')">Farm</a></li>
                     <li><a href="#community" onclick="navigateTo('home', 'community')">Community</a></li>
                     <li><a href="guides/index.html">All guides</a></li>
+                    <li><a href="worksheet.html">Illustrative worksheet</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -462,15 +397,15 @@
     <script src="js/guides-api.js?v=20260912-like1"></script>
     <script src="js/guides-ui.js?v=20260913-hero-m"></script>
     <script src="js/chat-api.js?v=20261002-assetchat"></script>
-    <script src="js/auth.js?v=20260909-guides10"></script>
-    <script src="js/farm-care.js?v=20261002-live"></script>
+    <script src="js/auth.js?v=20261003-signin"></script>
+    <script src="js/farm-care.js?v=20261003-chickegg"></script>
     <script src="js/farm-preview.js?v=20260930-farmcard"></script>
     <script src="js/farm-api.js?v=20261001-count"></script>
-    <script src="js/farm-ui.js?v=20261002-live"></script>
-    <script src="js/farm-care-ui.js?v=20261002-live"></script>
+    <script src="js/farm-ui.js?v=20261003-cropacres"></script>
+    <script src="js/farm-care-ui.js?v=20261003-chickegg"></script>
     <script src="js/community-api.js?v=20260919-mwidth"></script>
     <script src="js/community-ui.js?v=20261002-name"></script>
     <script src="js/chat-ui.js?v=20261002-assetchat"></script>
-    <script src="js/main.js?v=20260930-care"></script>
+    <script src="js/main.js?v=20261006-worksheet"></script>
 </body>
 </html>
