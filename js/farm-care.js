@@ -849,16 +849,13 @@
     }
 
     function illustrationFor(asset) {
-        const name = text(asset && (asset.rawName || asset.title)).toLowerCase();
-        const peppers = {
-            chilli: true, chillies: true, chili: true, chilies: true, chile: true,
-            "hot pepper": true, "hot peppers": true,
-        };
-        const current = text(asset && asset.imageUrl);
-        if (peppers[name] && (!current || current.indexOf("farm-deco-garden") !== -1)) {
-            return "assets/images/farm-deco-pepper.png";
+        const raw = text(asset && asset.imageUrl);
+        const config = typeof globalThis !== "undefined" ? globalThis.AgriviaConfig : null;
+        if (!config || config.apiBasePath !== "/api") {
+            return raw;
         }
-        return current;
+        const match = raw.match(/^https:\/\/api\.agrivia\.ai(\/api\/illustrations\/.+)$/i);
+        return match ? match[1] : raw;
     }
 
     return {

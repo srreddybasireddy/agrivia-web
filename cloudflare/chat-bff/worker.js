@@ -121,6 +121,7 @@ function isFarmPath(path) {
         ||         /^\/generic_assets\/[0-9a-f-]+\//i.test(path)
         || /^\/cattle\/[0-9a-f-]+(?:\/[0-9a-f-]+)?$/i.test(path)
         || /^\/crops\/[0-9a-f-]+(?:\/[0-9a-f-]+)?$/i.test(path)
+        || /^\/illustrations\/.+/i.test(path)
         || /^\/assets\/[^/]+\/care-plan$/i.test(path)
         || /^\/assets\/[^/]+\/care-view$/i.test(path)
         || /^\/assets\/[^/]+\/reminders$/i.test(path)

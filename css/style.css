@@ -1663,14 +1663,34 @@ input[type="range"] {
 }
 
 .farm-guest-lead {
-    font-family: var(--font-heading);
-    font-size: 1.2rem;
+    font-weight: 650;
     color: var(--ink);
     margin-bottom: 0.45rem;
 }
 
+.farm-guest-keeps {
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+    margin: 0.7rem 0 0.85rem;
+    padding: 0;
+}
+
+.farm-guest-keeps li {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    color: var(--ink-2);
+}
+
+.farm-guest-keeps strong {
+    font-weight: 650;
+    color: var(--ink);
+}
+
 .farm-guest .hero-cta-group {
-    margin-top: 1.1rem;
+    margin-top: 0.85rem;
 }
 
 /* Guides / legal / about */
@@ -3952,15 +3972,24 @@ input[type="range"] {
 }
 
 .advisor-farm-rail {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-areas:
+        "kicker"
+        "place"
+        "assets"
+        "open";
     gap: 0.7rem;
     padding: 1.15rem 1.05rem 1.1rem;
     position: sticky;
     top: 5.25rem;
 }
 
+.advisor-farm-meta {
+    display: contents;
+}
+
 .advisor-farm-kicker {
+    grid-area: kicker;
     font-size: 0.75rem;
     font-weight: 650;
     letter-spacing: 0.08em;
@@ -3969,6 +3998,7 @@ input[type="range"] {
 }
 
 .advisor-farm-place {
+    grid-area: place;
     font-family: var(--font-heading);
     font-size: 1.05rem;
     color: var(--leaf-deep);
@@ -3976,6 +4006,7 @@ input[type="range"] {
 }
 
 .advisor-farm-assets {
+    grid-area: assets;
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
@@ -4061,6 +4092,7 @@ input[type="range"] {
 }
 
 .advisor-farm-open {
+    grid-area: open;
     font-size: 0.9rem;
     font-weight: 650;
     color: var(--ochre);
@@ -4432,6 +4464,18 @@ body.advisor-open .site-footer {
     padding-top: 1rem;
 }
 
+#view-ai-advisor .chat-chips[hidden],
+#view-ai-advisor .chat-shell.is-empty .chat-chips {
+    display: none;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+#view-ai-advisor .chat-shell.is-empty .job-chips {
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
 #view-ai-advisor .query-chip {
     background: var(--paper);
     color: var(--ochre);
@@ -4531,29 +4575,174 @@ body.advisor-open .site-footer {
 @media (max-width: 992px) {
     #view-ai-advisor .advisor-layout.advisor-has-farm {
         grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        align-content: stretch;
     }
 
     #view-ai-advisor .advisor-farm-rail {
-        max-height: 8.5rem;
+        max-height: none;
+        align-self: start;
+        width: 100%;
+        height: auto;
     }
 }
 
 @media (max-width: 768px) {
+    body.advisor-open {
+        background: var(--raised);
+    }
+
+    body.advisor-open #appContainer,
+    body.advisor-open #view-ai-advisor.active {
+        background: var(--raised);
+    }
+
     .advisor-page {
-        padding: 0 1rem;
+        padding: 0;
+        max-width: none;
+    }
+
+    #view-ai-advisor .advisor-layout.advisor-has-farm {
+        gap: 0;
+        grid-template-rows: auto 1fr;
+    }
+
+    #view-ai-advisor .advisor-farm-rail {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        max-height: none;
+        align-self: start;
+        height: auto;
+        margin: 0;
+        padding: 0.55rem 1rem 0.6rem;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+        border-bottom: 1px solid var(--rule);
+        background: var(--raised);
+    }
+
+    #view-ai-advisor .advisor-farm-kicker {
+        display: none;
+    }
+
+    #view-ai-advisor .advisor-farm-meta {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.55rem;
+        min-width: 0;
+    }
+
+    #view-ai-advisor .advisor-farm-place {
+        font-family: var(--font-main);
+        font-size: 0.82rem;
+        font-weight: 650;
+        color: var(--ink-2);
+        line-height: 1.3;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+    }
+
+    #view-ai-advisor .advisor-farm-open {
+        order: -1;
+        margin: 0 auto 0 0;
+        flex: 0 0 auto;
+        font-size: 0.78rem;
+    }
+
+    #view-ai-advisor .advisor-farm-assets {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 0.35rem;
+        overflow-x: auto;
+        padding-bottom: 0.05rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #view-ai-advisor .advisor-asset-row {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        grid-template-columns: none;
+        gap: 0;
+        min-width: 0;
+        width: auto;
+        flex: 0 0 auto;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        background: var(--paper);
+    }
+
+    #view-ai-advisor .advisor-asset-row::after,
+    #view-ai-advisor .advisor-asset-thumb,
+    #view-ai-advisor .advisor-asset-fallback,
+    #view-ai-advisor .advisor-asset-copy span {
+        display: none;
+    }
+
+    #view-ai-advisor .advisor-asset-copy {
+        min-width: 0;
+    }
+
+    #view-ai-advisor .advisor-asset-copy strong {
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    #view-ai-advisor .advisor-asset-row.is-active {
+        background: var(--leaf-deep);
+        border-color: var(--leaf-deep);
+    }
+
+    #view-ai-advisor .advisor-asset-row.is-active strong {
+        color: #FFFDF8;
+    }
+
+    #view-ai-advisor .chat-shell,
+    #view-ai-advisor .chat-shell-wide {
+        max-width: none;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        background: var(--raised);
+        overflow: hidden;
+        min-height: 0;
+        height: 100%;
     }
 
     #view-ai-advisor .chat-shell.is-empty .chat-thread {
         justify-content: flex-start;
-        padding-top: 1.15rem;
+        padding-top: 0.85rem;
     }
 
     #view-ai-advisor .chat-thread {
-        padding: 1.1rem 1rem 0.85rem;
+        padding: 0.85rem 1.1rem 0.65rem;
+    }
+
+    #view-ai-advisor .chat-shell.is-empty .chat-welcome {
+        margin-top: 0;
+    }
+
+    #view-ai-advisor .chat-chips {
+        margin-top: 0.75rem;
+    }
+
+    #view-ai-advisor .chat-shell:not(.is-empty) .chat-chips:not([hidden]) {
+        margin-top: auto;
     }
 
     #view-ai-advisor .chat-dock {
-        padding: 0.7rem 1rem 0.85rem;
+        padding: 0.65rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    #view-ai-advisor .chat-dock-inner {
+        max-width: none;
     }
 
     #view-ai-advisor .chat-form {
@@ -4768,11 +4957,69 @@ body.advisor-open .site-footer {
 }
 
 @media (max-width: 768px) {
-    .farm-asset-card.has-image,
-    .farm-detail-hero,
-    .farm-detail-grid,
+    .farm-page {
+        padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .farm-asset-card.has-image {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "art" "copy";
+        align-items: stretch;
+        min-height: 0;
+        gap: 0.75rem;
+        padding: 0.75rem 0.85rem 0.95rem;
+    }
+
+    .farm-asset-card.has-image .farm-asset-copy {
+        grid-area: copy;
+    }
+
+    .farm-asset-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .farm-asset-deco {
+        grid-area: art;
+        justify-self: start;
+        align-self: start;
+        width: 10rem;
+        height: 10rem;
+        min-height: 0;
+        background: #F3F0E8;
+        border-radius: 12px;
+    }
+
+    .farm-asset-deco img {
+        width: 10rem;
+        height: 10rem;
+        object-fit: contain;
+        object-position: center;
+    }
+
     .farm-facts > div,
     .farm-keyfacts > div {
+        grid-template-columns: 6.4rem minmax(0, 1fr);
+        gap: 0.35rem 0.55rem;
+    }
+
+    .farm-detail-grid {
         grid-template-columns: 1fr;
+    }
+
+    .farm-detail-hero {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .farm-detail-art {
+        order: -1;
+        justify-self: start;
+        width: 10rem;
+        height: 10rem;
+        max-height: 10rem;
+        object-fit: contain;
+        object-position: center;
+        background: #F3F0E8;
+        border-radius: 12px;
     }
 }

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agrivia — mobile advisor chat</title>
+  <style>
+    :root {
+      --paper: #FAF8F4;
+      --raised: #FFFEFC;
+      --ink: #1A1916;
+      --ink-2: #4A453C;
+      --ink-3: #6B6458;
+      --rule: #E7E3D8;
+      --leaf: #2F5D3A;
+      --leaf-deep: #1A3026;
+      --ochre: #B26A3A;
+      --font: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+      --serif: "Source Serif 4", Georgia, serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: #EDE9DF;
+      color: var(--ink);
+      padding: 2rem 1.25rem 4rem;
+      line-height: 1.45;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: 1.55rem;
+      font-weight: 600;
+      max-width: 40rem;
+      margin: 0 auto 0.35rem;
+    }
+    .lede {
+      max-width: 40rem;
+      margin: 0 auto 1.75rem;
+      color: var(--ink-2);
+      font-size: 0.95rem;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    .phone-wrap { display: flex; flex-direction: column; gap: 0.4rem; }
+    .label { font-size: 0.78rem; font-weight: 650; color: var(--ink-2); }
+    .sub { font-size: 0.72rem; color: var(--ink-3); max-width: 22rem; }
+    .phone {
+      width: 360px;
+      height: 720px;
+      background: var(--paper);
+      border: 1px solid #C9C3B4;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(26, 25, 22, 0.12);
+      display: flex;
+      flex-direction: column;
+    }
+    .notch {
+      height: 28px;
+      background: var(--raised);
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: var(--ink-3);
+      flex-shrink: 0;
+    }
+    .hdr {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.55rem 0.75rem;
+      background: var(--raised);
+      border-bottom: 1px solid var(--rule);
+      flex-shrink: 0;
+    }
+    .burger {
+      width: 44px; height: 44px; border: 0; background: transparent;
+      display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 12px 10px;
+    }
+    .burger span { display: block; height: 2px; background: var(--ink); }
+    .logo { font-family: var(--serif); font-weight: 600; font-size: 1.05rem; margin-right: auto; }
+    .signout {
+      font-size: 0.72rem; font-weight: 650; padding: 0.4rem 0.65rem;
+      border: 1px solid var(--rule); border-radius: 999px; background: #fff;
+    }
+    .stage {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--paper);
+    }
+    /* TODAY — floating card */
+    .stage.today {
+      padding: 0.75rem 1rem 1rem;
+    }
+    .card {
+      flex: 1;
+      min-height: 0;
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .thread {
+      flex: 1;
+      padding: 1.1rem 1rem;
+      overflow: auto;
+    }
+    .mark {
+      width: 2.6rem; height: 2.6rem; border-radius: 50%;
+      background: var(--leaf-deep); margin-bottom: 0.55rem;
+    }
+    .kicker {
+      font-size: 0.72rem; font-weight: 650; color: var(--ochre);
+      letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.25rem;
+    }
+    .title {
+      font-family: var(--serif); font-size: 1.35rem; font-weight: 600;
+      color: var(--leaf-deep); line-height: 1.2;
+    }
+    .dock {
+      border-top: 1px solid var(--rule);
+      padding: 0.7rem 0.85rem 0.85rem;
+      background: var(--raised);
+    }
+    .form {
+      display: flex; gap: 0.4rem; align-items: stretch;
+      border: 1px solid var(--rule); border-radius: 12px;
+      padding: 0.25rem 0.25rem 0.25rem 0.75rem; background: var(--paper);
+    }
+    .form span {
+      flex: 1; font-size: 0.78rem; color: var(--ink-3);
+      display: flex; align-items: center;
+    }
+    .send {
+      background: var(--leaf); color: #FFFDF8; border: 0;
+      border-radius: 10px; padding: 0 0.85rem; font-weight: 650; font-size: 0.82rem;
+    }
+    .disc { font-size: 0.68rem; color: var(--ink-3); margin-top: 0.4rem; }
+    /* PROPOSED — full bleed */
+    .stage.bleed {
+      background: var(--raised);
+    }
+    .thread.bleed-pad {
+      padding: 1.25rem 1.1rem 0.75rem;
+    }
+    .dock.bleed-dock {
+      padding: 0.65rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -1px 0 var(--rule);
+    }
+    .msg {
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--ink-2);
+      line-height: 1.5;
+    }
+    .msg.user {
+      margin-left: 2rem;
+      background: var(--leaf-deep);
+      color: #FFFDF8;
+      padding: 0.75rem 0.95rem;
+      border-radius: 14px 14px 4px 14px;
+    }
+    .msg.bot {
+      padding: 0;
+      border: 0;
+    }
+    .phase { max-width: 52rem; margin: 2rem auto 0; }
+    .phase h2 {
+      font-family: var(--serif); font-size: 1.15rem; font-weight: 600; margin-bottom: 0.35rem;
+    }
+    .phase ul {
+      margin: 0.4rem 0 0 1.1rem; color: var(--ink-2); font-size: 0.9rem;
+    }
+    .phase li { margin-bottom: 0.35rem; }
+  </style>
+</head>
+<body>
+  <h1>Mobile advisor chat</h1>
+  <p class="lede">
+    Today the shell is a bordered card inside page padding — that reads as a floating box.
+    On phone chat, use a full-bleed thread under the site header (ChatGPT / Claude / iMessage pattern). Keep the card on desktop.
+  </p>
+
+  <div class="row">
+    <div class="phone-wrap">
+      <div class="label">Today (awkward)</div>
+      <div class="sub">advisor-page padding + chat-shell border/radius → inset card with dead margins.</div>
+      <div class="phone">
+        <div class="notch">9:41</div>
+        <div class="hdr">
+          <button class="burger" type="button"><span></span><span></span><span></span></button>
+          <div class="logo">Agrivia</div>
+          <span class="signout">Sign out</span>
+        </div>
+        <div class="stage today">
+          <div class="card">
+            <div class="thread">
+              <div class="mark"></div>
+              <div class="kicker">Advisor</div>
+              <div class="title">What are you working on today?</div>
+            </div>
+            <div class="dock">
+              <div class="form">
+                <span>Ask about tomatoes, chicks, goats…</span>
+                <button class="send" type="button">Send</button>
+              </div>
+              <p class="disc">Guidance only, not a vet diagnosis.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-wrap">
+      <div class="label">Recommended</div>
+      <div class="sub">Full-bleed under header. Composer docked to bottom. No card chrome on ≤768px.</div>
+      <div class="phone">
+        <div class="notch">9:41</div>
+        <div class="hdr">
+          <button class="burger" type="button"><span></span><span></span><span></span></button>
+          <div class="logo">Agrivia</div>
+          <span class="signout">Sign out</span>
+        </div>
+        <div class="stage bleed">
+          <div class="thread bleed-pad">
+            <div class="mark"></div>
+            <div class="kicker">Advisor</div>
+            <div class="title">What are you working on today?</div>
+            <p class="msg bot" style="margin-top:1.5rem;color:var(--ink-3);font-size:0.82rem;">Type below — answers stay in this thread.</p>
+          </div>
+          <div class="dock bleed-dock">
+            <div class="form">
+              <span>Ask about tomatoes, chicks, goats…</span>
+              <button class="send" type="button">Send</button>
+            </div>
+            <p class="disc">Guidance only, not a vet diagnosis.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="phase">
+    <h2>What to change in CSS (mobile only)</h2>
+    <ul>
+      <li>Zero out <code>.advisor-page</code> side padding on ≤768px.</li>
+      <li>On <code>#view-ai-advisor .chat-shell</code>: drop border, radius, and inset background separation — use page paper/raised flush to edges.</li>
+      <li>Keep composer in <code>.chat-dock</code> pinned to the bottom of the flex column (already structured well); add safe-area padding for the home indicator.</li>
+      <li>Leave desktop card (max-width + border-radius) alone — editorial panel still works on wide screens.</li>
+      <li>Optional later: collapse farm rail into a thin chip row above the thread on phone (don’t stack another card).</li>
+    </ul>
+  </section>
+</body>
+</html>

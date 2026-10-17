@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20261001-carelink">
+    <link rel="stylesheet" href="css/style.css?v=20261011-farmguest">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5524710580723425" crossorigin="anonymous"></script>
     <script type="application/ld+json">
     {
@@ -196,9 +196,11 @@
                 <div class="advisor-layout" id="advisorLayout">
                     <aside class="advisor-farm-rail paper-card" id="advisorFarmRail" hidden aria-label="Your farm">
                         <p class="advisor-farm-kicker">Your farm</p>
-                        <p class="advisor-farm-place" id="advisorFarmPlace"></p>
+                        <div class="advisor-farm-meta">
+                            <p class="advisor-farm-place" id="advisorFarmPlace"></p>
+                            <a href="#farm" class="advisor-farm-open" onclick="navigateTo('farm')">Your farm</a>
+                        </div>
                         <div class="advisor-farm-assets" id="advisorFarmAssets"></div>
-                        <a href="#farm" class="advisor-farm-open" onclick="navigateTo('farm')">Open Farm</a>
                     </aside>
                     <div class="chat-shell chat-shell-wide is-empty">
                         <div class="chat-thread">
@@ -247,8 +249,14 @@
                     <button type="button" class="btn btn-outline farm-edit-btn" id="farmEditToggle" hidden aria-expanded="false" aria-controls="farmProfileForm">Edit profile</button>
                 </div>
                 <div class="paper-card farm-guest" id="farmGuest">
-                    <p class="farm-guest-lead">Start with a question. Sign in when you want to keep the place.</p>
-                    <p>Chat works without an account. Google sign-in in the header saves beds, animals, and what the advisor learns — on the same farm the apps use.</p>
+                    <p class="farm-guest-lead">Sign in when you want to keep the place.</p>
+                    <p>Nothing is stored until you sign in. Google sign-in in the header keeps:</p>
+                    <ul class="farm-guest-keeps">
+                        <li><strong>Beds</strong> you add</li>
+                        <li><strong>Animals</strong> you keep</li>
+                        <li><strong>Care reminders</strong> for those</li>
+                    </ul>
+                    <p>Chat still works without an account, on the same farm the apps use.</p>
                     <div class="hero-cta-group">
                         <a href="#ai-advisor" class="btn btn-primary btn-pill" onclick="navigateTo('ai-advisor')">
                             <svg class="btn-sparkle" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -330,6 +338,18 @@
         </section>
     </main>
 
+    <dialog class="farm-anchor-dialog" id="farmDeleteDialog">
+        <form id="farmDeleteForm">
+            <h2 id="farmDeleteTitle">Remove this item?</h2>
+            <p id="farmDeleteCopy"></p>
+            <p class="farm-care-status" id="farmDeleteStatus"></p>
+            <div class="farm-profile-actions">
+                <button type="submit" class="btn btn-primary" id="farmDeleteConfirm">Remove</button>
+                <button type="button" class="btn btn-outline" id="farmDeleteCancel">Cancel</button>
+            </div>
+        </form>
+    </dialog>
+
     <dialog class="farm-anchor-dialog" id="farmAnchorDialog">
         <form id="farmAnchorForm">
             <h2 id="farmAnchorTitle">Set date</h2>
@@ -398,10 +418,10 @@
     <script src="js/guides-ui.js?v=20260913-hero-m"></script>
     <script src="js/chat-api.js?v=20261002-assetchat"></script>
     <script src="js/auth.js?v=20261003-signin"></script>
-    <script src="js/farm-care.js?v=20261003-chickegg"></script>
+    <script src="js/farm-care.js?v=20261016-illust"></script>
     <script src="js/farm-preview.js?v=20260930-farmcard"></script>
-    <script src="js/farm-api.js?v=20261001-count"></script>
-    <script src="js/farm-ui.js?v=20261003-cropacres"></script>
+    <script src="js/farm-api.js?v=20261016-illust"></script>
+    <script src="js/farm-ui.js?v=20261010-delete2"></script>
     <script src="js/farm-care-ui.js?v=20261003-chickegg"></script>
     <script src="js/community-api.js?v=20260919-mwidth"></script>
     <script src="js/community-ui.js?v=20261002-name"></script>

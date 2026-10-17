@@ -220,6 +220,16 @@
         return (item && (item.operational_details || item.operationalDetails || item.extra_details || item.extraDetails)) || {};
     }
 
+    function sameOriginIllustration(raw) {
+        // Pictures live on the Virginia API host. On agrivia.ai, load them
+        // through this site so Cloudflare can reach IPv6 networks.
+        if (!config || config.apiBasePath !== "/api") {
+            return raw;
+        }
+        const match = String(raw).match(/^https:\/\/api\.agrivia\.ai(\/api\/illustrations\/.+)$/i);
+        return match ? match[1] : raw;
+    }
+
     function readImageUrl(source, extra) {
         const pools = [source, extra];
         for (let i = 0; i < pools.length; i += 1) {
@@ -239,7 +249,7 @@
                 continue;
             }
             if (/^https?:\/\//i.test(raw) || raw.charAt(0) === "/") {
-                return raw;
+                return sameOriginIllustration(raw);
             }
         }
         return "";

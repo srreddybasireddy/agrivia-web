@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agrivia — mobile farm context on Advisor</title>
+  <style>
+    :root {
+      --paper: #FAF8F4;
+      --raised: #FFFEFC;
+      --ink: #1A1916;
+      --ink-2: #4A453C;
+      --ink-3: #6B6458;
+      --rule: #E7E3D8;
+      --leaf: #2F5D3A;
+      --leaf-deep: #1A3026;
+      --ochre: #B26A3A;
+      --font: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+      --serif: "Source Serif 4", Georgia, serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: #EDE9DF;
+      color: var(--ink);
+      padding: 2rem 1.25rem 4rem;
+      line-height: 1.45;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 600;
+      max-width: 42rem;
+      margin: 0 auto 0.35rem;
+    }
+    .lede {
+      max-width: 42rem;
+      margin: 0 auto 1.5rem;
+      color: var(--ink-2);
+      font-size: 0.94rem;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.4rem;
+      max-width: 56rem;
+      margin: 0 auto;
+    }
+    .phone-wrap { display: flex; flex-direction: column; gap: 0.4rem; }
+    .label { font-size: 0.78rem; font-weight: 650; color: var(--ink-2); }
+    .sub { font-size: 0.72rem; color: var(--ink-3); max-width: 22rem; }
+    .phone {
+      width: 360px;
+      height: 720px;
+      background: var(--raised);
+      border: 1px solid #C9C3B4;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(26, 25, 22, 0.12);
+      display: flex;
+      flex-direction: column;
+    }
+    .notch {
+      height: 26px;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.62rem;
+      color: var(--ink-3);
+    }
+    .hdr {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.7rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .logo { font-family: var(--serif); font-weight: 600; margin-right: auto; }
+    .signout {
+      font-size: 0.7rem; font-weight: 650;
+      border: 1px solid var(--rule); border-radius: 999px; padding: 0.35rem 0.55rem; background: #fff;
+    }
+    .stage { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .rail {
+      flex: 0 0 auto;
+      border-bottom: 1px solid var(--rule);
+      background: var(--raised);
+    }
+    .rail.today {
+      padding: 1rem 1rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .kicker {
+      font-size: 0.7rem; font-weight: 650; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--ochre);
+    }
+    .place {
+      font-family: var(--serif); font-size: 1.05rem; color: var(--leaf-deep);
+    }
+    .cards {
+      display: flex; gap: 0.5rem; overflow: hidden;
+    }
+    .card {
+      min-width: 13.5rem;
+      display: grid;
+      grid-template-columns: 2.4rem 1fr 0.6rem;
+      gap: 0.55rem;
+      align-items: center;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 0.55rem 0.6rem;
+      background: var(--paper);
+    }
+    .card.active { background: #E8EDE4; border-color: var(--leaf); }
+    .thumb { width: 2.4rem; height: 2.4rem; border-radius: 8px; background: #C5D4C0; }
+    .card strong { display: block; font-size: 0.88rem; }
+    .card span { font-size: 0.72rem; color: var(--ink-3); }
+    .open { font-size: 0.85rem; font-weight: 650; color: var(--ochre); }
+    .chev { color: var(--ink-3); font-size: 0.9rem; }
+
+    /* Recommended: one compact context bar */
+    .rail.bar {
+      padding: 0.55rem 0.85rem 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .meta {
+      display: flex;
+      align-items: baseline;
+      gap: 0.45rem;
+      min-width: 0;
+    }
+    .meta .place-sm {
+      font-size: 0.82rem;
+      font-weight: 650;
+      color: var(--ink-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .meta .open-sm {
+      margin-left: auto;
+      font-size: 0.78rem;
+      font-weight: 650;
+      color: var(--ochre);
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .chips {
+      display: flex;
+      gap: 0.35rem;
+      overflow-x: auto;
+      padding-bottom: 0.1rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    .chip {
+      flex: 0 0 auto;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 650;
+      color: var(--ink-2);
+      white-space: nowrap;
+    }
+    .chip.on {
+      background: var(--leaf-deep);
+      border-color: var(--leaf-deep);
+      color: #FFFDF8;
+    }
+
+    .thread {
+      flex: 1;
+      min-height: 0;
+      padding: 1rem 1.05rem 0.5rem;
+      overflow: auto;
+    }
+    .adv-mark {
+      width: 2.4rem; height: 2.4rem; border-radius: 50%;
+      background: var(--leaf-deep); margin-bottom: 0.45rem;
+    }
+    .title {
+      font-family: var(--serif); font-size: 1.25rem; font-weight: 600;
+      color: var(--leaf-deep); margin-bottom: 0.35rem;
+    }
+    .lead { font-size: 0.86rem; color: var(--ink-2); margin-bottom: 0.75rem; }
+    .pill {
+      display: inline-block;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.78rem;
+      font-weight: 650;
+      color: var(--ochre);
+      margin: 0 0.3rem 0.35rem 0;
+      background: var(--paper);
+    }
+    .dock {
+      border-top: 1px solid var(--rule);
+      padding: 0.6rem 0.9rem 0.75rem;
+    }
+    .form {
+      display: flex; gap: 0.35rem;
+      border: 1px solid var(--rule); border-radius: 12px;
+      padding: 0.25rem 0.25rem 0.25rem 0.7rem; background: var(--paper);
+    }
+    .form span { flex: 1; font-size: 0.76rem; color: var(--ink-3); display: flex; align-items: center; }
+    .send {
+      background: var(--leaf); color: #FFFDF8; border: 0;
+      border-radius: 10px; padding: 0 0.8rem; font-weight: 650; font-size: 0.8rem;
+    }
+    .measure {
+      font-size: 0.7rem; color: var(--ink-3); margin-top: 0.25rem;
+    }
+    .notes {
+      max-width: 42rem;
+      margin: 2rem auto 0;
+      font-size: 0.9rem;
+      color: var(--ink-2);
+    }
+    .notes h2 {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.4rem;
+    }
+    .notes ul { margin-left: 1.1rem; }
+    .notes li { margin-bottom: 0.35rem; }
+  </style>
+</head>
+<body>
+  <h1>Your farm on mobile Advisor</h1>
+  <p class="lede">
+    Today the rail is a mini Farm page (title + place + tall cards + Open Farm). On a phone that steals the chat.
+    Better: a thin context strip — place + Open Farm on one line, assets as selectable chips.
+  </p>
+
+  <div class="row">
+    <div class="phone-wrap">
+      <div class="label">Today</div>
+      <div class="sub">~30% of the viewport before you reach the prompt. Cards are desktop sidebar density.</div>
+      <div class="phone">
+        <div class="notch">9:41</div>
+        <div class="hdr"><div class="logo">Agrivia</div><span class="signout">Sign out</span></div>
+        <div class="stage">
+          <div class="rail today">
+            <div class="kicker">Your farm</div>
+            <div class="place">Bsr · 85041</div>
+            <div class="cards">
+              <div class="card">
+                <div class="thumb"></div>
+                <div><strong>Saffron</strong><span>Crops · Planted</span></div>
+                <span class="chev">›</span>
+              </div>
+              <div class="card active">
+                <div class="thumb"></div>
+                <div><strong>Wheat</strong><span>Crops · Planted</span></div>
+                <span class="chev">›</span>
+              </div>
+            </div>
+            <a class="open" href="#">Open Farm</a>
+            <p class="measure">Rail height ≈ tall card stack</p>
+          </div>
+          <div class="thread">
+            <div class="adv-mark"></div>
+            <div class="kicker">Advisor</div>
+            <div class="title">Welcome to the Agrivia advisor</div>
+            <p class="lead">Ask about Wheat…</p>
+            <span class="pill">What farm tasks…</span>
+            <span class="pill">Seasonal tips…</span>
+          </div>
+          <div class="dock">
+            <div class="form"><span>Ask about Wheat…</span><button class="send" type="button">Send</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-wrap">
+      <div class="label">Recommended</div>
+      <div class="sub">~2 short rows. Same actions: switch asset, open Farm, see place.</div>
+      <div class="phone">
+        <div class="notch">9:41</div>
+        <div class="hdr"><div class="logo">Agrivia</div><span class="signout">Sign out</span></div>
+        <div class="stage">
+          <div class="rail bar">
+            <div class="meta">
+              <span class="place-sm">Bsr · 85041</span>
+              <a class="open-sm" href="#">Open Farm</a>
+            </div>
+            <div class="chips">
+              <button class="chip" type="button">Saffron</button>
+              <button class="chip on" type="button">Wheat</button>
+              <button class="chip" type="button">Chickens</button>
+              <button class="chip" type="button">Garden beds</button>
+            </div>
+          </div>
+          <div class="thread">
+            <div class="adv-mark"></div>
+            <div class="kicker">Advisor</div>
+            <div class="title">Welcome to the Agrivia advisor</div>
+            <p class="lead">Ask about Wheat. Answers use the details saved for this item.</p>
+            <span class="pill">What farm tasks should I focus on this week?</span>
+            <span class="pill">Give me seasonal tips for my region.</span>
+          </div>
+          <div class="dock">
+            <div class="form"><span>Ask about Wheat…</span><button class="send" type="button">Send</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="notes">
+    <h2>Design notes</h2>
+    <ul>
+      <li><strong>Primary job on Advisor:</strong> pick which asset scopes the chat — not browse Farm.</li>
+      <li><strong>Drop on mobile:</strong> “YOUR FARM” kicker, large place heading, thumbnails, status line, chevrons.</li>
+      <li><strong>Keep:</strong> place as small meta, asset chips (selected = filled), Open Farm as text link.</li>
+      <li><strong>Status</strong> (“Crops · Planted”) already appears in the welcome / placeholder — don’t repeat in every chip.</li>
+      <li><strong>Alternative</strong> if chips feel busy: one line “Asking about Wheat ▾” that opens a bottom sheet. Slightly more JS; chips are simpler.</li>
+      <li>Desktop sidebar cards can stay as they are.</li>
+    </ul>
+  </section>
+</body>
+</html>
