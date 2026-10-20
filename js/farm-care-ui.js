@@ -9,6 +9,7 @@
     let scheduleTimer = 0;
     let scheduleTries = 0;
     let openAssetId = "";
+    let carePanelOpen = false;
 
     function el(id) {
         return document.getElementById(id);
@@ -98,6 +99,22 @@
         return listFrom(data, ["tasks", "items", "today"]);
     }
 
+    function assetNameFor(task) {
+        const fromTask = text(task.asset_name || task.assetName || task.asset_title);
+        if (fromTask) {
+            return fromTask;
+        }
+        const assetId = text(task.asset_id || task.assetId);
+        if (!assetId) {
+            return "";
+        }
+        const farmUi = global.AgriviaFarmUi;
+        const snapshot = farmUi && farmUi.getSnapshot ? farmUi.getSnapshot() : null;
+        const assets = (snapshot && snapshot.assets) || [];
+        const found = assets.find((item) => String(item.id) === assetId);
+        return found ? text(found.title) : "";
+    }
+
     function renderToday() {
         const panel = el("farmToday");
         const body = el("farmTodayBody");
@@ -115,7 +132,7 @@
         body.replaceChildren();
         const skeleton = document.createElement("p");
         skeleton.className = "farm-care-status";
-        skeleton.textContent = "Loading today’s tasks…";
+        skeleton.textContent = "Loading care tasks…";
         body.appendChild(skeleton);
         api().getToday().then((data) => {
             paintToday(body, taskRows(data));
@@ -123,72 +140,235 @@
             clear(body);
             const message = document.createElement("p");
             message.className = "farm-care-status is-error";
-            message.textContent = err.message || "Today’s tasks could not be loaded.";
+            message.textContent = err.message || "Care tasks could not be loaded.";
             body.appendChild(message);
         });
     }
 
+    function careSummaryLine(dueNow, comingUp) {
+        const dueCount = dueNow.length;
+        const soonCount = comingUp.length;
+        if (dueCount && soonCount) {
+            return `${dueCount} due on your farm · ${soonCount} coming up`;
+        }
+        if (dueCount) {
+            return dueCount === 1 ? "1 reminder due on your farm" : `${dueCount} reminders due on your farm`;
+        }
+        if (soonCount) {
+            return soonCount === 1 ? "1 upcoming farm reminder" : `${soonCount} upcoming farm reminders`;
+        }
+        return "No farm reminders right now";
+    }
+
     function paintToday(body, tasks) {
         clear(body);
-        if (!tasks.length) {
+        const split = care.splitCareTasks ? care.splitCareTasks(tasks) : { dueNow: tasks, comingUp: [] };
+        const dueNow = split.dueNow || [];
+        const comingUp = split.comingUp || [];
+        if (!dueNow.length && !comingUp.length) {
+            carePanelOpen = false;
+        }
+        body.appendChild(farmCareCard(dueNow, comingUp));
+    }
+
+    function farmCareCard(dueNow, comingUp) {
+        const card = document.createElement("section");
+        card.className = "farm-today paper-card" + (carePanelOpen ? " is-open" : "");
+        card.setAttribute("aria-labelledby", "farmTodayHeading");
+
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "farm-care-toggle";
+        toggle.setAttribute("aria-expanded", carePanelOpen ? "true" : "false");
+        toggle.setAttribute("aria-controls", "farmCarePanel");
+
+        const titleWrap = document.createElement("span");
+        titleWrap.className = "farm-care-toggle-copy";
+        const heading = document.createElement("strong");
+        heading.id = "farmTodayHeading";
+        heading.textContent = "Farm care";
+        const summary = document.createElement("span");
+        summary.className = "farm-today-hint";
+        summary.textContent = careSummaryLine(dueNow, comingUp);
+        if (dueNow.length) {
+            summary.classList.add("has-due");
+        }
+        titleWrap.appendChild(heading);
+        titleWrap.appendChild(summary);
+
+        const chevron = document.createElement("span");
+        chevron.className = "farm-care-chevron";
+        chevron.setAttribute("aria-hidden", "true");
+        chevron.textContent = carePanelOpen ? "Hide" : "Show";
+
+        toggle.appendChild(titleWrap);
+        toggle.appendChild(chevron);
+        toggle.addEventListener("click", () => {
+            carePanelOpen = !carePanelOpen;
+            const body = el("farmTodayBody");
+            if (body) {
+                paintToday(body, dueNow.concat(comingUp));
+            }
+        });
+        card.appendChild(toggle);
+
+        const panel = document.createElement("div");
+        panel.id = "farmCarePanel";
+        panel.className = "farm-care-panel";
+        panel.hidden = !carePanelOpen;
+
+        if (!dueNow.length && !comingUp.length) {
             const empty = document.createElement("p");
             empty.className = "farm-care-status";
-            empty.textContent = "Nothing due today.";
+            empty.textContent = "Nothing scheduled for your crops or animals yet.";
+            panel.appendChild(empty);
             const link = document.createElement("button");
             link.type = "button";
             link.className = "farm-care-link";
-            link.textContent = "Set up reminders";
+            link.textContent = "Set up reminders on a farm item";
             link.addEventListener("click", () => {
                 const grid = el("farmAssetGrid");
                 if (grid) {
                     grid.scrollIntoView({ behavior: "smooth", block: "start" });
                 }
             });
-            body.appendChild(empty);
-            body.appendChild(link);
-            return;
+            panel.appendChild(link);
+            card.appendChild(panel);
+            return card;
         }
-        const list = document.createElement("ul");
-        list.className = "farm-today-list";
-        tasks.forEach((task) => {
-            list.appendChild(todayRow(task));
-        });
-        body.appendChild(list);
+
+        const scroller = document.createElement("div");
+        scroller.className = "farm-care-scroll";
+
+        if (dueNow.length) {
+            const dueHeading = document.createElement("h3");
+            dueHeading.className = "farm-care-group";
+            dueHeading.textContent = "Due now";
+            scroller.appendChild(dueHeading);
+            const dueList = document.createElement("ul");
+            dueList.className = "farm-today-list";
+            dueNow.forEach((task) => {
+                dueList.appendChild(todayRow(task, true));
+            });
+            scroller.appendChild(dueList);
+        }
+
+        if (comingUp.length) {
+            const soonHeading = document.createElement("h3");
+            soonHeading.className = "farm-care-group";
+            soonHeading.textContent = "Coming up";
+            scroller.appendChild(soonHeading);
+            const soonList = document.createElement("ul");
+            soonList.className = "farm-today-list farm-coming-list";
+            comingUp.forEach((task) => {
+                soonList.appendChild(todayRow(task, false));
+            });
+            scroller.appendChild(soonList);
+        }
+
+        panel.appendChild(scroller);
+        card.appendChild(panel);
+        return card;
     }
 
-    function todayRow(task) {
+    function todayRow(task, actionable) {
         const row = document.createElement("li");
         row.className = care.isOverdue(task) ? "is-overdue" : "";
+        const copy = document.createElement("div");
+        copy.className = "farm-today-copy";
+        const title = document.createElement("span");
+        title.className = "farm-today-task";
+        title.textContent = care.careTaskTitle
+            ? care.careTaskTitle(task, assetNameFor(task))
+            : text(task.label || task.title) || "Care task";
+        const meta = document.createElement("span");
+        meta.className = "farm-today-meta";
+        meta.textContent = care.careTaskMeta ? care.careTaskMeta(task) : "";
+        copy.appendChild(title);
+        if (meta.textContent) {
+            copy.appendChild(meta);
+        }
+        if (!actionable) {
+            row.appendChild(copy);
+            return row;
+        }
         const check = document.createElement("input");
         check.type = "checkbox";
-        check.setAttribute("aria-label", "Done");
-        const copy = document.createElement("span");
-        const taskType = text(task.task_type || task.taskType || task.type);
-        const assetName = text(task.asset_name || task.assetName || task.asset_title);
-        copy.textContent = text(task.label || task.title) || [care.taskLine({
-            type: taskType,
-            label: "",
-            dueAt: task.due_at || task.dueAt,
-        }), assetName].filter(Boolean).join(" · ");
+        check.setAttribute("aria-label", `Done: ${title.textContent}`);
+        const actions = document.createElement("div");
+        actions.className = "farm-today-actions";
+        const done = button("Done", "farm-care-link");
         const snooze = button("Snooze", "farm-care-link");
         const reminderId = task.reminder_id || task.reminderId || task.id;
-        check.addEventListener("change", () => runTodayAction(row, () => api().completeReminder(reminderId), check));
-        snooze.addEventListener("click", () => runTodayAction(row, () => api().snoozeReminder(reminderId, "1h"), check));
+        const complete = () => {
+            if (!reminderId || row.dataset.busy === "1") {
+                return;
+            }
+            check.checked = true;
+            done.textContent = "Saving…";
+            runTodayAction(row, () => api().completeReminder(reminderId), { check: check, done: done, snooze: snooze });
+        };
+        check.addEventListener("change", () => {
+            if (check.checked) {
+                complete();
+            }
+        });
+        done.addEventListener("click", complete);
+        snooze.addEventListener("click", () => {
+            if (!reminderId || row.dataset.busy === "1") {
+                return;
+            }
+            snooze.textContent = "Saving…";
+            runTodayAction(row, () => api().snoozeReminder(reminderId, "1h"), { check: check, done: done, snooze: snooze });
+        });
+        actions.appendChild(done);
+        actions.appendChild(snooze);
         row.appendChild(check);
         row.appendChild(copy);
-        row.appendChild(snooze);
+        row.appendChild(actions);
         return row;
     }
 
-    async function runTodayAction(row, action) {
-        const previous = row.hidden;
-        row.hidden = true;
+    async function runTodayAction(row, action, controls) {
+        if (row.dataset.busy === "1") {
+            return;
+        }
+        row.dataset.busy = "1";
+        const nodes = [controls && controls.check, controls && controls.done, controls && controls.snooze].filter(Boolean);
+        nodes.forEach((node) => {
+            node.disabled = true;
+        });
         try {
             await action();
-            renderToday();
-            refreshUnread();
+            row.classList.add("is-done");
+            if (controls && controls.done) {
+                controls.done.textContent = "Done";
+            }
+            if (controls && controls.meta) {
+                controls.meta.textContent = "Marked done";
+            }
+            const meta = row.querySelector(".farm-today-meta");
+            if (meta) {
+                meta.textContent = "Marked done";
+            }
+            global.setTimeout(() => {
+                renderToday();
+                refreshUnread();
+            }, 450);
         } catch (err) {
-            row.hidden = previous;
+            row.dataset.busy = "0";
+            nodes.forEach((node) => {
+                node.disabled = false;
+            });
+            if (controls && controls.check) {
+                controls.check.checked = false;
+            }
+            if (controls && controls.done) {
+                controls.done.textContent = "Done";
+            }
+            if (controls && controls.snooze) {
+                controls.snooze.textContent = "Snooze";
+            }
             const note = el("farmLoadStatus");
             if (note) {
                 note.hidden = false;
@@ -367,8 +547,8 @@
         if (list) {
             list.hidden = Boolean(show);
         }
-        if (today && show) {
-            today.hidden = true;
+        if (today) {
+            today.hidden = Boolean(show);
         }
     }
 
@@ -764,14 +944,46 @@
         return form;
     }
 
+    function notifyIsOpen() {
+        const panel = el("farmNotify");
+        return Boolean(panel && !panel.hidden);
+    }
+
     function closeNotify() {
         const panel = el("farmNotify");
         const bell = el("farmBell");
         if (panel) {
             panel.hidden = true;
+            panel.classList.remove("is-sheet");
         }
         if (bell) {
             bell.setAttribute("aria-expanded", "false");
+        }
+        const hash = String(global.location.hash || "").replace(/^#/, "");
+        if (hash === "notifications") {
+            global.location.hash = "farm";
+        }
+    }
+
+    function onNotifyOutside(event) {
+        if (!notifyIsOpen()) {
+            return;
+        }
+        const panel = el("farmNotify");
+        const bell = el("farmBell");
+        const target = event.target;
+        if (panel && panel.contains(target)) {
+            return;
+        }
+        if (bell && bell.contains(target)) {
+            return;
+        }
+        closeNotify();
+    }
+
+    function onNotifyKey(event) {
+        if (event.key === "Escape" && notifyIsOpen()) {
+            closeNotify();
         }
     }
 
@@ -797,7 +1009,15 @@
         body.appendChild(loading);
         try {
             const data = await api().listNotifications("");
-            const items = listFrom(data, ["notifications", "items"]);
+            const items = listFrom(data, ["notifications", "items"]).filter((item) => {
+                if (item.completed_at || item.completedAt) {
+                    return false;
+                }
+                if (item.status === "completed" || item.status === "done") {
+                    return false;
+                }
+                return true;
+            });
             paintNotifications(body, items);
             const unreadItems = items.filter((item) => {
                 if (item.read_at) {
@@ -853,17 +1073,24 @@
         const row = document.createElement("article");
         row.className = "farm-notify-row";
         const title = document.createElement("strong");
-        title.textContent = text(item.title_text || item.title);
+        title.textContent = care.notificationTitle
+            ? care.notificationTitle(item)
+            : text(item.title_text || item.title);
         const body = document.createElement("p");
         body.textContent = text(item.body_text || item.body);
+        const actions = document.createElement("div");
+        actions.className = "farm-today-actions";
         const done = button("Done", "farm-care-link");
         const snooze = button("Snooze", "farm-care-link");
         done.addEventListener("click", () => notifyAction(row, "complete", item.id));
         snooze.addEventListener("click", () => notifyAction(row, "snooze", item.id, "tonight"));
+        actions.appendChild(done);
+        actions.appendChild(snooze);
         row.appendChild(title);
-        row.appendChild(body);
-        row.appendChild(done);
-        row.appendChild(snooze);
+        if (body.textContent) {
+            row.appendChild(body);
+        }
+        row.appendChild(actions);
         return row;
     }
 
@@ -878,6 +1105,7 @@
                 await api().snoozeNotification(id, preset || "1h");
             }
             refreshUnread();
+            renderToday();
         } catch (err) {
             row.hidden = false;
             setUnread(previous);
@@ -900,6 +1128,10 @@
         if (openAssetId) {
             openAssetId = "";
             showDetail(false);
+            renderToday();
+        } else if (hash === "farm" || hash === "") {
+            showDetail(false);
+            renderToday();
         }
         if (hash === "notifications") {
             openNotifications(true);
@@ -1040,11 +1272,16 @@
         }
         const back = el("farmDetailBack");
         if (back) {
-            back.addEventListener("click", closeAsset);
+            back.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                closeAsset();
+            });
         }
         const bell = el("farmBell");
         if (bell) {
-            bell.addEventListener("click", () => {
+            bell.addEventListener("click", (event) => {
+                event.stopPropagation();
                 const panel = el("farmNotify");
                 if (panel && !panel.hidden) {
                     closeNotify();
@@ -1059,6 +1296,15 @@
                 global.location.hash = "notifications";
             });
         }
+        const notifyClose = el("farmNotifyClose");
+        if (notifyClose) {
+            notifyClose.addEventListener("click", (event) => {
+                event.preventDefault();
+                closeNotify();
+            });
+        }
+        document.addEventListener("pointerdown", onNotifyOutside);
+        document.addEventListener("keydown", onNotifyKey);
         global.addEventListener("focus", refreshUnread);
         global.addEventListener("agrivia-auth-changed", startPoll);
         global.addEventListener("agrivia-farm-changed", () => {

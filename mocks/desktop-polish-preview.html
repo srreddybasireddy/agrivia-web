@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agrivia — desktop polish preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #FAF8F4;
+      --raised: #FFFEFC;
+      --ink: #1A1916;
+      --ink-2: #4A453C;
+      --ink-3: #6B6458;
+      --rule: #E7E3D8;
+      --leaf: #2F5D3A;
+      --leaf-deep: #1A3026;
+      --font: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+      --serif: "Source Serif 4", Georgia, serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: #E8E3D6;
+      color: var(--ink);
+      line-height: 1.5;
+      padding: 2.25rem 1.25rem 4rem;
+    }
+    .page { max-width: 1180px; margin: 0 auto; }
+    h1 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+    .lede { max-width: 42rem; color: var(--ink-2); margin-bottom: 2rem; }
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 2.25rem 0 0.85rem;
+    }
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .cap {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 0.4rem;
+    }
+    .cap.now { color: #8A4B2F; }
+    .cap.next { color: var(--leaf); }
+    .frame {
+      background: var(--paper);
+      border: 1px solid #C9C3B4;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(26, 25, 22, 0.08);
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+    .frame.short { min-height: 0; }
+    .chrome {
+      height: 36px;
+      background: #F3F0E8;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+      flex-shrink: 0;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #D7D1C4; }
+    .url {
+      margin-left: 8px;
+      font-size: 0.72rem;
+      color: var(--ink-3);
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      padding: 2px 10px;
+    }
+    .hdr {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.7rem 1rem;
+      background: var(--raised);
+      border-bottom: 1px solid var(--rule);
+      flex-shrink: 0;
+    }
+    .logo {
+      font-family: var(--serif);
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 1.05rem;
+      text-decoration: none;
+    }
+    .logo span { color: var(--ink-3); font-size: 0.78rem; }
+    .nav { display: flex; align-items: center; gap: 0.15rem; font-size: 0.92rem; }
+    .nav a {
+      color: var(--ink-2);
+      text-decoration: none;
+      padding: 0.15rem 0.15rem;
+    }
+    .nav a.on { color: var(--leaf-deep); font-weight: 650; }
+    .nav .pipe { color: #C4BDB0; padding: 0 0.28rem; user-select: none; }
+    .nav.spaced { gap: 1.05rem; margin-left: 0.35rem; }
+    .nav.spaced a { padding: 0.2rem 0.05rem; }
+    .nav.spaced a.on { box-shadow: inset 0 -2px 0 var(--leaf); }
+    .signin {
+      margin-left: auto;
+      font-size: 0.78rem;
+      border: 1px solid var(--rule);
+      background: var(--raised);
+      color: var(--ink-2);
+      border-radius: 999px;
+      padding: 0.28rem 0.7rem;
+    }
+    .stage { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .shell {
+      width: min(100%, 34rem);
+      margin: 0.85rem auto 0;
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .shell.stretch { flex: 1; margin-bottom: 0.85rem; }
+    .shell.fit { margin-bottom: 1.25rem; }
+    .thread { padding: 1.15rem 1.15rem 0.4rem; }
+    .shell.stretch .thread { flex: 1; }
+    .kicker {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--leaf);
+    }
+    .welcome h3 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 1.45rem;
+      margin: 0.15rem 0 0.7rem;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .chip {
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      color: var(--ink-2);
+      border-radius: 999px;
+      padding: 0.28rem 0.7rem;
+      font-size: 0.82rem;
+    }
+    .dock { padding: 0.75rem 1rem 0.85rem; }
+    .composer {
+      display: flex;
+      gap: 0.45rem;
+      align-items: flex-end;
+    }
+    .composer input {
+      flex: 1;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      border-radius: 12px;
+      padding: 0.65rem 0.75rem;
+      font: inherit;
+      color: var(--ink-3);
+    }
+    .send {
+      background: var(--leaf);
+      color: #fff;
+      border: 0;
+      border-radius: 12px;
+      padding: 0.65rem 0.9rem;
+      font: inherit;
+      font-weight: 650;
+    }
+    .fine { font-size: 0.75rem; color: var(--ink-3); margin-top: 0.4rem; }
+    .void {
+      flex: 1;
+      margin: 0.6rem 1.15rem;
+      border: 1px dashed #D5CFC2;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #A39B8C;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      text-align: center;
+      padding: 0.5rem;
+    }
+    .ask {
+      margin: 0.85rem 0 0.55rem;
+      background: #F4F1EA;
+      border-radius: 12px;
+      padding: 0.7rem 0.8rem;
+    }
+    .ask b { display: block; font-size: 0.72rem; color: var(--ink-3); font-weight: 650; }
+    .writing {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--leaf-deep);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.15rem 0.15rem 0.35rem;
+    }
+    .dots { display: inline-flex; gap: 3px; }
+    .dots i {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--leaf);
+      display: block;
+      animation: bounce 1s infinite ease-in-out;
+    }
+    .dots i:nth-child(2) { animation-delay: 0.15s; }
+    .dots i:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+      40% { transform: translateY(-3px); opacity: 1; }
+    }
+    .farm { padding: 1.1rem 1.15rem 1.25rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--leaf);
+      margin-bottom: 0.25rem;
+    }
+    .farm h3 {
+      font-family: var(--serif);
+      font-size: 1.7rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .card {
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      padding: 1rem 1.05rem 1.1rem;
+      max-width: 40rem;
+    }
+    .card p { color: var(--ink-2); font-size: 0.95rem; margin-bottom: 0.55rem; }
+    .card .lead { color: var(--ink); font-weight: 650; }
+    .saved {
+      list-style: none;
+      display: grid;
+      gap: 0.35rem;
+      margin: 0.35rem 0 0.8rem;
+    }
+    .saved li {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.92rem;
+    }
+    .saved strong { font-weight: 650; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.35rem; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.88rem;
+      font-weight: 650;
+      text-decoration: none;
+    }
+    .btn.primary { background: var(--leaf); color: #fff; }
+    .btn.ghost { border: 1px solid var(--rule); color: var(--ink-2); background: var(--raised); }
+    .note { margin-top: 1.5rem; color: var(--ink-2); font-size: 0.92rem; max-width: 42rem; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Desktop polish preview</h1>
+    <p class="lede">Mock only. Same one-column advisor, no sample beds or flocks, no trending sidebar. Each block shows the site now, then the change.</p>
+
+    <h2>Navigation</h2>
+    <div class="pair">
+      <div>
+        <p class="cap now">Now</p>
+        <div class="frame short">
+          <header class="hdr">
+            <div class="logo">Agrivia <span>.ai</span></div>
+            <nav class="nav">
+              <a>Guides</a><span class="pipe">|</span>
+              <a class="on">Advisor</a><span class="pipe">|</span>
+              <a>Farm</a><span class="pipe">|</span>
+              <a>Worksheet</a>
+            </nav>
+            <span class="signin">Sign in</span>
+          </header>
+        </div>
+      </div>
+      <div>
+        <p class="cap next">Proposed</p>
+        <div class="frame short">
+          <header class="hdr">
+            <div class="logo">Agrivia <span>.ai</span></div>
+            <nav class="nav spaced">
+              <a>Guides</a>
+              <a class="on">Advisor</a>
+              <a>Farm</a>
+              <a>Worksheet</a>
+            </nav>
+            <span class="signin">Sign in</span>
+          </header>
+        </div>
+      </div>
+    </div>
+
+    <h2>Empty Advisor</h2>
+    <div class="pair">
+      <div>
+        <p class="cap now">Now — welcome at the top, composer at the bottom</p>
+        <div class="frame">
+          <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">agrivia.ai/#ai-advisor</span></div>
+          <header class="hdr">
+            <div class="logo">Agrivia <span>.ai</span></div>
+            <nav class="nav"><a>Guides</a><span class="pipe">|</span><a class="on">Advisor</a><span class="pipe">|</span><a>Farm</a><span class="pipe">|</span><a>Worksheet</a></nav>
+            <span class="signin">Sign in</span>
+          </header>
+          <div class="stage">
+            <div class="shell stretch">
+              <div class="thread">
+                <div class="welcome">
+                  <p class="kicker">Advisor</p>
+                  <h3>What are you working on today?</h3>
+                </div>
+              </div>
+              <div class="void">This gap is the problem. The welcome stays up here. The box stays down there.</div>
+              <div class="dock">
+                <div class="composer">
+                  <input readonly value="Ask about tomatoes, chicks, goats, or a backyard coop…">
+                  <button class="send" type="button">Send</button>
+                </div>
+                <p class="fine">Guidance only, not a vet diagnosis.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="cap next">Proposed — welcome sits on the composer</p>
+        <div class="frame">
+          <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">agrivia.ai/#ai-advisor</span></div>
+          <header class="hdr">
+            <div class="logo">Agrivia <span>.ai</span></div>
+            <nav class="nav spaced"><a>Guides</a><a class="on">Advisor</a><a>Farm</a><a>Worksheet</a></nav>
+            <span class="signin">Sign in</span>
+          </header>
+          <div class="stage">
+            <div class="shell fit">
+              <div class="thread">
+                <div class="welcome">
+                  <p class="kicker">Advisor</p>
+                  <h3>What are you working on today?</h3>
+                </div>
+              </div>
+              <div class="dock">
+                <div class="composer">
+                  <input readonly value="Ask about tomatoes, chicks, goats, or a backyard coop…">
+                  <button class="send" type="button">Send</button>
+                </div>
+                <p class="fine">Guidance only, not a vet diagnosis.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2>While a reply is in progress</h2>
+    <div class="pair">
+      <div>
+        <p class="cap now">Now — no mark in the thread</p>
+        <div class="frame short">
+          <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">agrivia.ai/#ai-advisor</span></div>
+          <div class="shell fit" style="width:min(100%, 34rem)">
+            <div class="thread">
+              <div class="ask"><b>You asked</b>When should I move chicks off the heat lamp?</div>
+            </div>
+            <div class="dock">
+              <div class="composer">
+                <input readonly value="">
+                <button class="send" type="button">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="cap next">Proposed — one line under the question</p>
+        <div class="frame short">
+          <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">agrivia.ai/#ai-advisor</span></div>
+          <div class="shell fit" style="width:min(100%, 34rem)">
+            <div class="thread">
+              <div class="ask"><b>You asked</b>When should I move chicks off the heat lamp?</div>
+              <p class="writing"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span> Advisor is writing</p>
+            </div>
+            <div class="dock">
+              <div class="composer">
+                <input readonly value="">
+                <button class="send" type="button">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Signed-out Farm</h2>
+    <div class="pair">
+      <div>
+        <p class="cap now">Now</p>
+        <div class="frame short">
+          <div class="farm">
+            <span class="badge">Farm</span>
+            <h3>Your farm</h3>
+            <div class="card">
+              <p class="lead">Start with a question. Sign in when you want to keep the place.</p>
+              <p>Chat works without an account. Google sign-in in the header saves beds, animals, and what the advisor learns — on the same farm the apps use.</p>
+              <div class="actions">
+                <a class="btn primary" href="#ai-advisor">Ask the advisor first</a>
+                <a class="btn ghost" href="#guides">Read a starter guide</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="cap next">Proposed — what sign-in keeps</p>
+        <div class="frame short">
+          <div class="farm">
+            <span class="badge">Farm</span>
+            <h3>Your farm</h3>
+            <div class="card">
+              <p class="lead">Sign in when you want to keep the place.</p>
+              <p>Nothing is stored until you sign in. Google sign-in in the header keeps:</p>
+              <ul class="saved">
+                <li><strong>Beds</strong> you add</li>
+                <li><strong>Animals</strong> you keep</li>
+                <li><strong>Care reminders</strong> for those</li>
+              </ul>
+              <p>Chat still works without an account, on the same farm the apps use.</p>
+              <div class="actions">
+                <a class="btn primary" href="#ai-advisor">Ask the advisor first</a>
+                <a class="btn ghost" href="#guides">Read a starter guide</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="note">Worksheet stays Worksheet. No second column, no sample tomatoes, no invented flock. Tell me which of these four to put on the site.</p>
+  </div>
+</body>
+</html>

@@ -18,8 +18,39 @@ const STANDALONE_PAGES = {
     worksheet: 'worksheet.html',
 };
 
+function worksheetHref() {
+    return /\/guides(\/|$)/i.test(window.location.pathname)
+        ? '/worksheet.html'
+        : 'worksheet.html';
+}
+
+function ensureWorksheetNav() {
+    const nav = document.getElementById('mainNav');
+    if (!nav) {
+        return;
+    }
+    const existing = nav.querySelector('a[href*="worksheet"]');
+    if (existing) {
+        existing.setAttribute('href', worksheetHref());
+        if (/worksheet\.html/i.test(window.location.pathname)) {
+            existing.classList.add('active');
+        }
+        return;
+    }
+    const link = document.createElement('a');
+    link.className = 'nav-item';
+    link.id = 'nav-worksheet';
+    link.href = worksheetHref();
+    link.textContent = 'Worksheet';
+    if (/worksheet\.html/i.test(window.location.pathname)) {
+        link.classList.add('active');
+    }
+    nav.appendChild(link);
+}
+
 // Initialize Page Navigation
 document.addEventListener('DOMContentLoaded', () => {
+    ensureWorksheetNav();
     if (document.getElementById('appContainer')) {
         handleHashRouting();
         window.addEventListener('hashchange', handleHashRouting);

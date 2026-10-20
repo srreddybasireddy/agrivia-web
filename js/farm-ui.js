@@ -472,6 +472,61 @@
         }
     }
 
+    let pendingDelete = null;
+
+    function openDeleteDialog(asset) {
+        pendingDelete = asset;
+        const dialog = el("farmDeleteDialog");
+        const copy = el("farmDeleteCopy");
+        const status = el("farmDeleteStatus");
+        const confirmBtn = el("farmDeleteConfirm");
+        const label = asset.title || "this item";
+        if (copy) {
+            copy.textContent = `Remove ${label} from this farm?`;
+        }
+        if (status) {
+            status.textContent = "";
+        }
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+        }
+        if (dialog && typeof dialog.showModal === "function" && !dialog.open) {
+            dialog.showModal();
+        }
+    }
+
+    async function confirmDelete(event) {
+        event.preventDefault();
+        const asset = pendingDelete;
+        const dialog = el("farmDeleteDialog");
+        const status = el("farmDeleteStatus");
+        const confirmBtn = el("farmDeleteConfirm");
+        if (!asset || !global.AgriviaFarmApi) {
+            return;
+        }
+        if (confirmBtn) {
+            confirmBtn.disabled = true;
+        }
+        try {
+            await global.AgriviaFarmApi.deleteAsset(asset);
+            if (editingAssetKey === assetKey(asset)) {
+                editingAssetKey = "";
+            }
+            pendingDelete = null;
+            if (dialog) {
+                dialog.close();
+            }
+            await loadFarm();
+        } catch (err) {
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+            }
+            if (status) {
+                status.textContent = err.message || "Could not remove that item.";
+            }
+        }
+    }
+
     function appendCardActions(copy, asset) {
         const actions = document.createElement("div");
         actions.className = "farm-asset-actions";
@@ -506,27 +561,12 @@
         remove.className = "farm-asset-delete";
         remove.textContent = "Delete";
         remove.setAttribute("aria-label", `Delete ${shownName}`);
-        remove.addEventListener("click", async () => {
-            const label = asset.title || "this asset";
-            if (!window.confirm(`Remove ${label} from this farm?`)) {
-                return;
-            }
-            remove.disabled = true;
-            edit.disabled = true;
-            try {
-                await global.AgriviaFarmApi.deleteAsset(asset);
-                if (editingAssetKey === assetKey(asset)) {
-                    editingAssetKey = "";
-                }
-                await loadFarm();
-            } catch (err) {
-                remove.disabled = false;
-                edit.disabled = false;
-                const status = el("farmAssetStatus");
-                if (status) {
-                    status.textContent = err.message || "Could not remove that asset.";
-                }
-            }
+        remove.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            // Open after this click finishes. On desktop the same click
+            // otherwise lands on the dialog backdrop and dismisses it at once.
+            global.setTimeout(() => openDeleteDialog(asset), 0);
         });
 
         actions.appendChild(ask);
@@ -819,6 +859,21 @@
                 }
             }
         });
+
+        const deleteForm = el("farmDeleteForm");
+        if (deleteForm) {
+            deleteForm.addEventListener("submit", confirmDelete);
+        }
+        const deleteCancel = el("farmDeleteCancel");
+        if (deleteCancel) {
+            deleteCancel.addEventListener("click", () => {
+                pendingDelete = null;
+                const dialog = el("farmDeleteDialog");
+                if (dialog) {
+                    dialog.close();
+                }
+            });
+        }
 
         const editToggle = el("farmEditToggle");
         if (editToggle) {
