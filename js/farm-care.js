@@ -219,10 +219,115 @@
             return task.label;
         }
         const when = formatWhen(task.dueAt, now);
-        if (task.type && when) {
-            return `${task.type} · ${when}`;
+        const type = taskLabel(task.type);
+        if (type && when) {
+            return `${type} · ${when}`;
         }
-        return task.type || when;
+        return type || when;
+    }
+
+    function dueAtOf(task) {
+        return new Date((task && (task.dueAt || task.due_at)) || "");
+    }
+
+    function endOfLocalDay(now) {
+        const date = new Date(now || new Date());
+        date.setHours(23, 59, 59, 999);
+        return date;
+    }
+
+    function startOfLocalDay(now) {
+        const date = new Date(now || new Date());
+        date.setHours(0, 0, 0, 0);
+        return date;
+    }
+
+    function isDueNow(task, now) {
+        if (!task) {
+            return false;
+        }
+        if (isOverdue(task, now)) {
+            return true;
+        }
+        const due = dueAtOf(task);
+        if (Number.isNaN(due.getTime())) {
+            return false;
+        }
+        return due.getTime() <= endOfLocalDay(now).getTime();
+    }
+
+    function splitCareTasks(tasks, now) {
+        const dueNow = [];
+        const comingUp = [];
+        (tasks || []).forEach((task) => {
+            if (isDueNow(task, now)) {
+                dueNow.push(task);
+            } else {
+                comingUp.push(task);
+            }
+        });
+        return {
+            dueNow: dueNow,
+            comingUp: comingUp.slice(0, 6),
+        };
+    }
+
+    function careTaskTitle(task, assetName) {
+        if (!task) {
+            return "";
+        }
+        const type = text(task.task_type || task.taskType || task.type);
+        const rawLabel = text(task.label || task.title);
+        const name = text(assetName || task.asset_name || task.assetName || task.asset_title);
+        const looksRaw = Boolean(rawLabel) && (/_/.test(rawLabel) || rawLabel === type);
+        const taskName = looksRaw || !rawLabel ? taskLabel(type || rawLabel) : rawLabel;
+        if (taskName && name) {
+            return `${taskName} · ${name}`;
+        }
+        return taskName || name || "Care task";
+    }
+
+    function careTaskMeta(task, now) {
+        const due = dueAtOf(task);
+        if (Number.isNaN(due.getTime())) {
+            return "";
+        }
+        const clock = due.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+        const day = due.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+        const current = now || new Date();
+        if (isOverdue(task, current)) {
+            if (due.toDateString() === current.toDateString()) {
+                return `Overdue · ${clock}`;
+            }
+            const todayStart = startOfLocalDay(current);
+            const yesterday = new Date(todayStart);
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (due >= yesterday && due < todayStart) {
+                return "Overdue · yesterday";
+            }
+            return `Overdue · ${day}`;
+        }
+        if (due.toDateString() === current.toDateString()) {
+            return `Due · ${clock}`;
+        }
+        return day;
+    }
+
+    function notificationTitle(item) {
+        const title = text(item && (item.title_text || item.title));
+        const match = title.match(/^Care reminder:\s*(.+?)\s+for\s+(.+)$/i);
+        if (match) {
+            return `${taskLabel(match[1])} · ${match[2]}`;
+        }
+        if (title && !/_/.test(title)) {
+            return title;
+        }
+        const type = text(item && (item.task_type || item.taskType || item.type));
+        const name = text(item && (item.asset_name || item.assetName || item.asset_title));
+        if (type || name) {
+            return careTaskTitle({ type: type, label: title }, name);
+        }
+        return title || "Care reminder";
     }
 
     const MILESTONE_LABELS = {
@@ -875,6 +980,12 @@
         timeOfDayValue: timeOfDayValue,
         parseLocalDate: parseLocalDate,
         isOverdue: isOverdue,
+        isDueNow: isDueNow,
+        splitCareTasks: splitCareTasks,
+        careTaskTitle: careTaskTitle,
+        careTaskMeta: careTaskMeta,
+        notificationTitle: notificationTitle,
+        taskLabel: taskLabel,
         taskLine: taskLine,
         subjectKeyOf: subjectKeyOf,
         displayName: displayName,

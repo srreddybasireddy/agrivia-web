@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agrivia — Due now &amp; notifications mock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #FAF8F4;
+      --raised: #FFFEFC;
+      --ink: #1A1916;
+      --ink-2: #4A453C;
+      --ink-3: #6B6458;
+      --rule: #E7E3D8;
+      --leaf: #2F5D3A;
+      --leaf-deep: #1A3026;
+      --ochre: #B26A3A;
+      --danger: #9B2C2C;
+      --font: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+      --serif: "Source Serif 4", Georgia, serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: #E8E3D6;
+      color: var(--ink);
+      line-height: 1.45;
+      padding: 2rem 1.25rem 4rem;
+    }
+    .page { max-width: 1180px; margin: 0 auto; }
+    h1 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 1.85rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+    .lede {
+      max-width: 44rem;
+      color: var(--ink-2);
+      margin-bottom: 1.75rem;
+      font-size: 0.95rem;
+    }
+    .rules {
+      max-width: 44rem;
+      margin: 0 0 2rem;
+      padding: 0.9rem 1rem;
+      background: var(--raised);
+      border: 1px solid #C9C3B4;
+      border-radius: 12px;
+      font-size: 0.86rem;
+      color: var(--ink-2);
+    }
+    .rules strong { color: var(--ink); }
+    .rules ol { margin: 0.45rem 0 0 1.15rem; }
+    .rules li { margin: 0.25rem 0; }
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 2.1rem 0 0.85rem;
+    }
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.15rem;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .pair { grid-template-columns: 1fr; }
+    }
+    .cap {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .cap.now { color: #8A4B2F; }
+    .cap.next { color: var(--leaf); }
+    .note {
+      font-size: 0.78rem;
+      color: var(--ink-3);
+      margin-top: 0.45rem;
+      max-width: 22rem;
+    }
+
+    /* Shared farm chrome */
+    .logo-mark {
+      width: 1.15rem;
+      height: 1.15rem;
+      border-radius: 50%;
+      background: var(--leaf-deep);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 28% 32% 24% 38%;
+      background: #E8EDE4;
+      border-radius: 0 70% 40% 70%;
+      transform: rotate(-28deg);
+    }
+    .logo-text { font-family: var(--serif); font-weight: 600; }
+    .logo-badge { color: var(--leaf); }
+    .signout {
+      border: 1px solid #C9C3B4;
+      background: var(--raised);
+      border-radius: 999px;
+      padding: 0.25rem 0.7rem;
+      font: inherit;
+      font-size: 0.78rem;
+      color: var(--ink-2);
+    }
+    .bell {
+      position: relative;
+      width: 2.2rem;
+      height: 2.2rem;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--leaf-deep);
+      display: grid;
+      place-items: center;
+      cursor: default;
+    }
+    .bell svg { width: 1.15rem; height: 1.15rem; }
+    .bell-dot {
+      position: absolute;
+      top: 0.3rem;
+      right: 0.3rem;
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: #B42318;
+    }
+    .kicker {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ochre);
+    }
+    .farm-title {
+      font-family: var(--serif);
+      font-size: 1.55rem;
+      font-weight: 600;
+      color: var(--leaf-deep);
+      margin: 0.15rem 0 0;
+    }
+    .farm-sub { color: var(--ink-3); font-size: 0.9rem; margin-top: 0.15rem; }
+    .edit {
+      margin-top: 0.65rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border: 1px solid #C9C3B4;
+      background: var(--raised);
+      border-radius: 999px;
+      padding: 0.35rem 0.85rem;
+      font: inherit;
+      font-size: 0.84rem;
+      color: var(--ink-2);
+    }
+    .card {
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      padding: 0.95rem 1rem 1rem;
+      margin-top: 1rem;
+    }
+    .card h3 {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--leaf-deep);
+      margin: 0 0 0.55rem;
+    }
+    .card .hint {
+      font-size: 0.78rem;
+      color: var(--ink-3);
+      margin: -0.25rem 0 0.65rem;
+    }
+    .row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      padding: 0.5rem 0;
+      border-top: 1px solid var(--rule);
+    }
+    .row:first-of-type { border-top: 0; padding-top: 0.15rem; }
+    .row input { margin-top: 0.3rem; flex-shrink: 0; }
+    .row .copy { flex: 1; min-width: 0; }
+    .row .task {
+      display: block;
+      font-size: 0.92rem;
+      color: var(--ink);
+      font-weight: 550;
+    }
+    .row .meta {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--ink-3);
+      margin-top: 0.1rem;
+    }
+    .row.is-overdue .task { color: var(--danger); font-weight: 650; }
+    .row.is-overdue .meta { color: #B42318; }
+    .link {
+      border: 0;
+      background: none;
+      color: var(--leaf);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: default;
+      white-space: nowrap;
+      padding: 0.2rem 0;
+    }
+    .actions { display: flex; gap: 0.65rem; flex-shrink: 0; align-items: center; }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.95rem;
+    }
+    .chip {
+      border: 1px solid var(--rule);
+      background: #F7F4EC;
+      border-radius: 999px;
+      padding: 0.28rem 0.7rem;
+      font-size: 0.78rem;
+      color: var(--ink-2);
+    }
+    .coming .row .task { font-weight: 500; color: var(--ink-2); }
+    .empty {
+      font-size: 0.88rem;
+      color: var(--ink-3);
+      padding: 0.35rem 0 0.15rem;
+    }
+
+    /* Phone */
+    .phones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+    .phone-wrap { display: flex; flex-direction: column; }
+    .phone {
+      width: 360px;
+      height: 700px;
+      background: var(--paper);
+      border: 1px solid #C9C3B4;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(26, 25, 22, 0.12);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .notch {
+      height: 24px;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.62rem;
+      color: var(--ink-3);
+      background: var(--raised);
+      flex-shrink: 0;
+    }
+    .m-hdr {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.7rem;
+      border-bottom: 1px solid var(--rule);
+      background: var(--raised);
+      flex-shrink: 0;
+    }
+    .m-hdr .logo { display: flex; align-items: center; gap: 0.35rem; margin-right: auto; }
+    .burger {
+      width: 1.35rem;
+      height: 1.05rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .burger span {
+      display: block;
+      height: 2px;
+      background: var(--ink);
+      border-radius: 2px;
+    }
+    .m-body {
+      flex: 1;
+      overflow: auto;
+      padding: 0.95rem 0.9rem 1.25rem;
+      background: var(--paper);
+    }
+    .m-notify {
+      position: absolute;
+      top: 4.35rem;
+      right: 0.55rem;
+      left: 0.55rem;
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      padding: 0.8rem 0.9rem 0.95rem;
+      box-shadow: 0 12px 28px rgba(26, 25, 22, 0.14);
+      z-index: 5;
+      max-height: 22rem;
+      overflow: auto;
+    }
+    .m-notify.hidden { display: none; }
+    .notify-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.55rem;
+    }
+    .notify-head strong { font-size: 0.92rem; color: var(--leaf-deep); }
+    .n-row {
+      padding: 0.55rem 0;
+      border-top: 1px solid var(--rule);
+    }
+    .n-row strong {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--ink);
+      font-weight: 650;
+    }
+    .n-row p {
+      font-size: 0.8rem;
+      color: var(--ink-2);
+      margin: 0.2rem 0 0.45rem;
+    }
+    .n-row .actions { justify-content: flex-start; }
+
+    /* Desktop browser frame */
+    .desk {
+      background: var(--paper);
+      border: 1px solid #C9C3B4;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(26, 25, 22, 0.08);
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .chrome {
+      height: 36px;
+      background: #F3F0E8;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+      flex-shrink: 0;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #D7D1C4; }
+    .url {
+      margin-left: 8px;
+      font-size: 0.72rem;
+      color: var(--ink-3);
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      padding: 2px 10px;
+    }
+    .d-hdr {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.7rem 1.15rem;
+      background: var(--raised);
+      border-bottom: 1px solid var(--rule);
+      flex-shrink: 0;
+      position: relative;
+    }
+    .d-hdr .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-right: 0.5rem;
+    }
+    .nav {
+      display: flex;
+      gap: 0.15rem;
+      margin-right: auto;
+      font-size: 0.9rem;
+    }
+    .nav span {
+      padding: 0.2rem 0.55rem;
+      color: var(--ink-2);
+    }
+    .nav .on {
+      color: var(--leaf-deep);
+      font-weight: 650;
+      border-bottom: 2px solid var(--leaf);
+    }
+    .d-hdr .end {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      position: relative;
+    }
+    .d-body {
+      padding: 1.25rem 1.5rem 1.75rem;
+      max-width: 720px;
+    }
+    .d-notify {
+      position: absolute;
+      top: calc(100% + 0.35rem);
+      right: 0;
+      width: 22rem;
+      background: var(--raised);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      padding: 0.85rem 1rem 1rem;
+      box-shadow: 0 14px 32px rgba(26, 25, 22, 0.14);
+      z-index: 8;
+    }
+    .d-notify.hidden { display: none; }
+    .footer-note {
+      margin-top: 2.5rem;
+      font-size: 0.8rem;
+      color: var(--ink-3);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Due now &amp; notifications</h1>
+    <p class="lede">
+      Side-by-side mock of the Farm card and the header bell, on phone and desktop.
+      Same rules on both sizes. No site code changed.
+    </p>
+    <div class="rules">
+      <strong>Proposed rules</strong>
+      <ol>
+        <li><strong>Due now</strong> — only overdue and due today, each line names the plant or animal.</li>
+        <li><strong>Coming up</strong> — optional short list of the next few future reminders (not in the bell).</li>
+        <li><strong>Bell</strong> — only alerts that need a look right now. Dot = unread. Done removes the alert.</li>
+        <li>Labels use plain words: <em>Water · Sugar cane</em>, never <em>pest_check · Oct 31…</em>.</li>
+      </ol>
+    </div>
+
+    <h2>Mobile</h2>
+    <div class="phones">
+      <div class="phone-wrap">
+        <p class="cap now">Now · Farm card</p>
+        <div class="phone" aria-label="Current mobile farm today">
+          <div class="notch">10:47</div>
+          <div class="m-hdr">
+            <div class="burger" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="logo">
+              <span class="logo-mark" aria-hidden="true"></span>
+              <span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span>
+            </div>
+            <button type="button" class="bell" aria-label="Notifications">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22a2.2 2.2 0 0 0 2.1-1.6H9.9A2.2 2.2 0 0 0 12 22zm7-6V11a7 7 0 0 0-5-6.7V3a2 2 0 1 0-4 0v1.3A7 7 0 0 0 5 11v5l-1.6 1.6A1 1 0 0 0 4.1 19h15.8a1 1 0 0 0 .7-1.7L19 16z"></path></svg>
+            </button>
+            <button type="button" class="signout">Sign out</button>
+          </div>
+          <div class="m-body">
+            <p class="kicker">Farm</p>
+            <h2 class="farm-title">Your farm</h2>
+            <p class="farm-sub">Bsr · 85041</p>
+            <button type="button" class="edit">Edit profile</button>
+            <div class="card">
+              <h3>Today on your farm</h3>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy">
+                  <span class="task">water · Oct 24 1:00 AM</span>
+                </div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy">
+                  <span class="task">fertilize · Oct 31 1:00 AM</span>
+                </div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy">
+                  <span class="task">pest_check · Oct 31 1:00 AM</span>
+                </div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy">
+                  <span class="task">health_check · Nov 16 1:00 AM</span>
+                </div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy">
+                  <span class="task">harvest_check · Nov 16 1:00 AM</span>
+                </div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+            </div>
+            <div class="chips">
+              <span class="chip">6.1 acres</span>
+              <span class="chip">Crops 2</span>
+              <span class="chip">Livestock 1</span>
+              <span class="chip">Garden 4</span>
+              <span class="chip">Poultry 3</span>
+            </div>
+          </div>
+        </div>
+        <p class="note">Future dates under Today. No plant name. Underscore keys. Bell empty.</p>
+      </div>
+
+      <div class="phone-wrap">
+        <p class="cap next">Proposed · Due now + bell open</p>
+        <div class="phone" aria-label="Proposed mobile farm due now">
+          <div class="notch">10:47</div>
+          <div class="m-hdr">
+            <div class="burger" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="logo">
+              <span class="logo-mark" aria-hidden="true"></span>
+              <span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span>
+            </div>
+            <button type="button" class="bell" aria-label="Notifications, 2 unread">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22a2.2 2.2 0 0 0 2.1-1.6H9.9A2.2 2.2 0 0 0 12 22zm7-6V11a7 7 0 0 0-5-6.7V3a2 2 0 1 0-4 0v1.3A7 7 0 0 0 5 11v5l-1.6 1.6A1 1 0 0 0 4.1 19h15.8a1 1 0 0 0 .7-1.7L19 16z"></path></svg>
+              <span class="bell-dot" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="signout">Sign out</button>
+          </div>
+          <div class="m-notify" aria-label="Notification panel">
+            <div class="notify-head">
+              <strong>Notifications</strong>
+              <button type="button" class="link">Close</button>
+            </div>
+            <div class="n-row">
+              <strong>Water · Sugar cane</strong>
+              <p>Due this morning · Crops · 4 acres</p>
+              <div class="actions">
+                <button type="button" class="link">Done</button>
+                <button type="button" class="link">Snooze</button>
+              </div>
+            </div>
+            <div class="n-row">
+              <strong>Feed · Chicken</strong>
+              <p>Overdue from yesterday · Poultry</p>
+              <div class="actions">
+                <button type="button" class="link">Done</button>
+                <button type="button" class="link">Snooze</button>
+              </div>
+            </div>
+          </div>
+          <div class="m-body">
+            <p class="kicker">Farm</p>
+            <h2 class="farm-title">Your farm</h2>
+            <p class="farm-sub">Bsr · 85041</p>
+            <button type="button" class="edit">Edit profile</button>
+            <div class="card">
+              <h3>Due now</h3>
+              <p class="hint">Overdue and due today</p>
+              <div class="row is-overdue">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy">
+                  <span class="task">Feed · Chicken</span>
+                  <span class="meta">Overdue · yesterday</span>
+                </div>
+                <div class="actions">
+                  <button type="button" class="link">Done</button>
+                  <button type="button" class="link">Snooze</button>
+                </div>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy">
+                  <span class="task">Water · Sugar cane</span>
+                  <span class="meta">Due · 8:00 AM</span>
+                </div>
+                <div class="actions">
+                  <button type="button" class="link">Done</button>
+                  <button type="button" class="link">Snooze</button>
+                </div>
+              </div>
+            </div>
+            <div class="card coming">
+              <h3>Coming up</h3>
+              <p class="hint">Next few reminders · not in the bell</p>
+              <div class="row">
+                <div class="copy">
+                  <span class="task">Fertilize · Sugar cane</span>
+                  <span class="meta">Oct 31</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="copy">
+                  <span class="task">Pest check · Rose</span>
+                  <span class="meta">Oct 31</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="copy">
+                  <span class="task">Harvest check · Sugar cane</span>
+                  <span class="meta">Nov 16</span>
+                </div>
+              </div>
+            </div>
+            <div class="chips">
+              <span class="chip">6.1 acres</span>
+              <span class="chip">Crops 2</span>
+              <span class="chip">Livestock 1</span>
+              <span class="chip">Garden 4</span>
+              <span class="chip">Poultry 3</span>
+            </div>
+          </div>
+        </div>
+        <p class="note">Bell matches Due now. Future care sits in Coming up. Done clears the alert.</p>
+      </div>
+
+      <div class="phone-wrap">
+        <p class="cap next">Proposed · nothing due</p>
+        <div class="phone" aria-label="Proposed empty due now">
+          <div class="notch">10:47</div>
+          <div class="m-hdr">
+            <div class="burger" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="logo">
+              <span class="logo-mark" aria-hidden="true"></span>
+              <span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span>
+            </div>
+            <button type="button" class="bell" aria-label="Notifications">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22a2.2 2.2 0 0 0 2.1-1.6H9.9A2.2 2.2 0 0 0 12 22zm7-6V11a7 7 0 0 0-5-6.7V3a2 2 0 1 0-4 0v1.3A7 7 0 0 0 5 11v5l-1.6 1.6A1 1 0 0 0 4.1 19h15.8a1 1 0 0 0 .7-1.7L19 16z"></path></svg>
+            </button>
+            <button type="button" class="signout">Sign out</button>
+          </div>
+          <div class="m-body">
+            <p class="kicker">Farm</p>
+            <h2 class="farm-title">Your farm</h2>
+            <p class="farm-sub">Bsr · 85041</p>
+            <button type="button" class="edit">Edit profile</button>
+            <div class="card">
+              <h3>Due now</h3>
+              <p class="empty">Nothing due today.</p>
+            </div>
+            <div class="card coming">
+              <h3>Coming up</h3>
+              <div class="row">
+                <div class="copy">
+                  <span class="task">Fertilize · Sugar cane</span>
+                  <span class="meta">Oct 31</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="copy">
+                  <span class="task">Pest check · Rose</span>
+                  <span class="meta">Oct 31</span>
+                </div>
+              </div>
+            </div>
+            <div class="chips">
+              <span class="chip">6.1 acres</span>
+              <span class="chip">Crops 2</span>
+              <span class="chip">Garden 4</span>
+            </div>
+          </div>
+        </div>
+        <p class="note">Empty Due now and empty bell. Coming up still shows the schedule.</p>
+      </div>
+    </div>
+
+    <h2>Desktop web</h2>
+    <div class="pair">
+      <div>
+        <p class="cap now">Now</p>
+        <div class="desk" aria-label="Current desktop farm today">
+          <div class="chrome">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="url">agrivia.ai/#farm</span>
+          </div>
+          <div class="d-hdr">
+            <div class="brand">
+              <span class="logo-mark" aria-hidden="true"></span>
+              <span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span>
+            </div>
+            <div class="nav">
+              <span>Guides</span>
+              <span>Advisor</span>
+              <span class="on">Farm</span>
+              <span>Worksheet</span>
+            </div>
+            <div class="end">
+              <button type="button" class="bell" aria-label="Notifications">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22a2.2 2.2 0 0 0 2.1-1.6H9.9A2.2 2.2 0 0 0 12 22zm7-6V11a7 7 0 0 0-5-6.7V3a2 2 0 1 0-4 0v1.3A7 7 0 0 0 5 11v5l-1.6 1.6A1 1 0 0 0 4.1 19h15.8a1 1 0 0 0 .7-1.7L19 16z"></path></svg>
+              </button>
+              <button type="button" class="signout">Sign out</button>
+            </div>
+          </div>
+          <div class="d-body">
+            <p class="kicker">Farm</p>
+            <h2 class="farm-title">Your farm</h2>
+            <p class="farm-sub">Bsr · 85041</p>
+            <button type="button" class="edit">Edit profile</button>
+            <div class="card">
+              <h3>Today on your farm</h3>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy"><span class="task">water · Oct 24 1:00 AM</span></div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy"><span class="task">fertilize · Oct 31 1:00 AM</span></div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy"><span class="task">pest_check · Oct 31 1:00 AM</span></div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy"><span class="task">health_check · Nov 16 1:00 AM</span></div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy"><span class="task">harvest_check · Nov 16 1:00 AM</span></div>
+                <button type="button" class="link">Snooze</button>
+              </div>
+            </div>
+            <div class="chips">
+              <span class="chip">6.1 acres</span>
+              <span class="chip">Crops 2</span>
+              <span class="chip">Livestock 1</span>
+              <span class="chip">Garden 4</span>
+              <span class="chip">Poultry 3</span>
+            </div>
+          </div>
+        </div>
+        <p class="note">Same confusion on wide screens: future dates, no item name, quiet bell.</p>
+      </div>
+
+      <div>
+        <p class="cap next">Proposed · Due now + bell</p>
+        <div class="desk" aria-label="Proposed desktop farm due now">
+          <div class="chrome">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="url">agrivia.ai/#farm</span>
+          </div>
+          <div class="d-hdr">
+            <div class="brand">
+              <span class="logo-mark" aria-hidden="true"></span>
+              <span class="logo-text">Agrivia<span class="logo-badge">.ai</span></span>
+            </div>
+            <div class="nav">
+              <span>Guides</span>
+              <span>Advisor</span>
+              <span class="on">Farm</span>
+              <span>Worksheet</span>
+            </div>
+            <div class="end">
+              <button type="button" class="bell" aria-label="Notifications, 2 unread">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22a2.2 2.2 0 0 0 2.1-1.6H9.9A2.2 2.2 0 0 0 12 22zm7-6V11a7 7 0 0 0-5-6.7V3a2 2 0 1 0-4 0v1.3A7 7 0 0 0 5 11v5l-1.6 1.6A1 1 0 0 0 4.1 19h15.8a1 1 0 0 0 .7-1.7L19 16z"></path></svg>
+                <span class="bell-dot" aria-hidden="true"></span>
+              </button>
+              <div class="d-notify" aria-label="Desktop notification panel">
+                <div class="notify-head">
+                  <strong>Notifications</strong>
+                  <button type="button" class="link">Close</button>
+                </div>
+                <div class="n-row">
+                  <strong>Water · Sugar cane</strong>
+                  <p>Due this morning · Crops · 4 acres</p>
+                  <div class="actions">
+                    <button type="button" class="link">Done</button>
+                    <button type="button" class="link">Snooze</button>
+                  </div>
+                </div>
+                <div class="n-row">
+                  <strong>Feed · Chicken</strong>
+                  <p>Overdue from yesterday · Poultry</p>
+                  <div class="actions">
+                    <button type="button" class="link">Done</button>
+                    <button type="button" class="link">Snooze</button>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="signout">Sign out</button>
+            </div>
+          </div>
+          <div class="d-body">
+            <p class="kicker">Farm</p>
+            <h2 class="farm-title">Your farm</h2>
+            <p class="farm-sub">Bsr · 85041</p>
+            <button type="button" class="edit">Edit profile</button>
+            <div class="card">
+              <h3>Due now</h3>
+              <p class="hint">Overdue and due today</p>
+              <div class="row is-overdue">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy">
+                  <span class="task">Feed · Chicken</span>
+                  <span class="meta">Overdue · yesterday</span>
+                </div>
+                <div class="actions">
+                  <button type="button" class="link">Done</button>
+                  <button type="button" class="link">Snooze</button>
+                </div>
+              </div>
+              <div class="row">
+                <input type="checkbox" disabled aria-hidden="true">
+                <div class="copy">
+                  <span class="task">Water · Sugar cane</span>
+                  <span class="meta">Due · 8:00 AM</span>
+                </div>
+                <div class="actions">
+                  <button type="button" class="link">Done</button>
+                  <button type="button" class="link">Snooze</button>
+                </div>
+              </div>
+            </div>
+            <div class="card coming">
+              <h3>Coming up</h3>
+              <p class="hint">Next few reminders · not in the bell</p>
+              <div class="row">
+                <div class="copy">
+                  <span class="task">Fertilize · Sugar cane</span>
+                  <span class="meta">Oct 31</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="copy">
+                  <span class="task">Pest check · Rose</span>
+                  <span class="meta">Oct 31</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="copy">
+                  <span class="task">Harvest check · Sugar cane</span>
+                  <span class="meta">Nov 16</span>
+                </div>
+              </div>
+            </div>
+            <div class="chips">
+              <span class="chip">6.1 acres</span>
+              <span class="chip">Crops 2</span>
+              <span class="chip">Livestock 1</span>
+              <span class="chip">Garden 4</span>
+              <span class="chip">Poultry 3</span>
+            </div>
+          </div>
+        </div>
+        <p class="note">Desktop uses the same Due now / Coming up / Done pattern. Bell stays a compact panel.</p>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      Local mock only: <code>mocks/farm-due-now-notifications.html</code>. Not deployed. Review this, then we implement.
+    </p>
+  </div>
+</body>
+</html>

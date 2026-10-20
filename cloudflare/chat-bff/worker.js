@@ -26,6 +26,8 @@ const MAX_QUERY_LENGTH = 2000;
 const PER_IP_WINDOW_MS = 2000;
 const GLOBAL_WINDOW_MS = 1000;
 const GLOBAL_MAX = 2;
+const ILLUSTRATION_WINDOW_MS = 10 * 60 * 1000;
+const ILLUSTRATION_MAX = 30;
 const UNAVAILABLE = { error: "The advisor is unavailable right now. Try again shortly." };
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RESERVED_GUIDE_PAGES = new Set(["index", "write", "article"]);
@@ -155,6 +157,44 @@ function passOrigin(response) {
         return json(502, UNAVAILABLE);
     }
     return response;
+}
+
+async function proxyIllustration(request, env, path) {
+    if (request.method !== "GET" && request.method !== "HEAD") {
+        return json(405, { error: "Method not allowed." });
+    }
+    const cache = caches.default;
+    const limited = await isRateLimited(
+        cache,
+        `illustration/${encodeURIComponent(clientIp(request))}`,
+        ILLUSTRATION_WINDOW_MS,
+        ILLUSTRATION_MAX
+    );
+    if (limited) {
+        return json(429, { error: "Too many picture requests. Wait a few minutes." });
+    }
+    const cacheKey = new Request(`https://agrivia.ai/api${path}`, { method: "GET" });
+    const cached = await cache.match(cacheKey);
+    if (cached) {
+        return request.method === "HEAD"
+            ? new Response(null, { status: cached.status, headers: cached.headers })
+            : cached;
+    }
+    const originRes = await fetchOrigin(env, path, {
+        method: "GET",
+        headers: { Accept: "image/jpeg,image/png,image/*,*/*" },
+    });
+    if (!originRes.ok) {
+        return passOrigin(originRes);
+    }
+    const headers = new Headers();
+    headers.set("Content-Type", originRes.headers.get("Content-Type") || "image/jpeg");
+    headers.set("Cache-Control", "public, max-age=604800, s-maxage=604800");
+    const response = new Response(originRes.body, { status: 200, headers });
+    await cache.put(cacheKey, response.clone());
+    return request.method === "HEAD"
+        ? new Response(null, { status: 200, headers })
+        : response;
 }
 
 async function proxyFarm(request, env, path) {
@@ -317,6 +357,9 @@ async function handleApi(request, env) {
         return await proxyWelcome(request, env);
     }
     if (farm || guides) {
+        if (/^\/illustrations\/.+/i.test(path)) {
+            return await proxyIllustration(request, env, path);
+        }
         const response = await proxyFarm(request, env, path);
         if (guides && shouldPurgeGuideCache(request.method, path) && response.ok) {
             await purgeGuideCaches(path, response.clone());

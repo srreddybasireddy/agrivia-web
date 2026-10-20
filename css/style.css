@@ -3010,9 +3010,23 @@ input[type="range"] {
     margin-bottom: 0.45rem;
 }
 
+.farm-notify-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.farm-today-wrap {
+    margin: 0 0 1rem;
+}
+
 .farm-today {
     margin: 0 0 1rem;
-    padding: 1rem 1.15rem;
+    padding: 0.75rem 1rem;
+}
+
+.farm-today:last-child {
+    margin-bottom: 0;
 }
 
 .farm-today h2,
@@ -3021,6 +3035,78 @@ input[type="range"] {
     font-family: var(--font-heading);
     color: var(--leaf-deep);
     margin: 0 0 0.45rem;
+}
+
+.farm-care-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border: 0;
+    background: transparent;
+    padding: 0.15rem 0;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+}
+
+.farm-care-toggle-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.farm-care-toggle-copy strong {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--leaf-deep);
+}
+
+.farm-care-chevron {
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    font-weight: 650;
+    color: var(--leaf);
+}
+
+.farm-today-hint {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--ink-3);
+}
+
+.farm-today-hint.has-due {
+    color: #9B2C2C;
+    font-weight: 600;
+}
+
+.farm-care-panel {
+    margin-top: 0.65rem;
+    padding-top: 0.55rem;
+    border-top: 1px solid var(--rule);
+}
+
+.farm-care-scroll {
+    max-height: 14.5rem;
+    overflow: auto;
+    padding-right: 0.15rem;
+}
+
+.farm-care-group {
+    margin: 0.55rem 0 0.2rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.farm-care-group:first-child {
+    margin-top: 0;
 }
 
 .farm-today-list,
@@ -3032,13 +3118,96 @@ input[type="range"] {
 
 .farm-today-list li {
     justify-content: space-between;
-    padding: 0.35rem 0;
+    align-items: flex-start;
+    padding: 0.55rem 0;
     border-top: 1px solid var(--rule);
 }
 
-.farm-today-list li.is-overdue span {
+.farm-today-list li:first-child {
+    border-top: 0;
+    padding-top: 0.15rem;
+}
+
+.farm-today-copy {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.farm-today-task {
+    font-size: 0.92rem;
+    font-weight: 550;
+    color: var(--ink);
+}
+
+.farm-today-meta {
+    font-size: 0.78rem;
+    color: var(--ink-3);
+}
+
+.farm-today-actions {
+    display: flex;
+    gap: 0.65rem;
+    flex-shrink: 0;
+    align-items: center;
+}
+
+.farm-today-list li.is-overdue .farm-today-task {
     color: #9B2C2C;
     font-weight: 650;
+}
+
+.farm-today-list li.is-overdue .farm-today-meta {
+    color: #B42318;
+}
+
+.farm-today-list li.is-done {
+    opacity: 0.55;
+}
+
+.farm-today-list li.is-done .farm-today-task {
+    text-decoration: line-through;
+    color: var(--ink-3);
+}
+
+.farm-today-list li.is-done .farm-today-meta {
+    color: var(--leaf);
+    font-weight: 600;
+}
+
+.farm-coming .farm-today-task {
+    font-weight: 500;
+    color: var(--ink-2);
+}
+
+.farm-coming-list li {
+    align-items: center;
+}
+
+.farm-notify-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--rule);
+}
+
+.farm-notify-row strong {
+    flex: 1 1 100%;
+    font-size: 0.9rem;
+}
+
+.farm-notify-row p {
+    flex: 1 1 100%;
+    margin: 0.15rem 0 0.35rem;
+    font-size: 0.8rem;
+    color: var(--ink-2);
+}
+
+.farm-notify-row .farm-today-actions {
+    flex: 1 1 100%;
+    justify-content: flex-start;
 }
 
 .farm-care-rows p,
