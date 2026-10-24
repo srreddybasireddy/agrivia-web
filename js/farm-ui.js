@@ -172,14 +172,11 @@
         }
     }
 
-    function renderHeaderPill(assets, careCount) {
+    function renderHeaderPill() {
         const pill = el("farmHeaderPill");
-        if (!pill) {
-            return;
+        if (pill) {
+            setHidden(pill, true);
         }
-        const text = headerPillText(assets, careCount || 0);
-        pill.textContent = text;
-        setHidden(pill, !text);
     }
 
     function renderIdentity(profile, signedIn) {
