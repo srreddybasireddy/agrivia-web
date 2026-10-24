@@ -2685,7 +2685,7 @@ input[type="range"] {
 }
 
 .farm-page {
-    max-width: 56rem;
+    max-width: 1120px;
 }
 
 .farm-masthead {
@@ -4038,17 +4038,151 @@ input[type="range"] {
     margin-top: 1.25rem;
 }
 
+.guide-write-mine-title {
+    font-family: var(--font-main);
+    font-size: 0.85rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+    margin: 1.5rem 0 0.45rem;
+}
+
 .guide-mine-list {
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin: 0 0 0.5rem;
+    padding: 0;
+}
+
+.guide-mine-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+.guide-mine-open {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--leaf-deep);
+    font: inherit;
+    font-weight: 650;
+    text-align: left;
+    cursor: pointer;
+}
+
+.guide-mine-open:hover {
+    text-decoration: underline;
+}
+
+.guide-mine-status {
+    color: var(--ink-3);
+    font-size: 0.82rem;
 }
 
 .guide-mine-list a {
+    margin-left: auto;
     color: var(--ochre);
     font-weight: 650;
+    font-size: 0.85rem;
+}
+
+.guide-write-switch {
+    display: flex;
+    gap: 0.4rem;
+    margin: 0 0 1.35rem;
+}
+
+.guide-write-switch-option {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.4rem;
+    padding: 0.35rem 0.95rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink-2);
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.guide-write-switch-option:focus-visible {
+    outline: 2px solid var(--leaf);
+    outline-offset: 2px;
+}
+
+.guide-write-switch-option.is-on {
+    background: var(--leaf-deep);
+    border-color: var(--leaf-deep);
+    color: #FFFDF8;
 }
 
 .guide-write-form .form-group {
     margin-bottom: 1rem;
+}
+
+.guide-write-draft-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.35rem 0 0.85rem;
+}
+
+.guide-write-hint {
+    margin: 0.35rem 0 0;
+    color: var(--ink-3);
+    font-size: 0.88rem;
+}
+
+.guide-write-draft-row .guide-write-hint {
+    margin: 0;
+}
+
+.guide-write-body {
+    min-height: 16rem;
+    line-height: 1.5;
+}
+
+.guide-write-file {
+    margin: 1.25rem 0 0;
+    padding: 1rem 0 0;
+    border: 0;
+    border-top: 1px solid var(--rule);
+}
+
+.guide-write-file legend {
+    padding: 0;
+    font-size: 0.85rem;
+    font-weight: 650;
+    color: var(--ink-3);
+}
+
+.guide-write-file-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+    margin-top: 0.75rem;
+}
+
+.guide-write-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.guide-write-form .farm-status.is-error {
+    color: #8C3A2F;
+}
+
+@media (max-width: 640px) {
+    .guide-write-file-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .guide-empty-actions {

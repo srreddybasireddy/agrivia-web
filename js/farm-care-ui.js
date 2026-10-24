@@ -66,15 +66,19 @@
         }
     }
 
+    function dueTasksFrom(data) {
+        const split = care.splitCareTasks ? care.splitCareTasks(taskRows(data)) : { dueNow: taskRows(data) };
+        return split.dueNow || [];
+    }
+
     async function refreshUnread() {
-        if (!signedIn() || !api()) {
+        if (!signedIn() || !api() || !api().getToday) {
             setUnread(0);
             return;
         }
         try {
-            const data = await api().unreadCount();
-            const count = data.count != null ? data.count : data.unread_count;
-            setUnread(count);
+            const data = await api().getToday();
+            setUnread(dueTasksFrom(data).length);
         } catch (err) {
             setUnread(unread);
         }
@@ -97,6 +101,24 @@
 
     function taskRows(data) {
         return listFrom(data, ["tasks", "items", "today"]);
+    }
+
+    function reminderIdsOf(task) {
+        const listed = task && Array.isArray(task.reminderIds) ? task.reminderIds : [];
+        const ids = listed.map((id) => text(id)).filter(Boolean);
+        const single = text(task && (task.reminder_id || task.reminderId || task.id));
+        if (single && ids.indexOf(single) === -1) {
+            ids.push(single);
+        }
+        return ids;
+    }
+
+    function completeReminders(ids) {
+        return Promise.all(ids.map((id) => api().completeReminder(id)));
+    }
+
+    function snoozeReminders(ids, preset) {
+        return Promise.all(ids.map((id) => api().snoozeReminder(id, preset)));
     }
 
     function assetNameFor(task) {
@@ -135,7 +157,10 @@
         skeleton.textContent = "Loading care tasks…";
         body.appendChild(skeleton);
         api().getToday().then((data) => {
-            paintToday(body, taskRows(data));
+            const tasks = taskRows(data);
+            paintToday(body, tasks);
+            const split = care.splitCareTasks ? care.splitCareTasks(tasks) : { dueNow: tasks };
+            setUnread((split.dueNow || []).length);
         }).catch((err) => {
             clear(body);
             const message = document.createElement("p");
@@ -299,14 +324,14 @@
         actions.className = "farm-today-actions";
         const done = button("Done", "farm-care-link");
         const snooze = button("Snooze", "farm-care-link");
-        const reminderId = task.reminder_id || task.reminderId || task.id;
+        const reminderIds = reminderIdsOf(task);
         const complete = () => {
-            if (!reminderId || row.dataset.busy === "1") {
+            if (!reminderIds.length || row.dataset.busy === "1") {
                 return;
             }
             check.checked = true;
             done.textContent = "Saving…";
-            runTodayAction(row, () => api().completeReminder(reminderId), { check: check, done: done, snooze: snooze });
+            runTodayAction(row, () => completeReminders(reminderIds), { check: check, done: done, snooze: snooze });
         };
         check.addEventListener("change", () => {
             if (check.checked) {
@@ -315,11 +340,11 @@
         });
         done.addEventListener("click", complete);
         snooze.addEventListener("click", () => {
-            if (!reminderId || row.dataset.busy === "1") {
+            if (!reminderIds.length || row.dataset.busy === "1") {
                 return;
             }
             snooze.textContent = "Saving…";
-            runTodayAction(row, () => api().snoozeReminder(reminderId, "1h"), { check: check, done: done, snooze: snooze });
+            runTodayAction(row, () => snoozeReminders(reminderIds, "1h"), { check: check, done: done, snooze: snooze });
         });
         actions.appendChild(done);
         actions.appendChild(snooze);
@@ -1008,31 +1033,10 @@
         loading.textContent = "Loading notifications…";
         body.appendChild(loading);
         try {
-            const data = await api().listNotifications("");
-            const items = listFrom(data, ["notifications", "items"]).filter((item) => {
-                if (item.completed_at || item.completedAt) {
-                    return false;
-                }
-                if (item.status === "completed" || item.status === "done") {
-                    return false;
-                }
-                return true;
-            });
-            paintNotifications(body, items);
-            const unreadItems = items.filter((item) => {
-                if (item.read_at) {
-                    return false;
-                }
-                if (Object.prototype.hasOwnProperty.call(item, "read_at")) {
-                    return true;
-                }
-                return item.read === false || item.status === "unread";
-            });
-            await Promise.all(unreadItems.map((item) => api().readNotification(item.id).catch(() => null)));
-            if (unreadItems.length) {
-                setUnread(Math.max(0, unread - unreadItems.length));
-                refreshUnread();
-            }
+            const data = await api().getToday();
+            const due = dueTasksFrom(data);
+            paintDueNotifications(body, due);
+            setUnread(due.length);
         } catch (err) {
             clear(body);
             const message = document.createElement("p");
@@ -1042,48 +1046,33 @@
         }
     }
 
-    function paintNotifications(body, items) {
+    function paintDueNotifications(body, tasks) {
         clear(body);
-        const groups = care.groupNotifications(items.map((item) => ({
-            ...item,
-            dueAt: item.due_at || item.dueAt || item.created_at || item.createdAt,
-        })));
-        [
-            ["Today", groups.today],
-            ["Upcoming", groups.upcoming],
-            ["Earlier", groups.earlier],
-        ].forEach((entry) => {
-            if (!entry[1].length) {
-                return;
-            }
-            const heading = document.createElement("h3");
-            heading.textContent = entry[0];
-            body.appendChild(heading);
-            entry[1].forEach((item) => body.appendChild(notifyRow(item)));
-        });
-        if (!items.length) {
+        if (!tasks.length) {
             const empty = document.createElement("p");
             empty.className = "farm-care-status";
-            empty.textContent = "No notifications.";
+            empty.textContent = "Nothing due today.";
             body.appendChild(empty);
+            return;
         }
+        tasks.forEach((task) => body.appendChild(notifyRow(task)));
     }
 
-    function notifyRow(item) {
+    function notifyRow(task) {
         const row = document.createElement("article");
         row.className = "farm-notify-row";
         const title = document.createElement("strong");
-        title.textContent = care.notificationTitle
-            ? care.notificationTitle(item)
-            : text(item.title_text || item.title);
+        const name = assetNameFor(task);
+        title.textContent = care.careTaskTitle ? care.careTaskTitle(task, name) : "Care task";
         const body = document.createElement("p");
-        body.textContent = text(item.body_text || item.body);
+        body.textContent = care.careTaskMeta ? care.careTaskMeta(task) : "";
         const actions = document.createElement("div");
         actions.className = "farm-today-actions";
         const done = button("Done", "farm-care-link");
         const snooze = button("Snooze", "farm-care-link");
-        done.addEventListener("click", () => notifyAction(row, "complete", item.id));
-        snooze.addEventListener("click", () => notifyAction(row, "snooze", item.id, "tonight"));
+        const ids = reminderIdsOf(task);
+        done.addEventListener("click", () => notifyAction(row, () => completeReminders(ids)));
+        snooze.addEventListener("click", () => notifyAction(row, () => snoozeReminders(ids, "1h")));
         actions.appendChild(done);
         actions.appendChild(snooze);
         row.appendChild(title);
@@ -1094,21 +1083,29 @@
         return row;
     }
 
-    async function notifyAction(row, action, id, preset) {
-        const previous = unread;
-        setUnread(care.unreadAfter(unread, action));
+    async function notifyAction(row, action) {
+        if (row.dataset.busy === "1") {
+            return;
+        }
+        row.dataset.busy = "1";
         row.hidden = true;
         try {
-            if (action === "complete") {
-                await api().completeNotification(id);
-            } else {
-                await api().snoozeNotification(id, preset || "1h");
-            }
-            refreshUnread();
+            await action();
             renderToday();
+            if (notifyIsOpen()) {
+                const body = el("farmNotifyBody");
+                const data = await api().getToday();
+                const due = dueTasksFrom(data);
+                if (body) {
+                    paintDueNotifications(body, due);
+                }
+                setUnread(due.length);
+            } else {
+                refreshUnread();
+            }
         } catch (err) {
             row.hidden = false;
-            setUnread(previous);
+            row.dataset.busy = "0";
         }
     }
 

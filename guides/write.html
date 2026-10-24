@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css?v=20260913-menu-left">
+    <link rel="stylesheet" href="../css/style.css?v=20261022-write">
 </head>
 <body class="paper-theme">
     <header class="site-header">
@@ -42,30 +42,20 @@
     <main class="section-padding">
         <div class="container home-column">
             <h1 class="guides-hero-title" id="guideWriteHeading">Write a guide</h1>
-            <p class="guides-hero-desc">Documents are written how-tos. Videos are a public YouTube, Vimeo, or other https link from your farm — we do not host raw video files.</p>
+            <p class="guides-hero-desc" id="guideWriteLede">A written how-to. Readers see the title, the summary, and the guide.</p>
             <div class="paper-card farm-guest" id="guideWriteGuest">
                 <p>Sign in with Google to publish a document or post a video. Guests can still read published guides.</p>
                 <div id="guideWriteGoogle" class="google-signin-mount"></div>
             </div>
-            <div id="guideWriteSigned" hidden>
-                <p class="farm-status">Signed in as <span id="guideWriteEmail"></span></p>
+            <section id="guideWriteSigned" hidden>
+                <h2 class="guide-write-mine-title" id="guideMineHeading" hidden>Your guides</h2>
                 <ul class="guide-mine-list" id="guideMineList" hidden></ul>
-            </div>
-            <form class="paper-card guide-write-form" id="guideWriteForm" hidden>
+            </section>
+            <form class="guide-write-form" id="guideWriteForm" hidden>
                 <input type="hidden" id="guideWriteSlug">
-                <div class="form-group">
-                    <label class="farm-label" for="guideWriteFormat">Type</label>
-                    <select class="form-input" id="guideWriteFormat">
-                        <option value="document">Document</option>
-                        <option value="video">Video</option>
-                    </select>
-                </div>
-                <div class="form-group" id="guideWriteOutcomeWrap" hidden>
-                    <label class="farm-label" for="guideWriteOutcome">How did it go?</label>
-                    <select class="form-input" id="guideWriteOutcome">
-                        <option value="success">Success</option>
-                        <option value="experience">Experience (partial or did not work)</option>
-                    </select>
+                <div class="guide-write-switch" role="group" aria-label="Type">
+                    <button type="button" class="guide-write-switch-option is-on" id="guideWriteFormatDocument" data-format="document" aria-pressed="true">Document</button>
+                    <button type="button" class="guide-write-switch-option" id="guideWriteFormatVideo" data-format="video" aria-pressed="false">Video</button>
                 </div>
                 <div class="form-group">
                     <label class="farm-label" for="guideWriteTitle">Title</label>
@@ -75,32 +65,58 @@
                     <label class="farm-label" for="guideWriteSummary">Short summary</label>
                     <textarea class="form-input" id="guideWriteSummary" rows="2" maxlength="280"></textarea>
                 </div>
-                <div class="form-group">
-                    <label class="farm-label" for="guideWriteTopic">Search words (optional)</label>
-                    <input class="form-input" id="guideWriteTopic" maxlength="80" placeholder="goats, shade, first bed">
+                <div id="guideWriteDocument">
+                    <div class="guide-write-draft-row">
+                        <button type="button" class="btn btn-outline" id="guideWriteDraftAi">Draft with the advisor</button>
+                        <p class="guide-write-hint">Uses the title. Edit the draft before you publish.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="farm-label" for="guideWriteBody">Guide</label>
+                        <textarea class="form-input guide-write-body" id="guideWriteBody" rows="16" required></textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="farm-label" for="guideWriteTab">Also file under</label>
-                    <select class="form-input" id="guideWriteTab">
-                        <option value="growing">Growing and livestock</option>
-                        <option value="equipment">Equipment</option>
-                    </select>
+                <div id="guideWriteVideo" hidden>
+                    <div class="form-group">
+                        <label class="farm-label" for="guideWriteVideoUrl">Video link</label>
+                        <input class="form-input" id="guideWriteVideoUrl" type="url" maxlength="2000" placeholder="https://www.youtube.com/watch?v=…">
+                        <p class="guide-write-hint">A public YouTube, Vimeo, or other https link. Agrivia does not host the video file.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="farm-label" for="guideWriteOutcome">How did it go?</label>
+                        <select class="form-input" id="guideWriteOutcome">
+                            <option value="success">Success</option>
+                            <option value="experience">Partial or did not work</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="farm-label" for="guideWriteNotes">Notes (optional)</label>
+                        <textarea class="form-input" id="guideWriteNotes" rows="5"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="farm-label" for="guideWriteVideoTitle">Video title (optional)</label>
+                        <input class="form-input" id="guideWriteVideoTitle" maxlength="120">
+                    </div>
                 </div>
-                <div class="form-group" id="guideWriteVideoWrap">
-                    <label class="farm-label" for="guideWriteVideo">Video URL</label>
-                    <input class="form-input" id="guideWriteVideo" type="url" maxlength="2000" placeholder="https://www.youtube.com/watch?v=…">
-                    <label class="farm-label" for="guideWriteVideoTitle">Video title (optional)</label>
-                    <input class="form-input" id="guideWriteVideoTitle" maxlength="120">
-                </div>
-                <div class="form-group">
-                    <label class="farm-label" for="guideWriteBody" id="guideWriteBodyLabel">Guide body</label>
-                    <textarea class="form-input" id="guideWriteBody" rows="10"></textarea>
-                </div>
+                <fieldset class="guide-write-file">
+                    <legend>Where it appears</legend>
+                    <div class="guide-write-file-grid">
+                        <div class="form-group">
+                            <label class="farm-label" for="guideWriteTab">Section</label>
+                            <select class="form-input" id="guideWriteTab">
+                                <option value="growing">Growing and livestock</option>
+                                <option value="equipment">Equipment</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="farm-label" for="guideWriteTopic">Search words</label>
+                            <input class="form-input" id="guideWriteTopic" maxlength="80" placeholder="goats, shade, first bed">
+                        </div>
+                    </div>
+                </fieldset>
                 <p class="farm-status" id="guideWriteStatus" hidden></p>
-                <div class="hero-cta-group">
+                <div class="guide-write-actions">
                     <button type="submit" class="btn btn-outline" data-status="draft">Save draft</button>
                     <button type="submit" class="btn btn-primary" data-status="published">Publish</button>
-                    <button type="button" class="btn btn-outline" id="guideWriteDraftAi">Draft with the advisor</button>
                 </div>
             </form>
         </div>
@@ -112,8 +128,9 @@
     </footer>
     <script src="../js/config.js?v=20261006-worksheet"></script>
     <script src="../js/auth.js?v=20261006-worksheet"></script>
-    <script src="../js/guides-api.js?v=20261006-worksheet"></script>
-    <script src="../js/guides-ui.js?v=20261006-worksheet"></script>
+    <script src="../js/guides-api.js?v=20261022-farmid"></script>
+    <script src="../js/guides-ui.js?v=20261022-write"></script>
+    <script src="../js/guides-write.js?v=20261022-write"></script>
     <script src="../js/main.js?v=20261006-worksheet"></script>
 </body>
 </html>

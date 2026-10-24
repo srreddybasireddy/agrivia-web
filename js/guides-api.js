@@ -24,6 +24,11 @@
         }
     }
 
+    function farmId() {
+        const auth = global.AgriviaAuth;
+        return (auth && auth.getFarmUuid && auth.getFarmUuid()) || "";
+    }
+
     function authHeaders(extra) {
         const headers = { Accept: "application/json", ...(extra || {}) };
         const token = global.AgriviaAuth && global.AgriviaAuth.getSessionToken();
@@ -71,6 +76,7 @@
             query: fields.query || "",
             format: fields.format || "document",
             outcome: fields.outcome || "",
+            deviceUuid: fields.deviceUuid || farmId(),
         });
     }
 
@@ -88,10 +94,10 @@
             })}`);
         },
         get: function (slug) {
-            return request(`/guides/${encodeURIComponent(slug)}`);
+            return request(`/guides/${encodeURIComponent(slug)}${queryString({ deviceUuid: farmId() })}`);
         },
         mine: function () {
-            return request("/guides/mine");
+            return request(`/guides/mine${queryString({ deviceUuid: farmId() })}`);
         },
         create: function (fields) {
             return request("/guides", {
@@ -115,6 +121,7 @@
                     query: query,
                     primaryTab: primaryTab || "growing",
                     videoUrl: videoUrl || "",
+                    deviceUuid: farmId(),
                 }),
             });
         },
@@ -122,7 +129,7 @@
             return request(`/guides/${encodeURIComponent(slug)}/vote`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ vote: vote }),
+                body: JSON.stringify({ vote: vote, deviceUuid: farmId() }),
             });
         },
         comments: function (slug) {
@@ -132,7 +139,7 @@
             return request(`/guides/${encodeURIComponent(slug)}/comments`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ body: body }),
+                body: JSON.stringify({ body: body, deviceUuid: farmId() }),
             });
         },
     };

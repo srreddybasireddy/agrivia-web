@@ -256,16 +256,57 @@
         return due.getTime() <= endOfLocalDay(now).getTime();
     }
 
+    function reminderIdOf(task) {
+        return text(task && (task.reminder_id || task.reminderId || task.id));
+    }
+
+    function careTaskKey(task) {
+        const asset = text(task && (task.asset_id || task.assetId || task.asset_name || task.assetName || task.asset_title)).toLowerCase();
+        const type = text(task && (task.task_type || task.taskType || task.type || task.label || task.title)).toLowerCase();
+        return `${asset}|${type}`;
+    }
+
+    function collapseCareTasks(tasks) {
+        const groups = new Map();
+        (tasks || []).forEach((task) => {
+            const key = careTaskKey(task);
+            const due = dueAtOf(task).getTime();
+            const id = reminderIdOf(task);
+            const existing = groups.get(key);
+            if (!existing) {
+                groups.set(key, {
+                    task: Object.assign({}, task),
+                    ids: id ? [id] : [],
+                    due: due,
+                });
+                return;
+            }
+            if (id && existing.ids.indexOf(id) === -1) {
+                existing.ids.push(id);
+            }
+            if (!Number.isNaN(due) && (Number.isNaN(existing.due) || due < existing.due)) {
+                existing.task = Object.assign({}, task);
+                existing.due = due;
+            }
+        });
+        return Array.from(groups.values()).map((group) => {
+            group.task.reminderIds = group.ids;
+            return group.task;
+        });
+    }
+
     function splitCareTasks(tasks, now) {
         const dueNow = [];
         const comingUp = [];
-        (tasks || []).forEach((task) => {
+        collapseCareTasks(tasks).forEach((task) => {
             if (isDueNow(task, now)) {
                 dueNow.push(task);
             } else {
                 comingUp.push(task);
             }
         });
+        dueNow.sort((left, right) => dueAtOf(left) - dueAtOf(right));
+        comingUp.sort((left, right) => dueAtOf(left) - dueAtOf(right));
         return {
             dueNow: dueNow,
             comingUp: comingUp.slice(0, 6),
@@ -982,6 +1023,8 @@
         isOverdue: isOverdue,
         isDueNow: isDueNow,
         splitCareTasks: splitCareTasks,
+        collapseCareTasks: collapseCareTasks,
+        reminderIdOf: reminderIdOf,
         careTaskTitle: careTaskTitle,
         careTaskMeta: careTaskMeta,
         notificationTitle: notificationTitle,
