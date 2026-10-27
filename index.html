@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20261021-farmwidth">
+    <link rel="stylesheet" href="css/style.css?v=20261026-avatar">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5524710580723425" crossorigin="anonymous"></script>
     <script type="application/ld+json">
     {
@@ -79,8 +79,35 @@
                             </div>
                             <div id="farmNotifyBody"></div>
                         </div>
-                        <span class="auth-email" id="authEmailLabel"></span>
-                        <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
+                        <div class="account-menu">
+                            <button type="button" class="account-button" id="accountMenuButton" aria-expanded="false" aria-controls="accountMenu" aria-label="Account" title="Account">
+                                <svg class="account-glyph" id="accountGlyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="3.2" fill="currentColor"></circle><path fill="currentColor" d="M6.2 19.4c.7-3 3-4.6 5.8-4.6s5.1 1.6 5.8 4.6c.2.7-.3 1.1-.9 1.1H7.1c-.6 0-1.1-.4-.9-1.1z"></path></svg>
+                                <span class="account-initial" id="accountInitial" hidden></span>
+                            </button>
+                            <div class="account-panel" id="accountMenu" hidden role="dialog" aria-label="Account">
+                                <p class="account-panel-kicker">Account</p>
+                                <p class="account-panel-email" id="authEmailLabel"></p>
+                                <form id="farmProfileForm">
+                                    <p class="farm-status" id="farmStatus"></p>
+                                    <div class="account-fields">
+                                        <label class="farm-label" for="farmUserName">Name</label>
+                                        <input class="form-input" id="farmUserName" name="userName" maxlength="100" autocomplete="name">
+                                        <label class="farm-label" for="farmEmail">Email</label>
+                                        <input class="form-input" id="farmEmail" name="email" type="email" maxlength="255" autocomplete="email">
+                                        <label class="farm-label" for="farmPhone">Mobile</label>
+                                        <input class="form-input" id="farmPhone" name="phone" maxlength="20" autocomplete="tel">
+                                        <label class="farm-label" for="farmZip">ZIP</label>
+                                        <input class="form-input" id="farmZip" name="zip" maxlength="20" autocomplete="postal-code">
+                                        <label class="farm-label" for="farmAddress">Place / address</label>
+                                        <input class="form-input" id="farmAddress" name="address" maxlength="255" autocomplete="street-address">
+                                    </div>
+                                    <div class="account-panel-actions">
+                                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                        <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -248,7 +275,6 @@
                         <h1 class="page-title">Your farm</h1>
                         <p class="farm-place-line" id="farmPlaceLine" hidden></p>
                     </div>
-                    <button type="button" class="btn btn-outline farm-edit-btn" id="farmEditToggle" hidden aria-expanded="false" aria-controls="farmProfileForm">Edit profile</button>
                 </div>
                 <div class="paper-card farm-guest" id="farmGuest">
                     <p class="farm-guest-lead">Sign in when you want to keep the place.</p>
@@ -280,36 +306,6 @@
                     <div id="farmList">
                     <p class="farm-status" id="farmLoadStatus" hidden></p>
                     <p class="farm-profile-hint" id="farmProfileHint" hidden>Add your name and ZIP so Advisor can place this farm.</p>
-                    <form class="paper-card farm-card farm-profile-panel" id="farmProfileForm" hidden>
-                        <h2>Profile</h2>
-                        <p class="farm-status" id="farmStatus"></p>
-                        <div class="farm-profile-grid">
-                            <div>
-                                <label class="farm-label" for="farmUserName">Name</label>
-                                <input class="form-input" id="farmUserName" name="userName" maxlength="100" autocomplete="name">
-                            </div>
-                            <div>
-                                <label class="farm-label" for="farmEmail">Email</label>
-                                <input class="form-input" id="farmEmail" name="email" type="email" maxlength="255" autocomplete="email">
-                            </div>
-                            <div>
-                                <label class="farm-label" for="farmPhone">Mobile</label>
-                                <input class="form-input" id="farmPhone" name="phone" maxlength="20" autocomplete="tel">
-                            </div>
-                            <div>
-                                <label class="farm-label" for="farmZip">ZIP</label>
-                                <input class="form-input" id="farmZip" name="zip" maxlength="20" autocomplete="postal-code">
-                            </div>
-                            <div class="farm-field-wide">
-                                <label class="farm-label" for="farmAddress">Place / address</label>
-                                <input class="form-input" id="farmAddress" name="address" maxlength="255" autocomplete="street-address">
-                            </div>
-                        </div>
-                        <div class="farm-profile-actions">
-                            <button type="submit" class="btn btn-primary">Save profile</button>
-                            <button type="button" class="btn btn-outline" id="farmEditCancel">Cancel</button>
-                        </div>
-                    </form>
                     <div class="farm-next" id="farmNextQuestion" hidden></div>
                     <div class="farm-kpi" id="farmKpiBanner"></div>
                     <div class="farm-care-banner" id="farmCareBanner" hidden></div>
@@ -422,7 +418,7 @@
     <script src="js/farm-care.js?v=20261021-belldue"></script>
     <script src="js/farm-preview.js?v=20260930-farmcard"></script>
     <script src="js/farm-api.js?v=20261016-illust"></script>
-    <script src="js/farm-ui.js?v=20261021-farmwidth"></script>
+    <script src="js/farm-ui.js?v=20261026-avatar"></script>
     <script src="js/farm-care-ui.js?v=20261021-belldue"></script>
     <script src="js/community-api.js?v=20260919-mwidth"></script>
     <script src="js/community-ui.js?v=20261002-name"></script>

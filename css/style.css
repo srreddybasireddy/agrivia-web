@@ -2956,6 +2956,93 @@ input[type="range"] {
     position: relative;
 }
 
+.account-menu {
+    position: relative;
+}
+
+.account-button {
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--leaf-deep);
+    color: #F4EFE4;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    box-shadow: 0 0 0 3px var(--raised), 0 0 0 4px #C4A574;
+}
+
+.account-button > * {
+    grid-area: 1 / 1;
+}
+
+.account-button:hover,
+.account-button[aria-expanded="true"] {
+    box-shadow: 0 0 0 3px var(--raised), 0 0 0 4px #A6854A;
+}
+
+.account-button:focus-visible {
+    outline: 2px solid var(--leaf);
+    outline-offset: 5px;
+}
+
+.account-glyph {
+    width: 1.45rem;
+    height: 1.45rem;
+}
+
+.account-initial {
+    font-family: var(--font-heading);
+    font-weight: 560;
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.account-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.55rem);
+    width: min(22rem, calc(100vw - 2rem));
+    background: var(--raised);
+    border: 1px solid var(--rule);
+    border-radius: 1rem;
+    box-shadow: 0 16px 40px rgba(26, 48, 38, 0.14);
+    padding: 1rem 1rem 0.9rem;
+    z-index: 40;
+}
+
+.account-panel-kicker {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.account-panel-email {
+    margin: 0.2rem 0 0.85rem;
+    font-weight: 650;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+
+.account-fields {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.account-panel .farm-status:empty {
+    display: none;
+}
+
+.account-panel-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+}
+
 .farm-bell {
     position: relative;
     width: 2.4rem;

@@ -31,7 +31,7 @@ const ILLUSTRATION_MAX = 30;
 const UNAVAILABLE = { error: "The advisor is unavailable right now. Try again shortly." };
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RESERVED_GUIDE_PAGES = new Set(["index", "write", "article"]);
-const ASSET_VER = "20260913-menu-left";
+const ASSET_VER = "20261026-avatar";
 const GUIDE_CACHE_TTL = 60;
 const ADSENSE = "ca-pub-5524710580723425";
 
@@ -567,8 +567,35 @@ function guidePage(guide) {
                 <div class="auth-slot" id="authSlot">
                     <div id="authGuest"><div id="googleSignInBtn" class="google-signin-mount"></div></div>
                     <div id="authSignedIn" hidden>
-                        <span class="auth-email" id="authEmailLabel"></span>
-                        <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
+                        <div class="account-menu">
+                            <button type="button" class="account-button" id="accountMenuButton" aria-expanded="false" aria-controls="accountMenu" aria-label="Account" title="Account">
+                                <svg class="account-glyph" id="accountGlyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="3.2" fill="currentColor"></circle><path fill="currentColor" d="M6.2 19.4c.7-3 3-4.6 5.8-4.6s5.1 1.6 5.8 4.6c.2.7-.3 1.1-.9 1.1H7.1c-.6 0-1.1-.4-.9-1.1z"></path></svg>
+                                <span class="account-initial" id="accountInitial" hidden></span>
+                            </button>
+                            <div class="account-panel" id="accountMenu" hidden role="dialog" aria-label="Account">
+                                <p class="account-panel-kicker">Account</p>
+                                <p class="account-panel-email" id="authEmailLabel"></p>
+                                <form id="farmProfileForm">
+                                    <p class="farm-status" id="farmStatus"></p>
+                                    <div class="account-fields">
+                                        <label class="farm-label" for="farmUserName">Name</label>
+                                        <input class="form-input" id="farmUserName" name="userName" maxlength="100" autocomplete="name">
+                                        <label class="farm-label" for="farmEmail">Email</label>
+                                        <input class="form-input" id="farmEmail" name="email" type="email" maxlength="255" autocomplete="email">
+                                        <label class="farm-label" for="farmPhone">Mobile</label>
+                                        <input class="form-input" id="farmPhone" name="phone" maxlength="20" autocomplete="tel">
+                                        <label class="farm-label" for="farmZip">ZIP</label>
+                                        <input class="form-input" id="farmZip" name="zip" maxlength="20" autocomplete="postal-code">
+                                        <label class="farm-label" for="farmAddress">Place / address</label>
+                                        <input class="form-input" id="farmAddress" name="address" maxlength="255" autocomplete="street-address">
+                                    </div>
+                                    <div class="account-panel-actions">
+                                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                        <button type="button" class="btn btn-outline btn-sm" id="authSignOut">Sign out</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -603,6 +630,8 @@ function guidePage(guide) {
     </footer>
     <script src="/js/config.js?v=${ASSET_VER}"></script>
     <script src="/js/auth.js?v=${ASSET_VER}"></script>
+    <script src="/js/farm-api.js?v=${ASSET_VER}"></script>
+    <script src="/js/farm-ui.js?v=${ASSET_VER}"></script>
     <script src="/js/guides-api.js?v=${ASSET_VER}"></script>
     <script src="/js/guides-ui.js?v=${ASSET_VER}"></script>
     <script src="/js/main.js?v=${ASSET_VER}"></script>
