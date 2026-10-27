@@ -132,14 +132,37 @@
 
     function setProfileOpen(open) {
         profileEditorOpen = Boolean(open);
-        const form = el("farmProfileForm");
-        const toggle = el("farmEditToggle");
-        setHidden(form, !profileEditorOpen);
-        if (form) {
-            form.classList.toggle("is-open", profileEditorOpen);
+        const panel = el("accountMenu");
+        const button = el("accountMenuButton");
+        setHidden(panel, !profileEditorOpen);
+        if (button) {
+            button.setAttribute("aria-expanded", profileEditorOpen ? "true" : "false");
         }
-        if (toggle) {
-            toggle.setAttribute("aria-expanded", profileEditorOpen ? "true" : "false");
+    }
+
+    function paintAccountMark(profile) {
+        const auth = global.AgriviaAuth;
+        const source = (profile && (profile.userName || profile.email))
+            || (auth && (auth.getName() || auth.getEmail()))
+            || "";
+        const letter = String(source).trim().charAt(0).toUpperCase();
+        const node = el("accountInitial");
+        const glyph = el("accountGlyph");
+        if (node) {
+            node.textContent = letter;
+            node.hidden = !letter;
+        }
+        if (glyph) {
+            if (letter) {
+                glyph.setAttribute("hidden", "");
+            } else {
+                glyph.removeAttribute("hidden");
+            }
+        }
+        const label = el("authEmailLabel");
+        if (label) {
+            const email = (profile && profile.email) || (auth && auth.getEmail()) || "";
+            label.textContent = email || (auth && auth.getName()) || "Signed in";
         }
     }
 
@@ -151,13 +174,10 @@
         const signedIn = auth.isSignedIn();
         const guest = el("authGuest");
         const signed = el("authSignedIn");
-        const label = el("authEmailLabel");
         const farmNav = el("nav-farm");
         setHidden(guest, signedIn);
         setHidden(signed, !signedIn);
-        if (label) {
-            label.textContent = auth.getEmail() || auth.getName() || "Signed in";
-        }
+        paintAccountMark(lastSnapshot && lastSnapshot.profile);
         if (farmNav) {
             farmNav.hidden = false;
         }
@@ -165,8 +185,8 @@
             lastSnapshot = null;
             lastAssets = [];
             activeKindFilter = "";
-            profileEditorOpen = false;
             editingAssetKey = "";
+            setProfileOpen(false);
             const pill = el("farmHeaderPill");
             setHidden(pill, true);
         }
@@ -181,15 +201,16 @@
 
     function renderIdentity(profile, signedIn) {
         const line = el("farmPlaceLine");
-        const toggle = el("farmEditToggle");
         const text = signedIn ? placeLine(profile) : "";
         if (line) {
             line.textContent = text;
             setHidden(line, !text);
         }
-        setHidden(toggle, !signedIn);
         const hint = el("farmProfileHint");
         setHidden(hint, true);
+        if (signedIn) {
+            paintAccountMark(profile);
+        }
         if (!signedIn || !profileEditorOpen) {
             setProfileOpen(false);
         }
@@ -731,25 +752,27 @@
     }
 
     function fillProfileForm(profile) {
+        const record = profile || {};
         const name = el("farmUserName");
         const email = el("farmEmail");
         const phone = el("farmPhone");
         const zip = el("farmZip");
         const address = el("farmAddress");
+        paintAccountMark(record);
         if (name) {
-            name.value = profile.userName || (global.AgriviaAuth && global.AgriviaAuth.getName()) || "";
+            name.value = record.userName || (global.AgriviaAuth && global.AgriviaAuth.getName()) || "";
         }
         if (email) {
-            email.value = profile.email || (global.AgriviaAuth && global.AgriviaAuth.getEmail()) || "";
+            email.value = record.email || (global.AgriviaAuth && global.AgriviaAuth.getEmail()) || "";
         }
         if (phone) {
-            phone.value = profile.phoneNumber || "";
+            phone.value = record.phoneNumber || "";
         }
         if (zip) {
-            zip.value = profile.zipCode || "";
+            zip.value = record.zipCode || "";
         }
         if (address) {
-            address.value = profile.address || "";
+            address.value = record.address || "";
         }
     }
 
@@ -872,37 +895,76 @@
             });
         }
 
-        const editToggle = el("farmEditToggle");
-        if (editToggle) {
-            editToggle.addEventListener("click", () => {
-                const form = el("farmProfileForm");
-                const opening = Boolean(form && form.hidden);
-                if (opening && lastSnapshot) {
-                    fillProfileForm(lastSnapshot.profile);
+        const accountButton = el("accountMenuButton");
+        if (accountButton) {
+            accountButton.addEventListener("click", () => {
+                const opening = !profileEditorOpen;
+                if (opening) {
+                    fillProfileForm((lastSnapshot && lastSnapshot.profile) || {
+                        userName: auth.getName() || "",
+                        email: auth.getEmail() || "",
+                    });
+                    const status = el("farmStatus");
+                    if (status) {
+                        status.textContent = "";
+                    }
+                }
+                if (opening) {
+                    const notify = el("farmNotify");
+                    const bell = el("farmBell");
+                    setHidden(notify, true);
+                    if (bell) {
+                        bell.setAttribute("aria-expanded", "false");
+                    }
                 }
                 setProfileOpen(opening);
+                if (opening) {
+                    const name = el("farmUserName");
+                    if (name) {
+                        name.focus();
+                    }
+                }
             });
         }
 
-        const editCancel = el("farmEditCancel");
-        if (editCancel) {
-            editCancel.addEventListener("click", () => {
-                if (lastSnapshot) {
-                    fillProfileForm(lastSnapshot.profile);
-                }
-                const status = el("farmStatus");
-                if (status) {
-                    status.textContent = "";
-                }
+        document.addEventListener("pointerdown", (event) => {
+            if (!profileEditorOpen) {
+                return;
+            }
+            const panel = el("accountMenu");
+            const button = el("accountMenuButton");
+            const target = event.target;
+            if (panel && target instanceof Node && panel.contains(target)) {
+                return;
+            }
+            if (button && target instanceof Node && button.contains(target)) {
+                return;
+            }
+            setProfileOpen(false);
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && profileEditorOpen) {
                 setProfileOpen(false);
-            });
-        }
+                const button = el("accountMenuButton");
+                if (button) {
+                    button.focus();
+                }
+            }
+        });
 
         const profileForm = el("farmProfileForm");
         if (profileForm) {
             profileForm.addEventListener("submit", async (event) => {
                 event.preventDefault();
                 const status = el("farmStatus");
+                const submitButton = event.submitter || profileForm.querySelector("button[type='submit']");
+                if (submitButton) {
+                    submitButton.disabled = true;
+                }
+                if (status) {
+                    status.textContent = "Saving…";
+                }
                 try {
                     await global.AgriviaFarmApi.saveProfile({
                         userName: el("farmUserName").value,
@@ -911,12 +973,17 @@
                         zipCode: el("farmZip").value,
                         address: el("farmAddress").value,
                     });
-                    setProfileOpen(false);
                     await loadFarm();
-                    setProfileOpen(false);
+                    if (status) {
+                        status.textContent = "Saved.";
+                    }
                 } catch (err) {
                     if (status) {
                         status.textContent = err.message || "Could not save the profile.";
+                    }
+                } finally {
+                    if (submitButton) {
+                        submitButton.disabled = false;
                     }
                 }
             });
