@@ -306,6 +306,7 @@
 
         let selectedCategory = config.category || "General";
         let activeAsset = null;
+        let threadLoadToken = 0;
         let isSending = false;
         let lastWelcomeGreeting = "";
         const defaultTitle = welcomeTitle ? welcomeTitle.textContent : "What are you working on today?";
@@ -448,10 +449,47 @@
             };
             setChatCategory(activeAsset.category);
             input.placeholder = activeAsset.title ? `Ask about ${activeAsset.title}…` : defaultPlaceholder;
-            renderThread(readThread(assetId));
             applyWelcomeCopy();
             highlightFarmRail();
+            if (isSignedIn() && api.getThreadMessages) {
+                loadItemThread(assetId);
+            } else {
+                renderThread(readThread(assetId));
+            }
             input.focus();
+        }
+
+        async function loadItemThread(assetId) {
+            const token = ++threadLoadToken;
+            messages.replaceChildren();
+            messages.appendChild(createStatus("Loading conversation…", "loading"));
+            showEmpty(false);
+            try {
+                const page = await api.getThreadMessages(currentDeviceUuid(), assetId, { limit: 20 });
+                if (token !== threadLoadToken) {
+                    return;
+                }
+                const turns = (page.messages || []).filter((turn) => {
+                    return turn && (turn.role === "user" || turn.role === "assistant") && turn.content;
+                });
+                messages.replaceChildren();
+                if (!turns.length) {
+                    showEmpty(true);
+                    applyWelcomeCopy();
+                    return;
+                }
+                turns.forEach((turn) => {
+                    messages.appendChild(createMessage(turn.role, turn.content));
+                });
+                showEmpty(false);
+                messages.scrollTop = messages.scrollHeight;
+            } catch (err) {
+                if (token !== threadLoadToken) {
+                    return;
+                }
+                messages.replaceChildren();
+                appendNode(createStatus(err.message || "Could not load this conversation.", "error"));
+            }
         }
 
         function setAskLines(prompts) {
@@ -758,9 +796,19 @@
                     ? activeAsset.category
                     : categoryForQuery(query);
                 renderActiveCategory();
-                const result = await api.getAdvisoryResponse(deviceUuid, category, query, chatFocus());
+                const onItemThread = Boolean(isSignedIn() && activeAsset && activeAsset.assetId && api.postThreadMessage);
+                const result = onItemThread
+                    ? await api.postThreadMessage(deviceUuid, activeAsset.assetId, query)
+                    : await api.getAdvisoryResponse(deviceUuid, category, query, chatFocus());
                 pending.remove();
-                const answerText = answerWithFollowUp(result);
+                if (onItemThread && result.routed && result.thread && result.thread.asset_id && result.thread.asset_id !== activeAsset.assetId) {
+                    focusAsset({
+                        assetId: result.thread.asset_id,
+                        title: result.thread.label || "",
+                    });
+                    return;
+                }
+                const answerText = onItemThread ? result.answer : answerWithFollowUp(result);
                 if (!answerText) {
                     appendNode(createStatus("No answer came back. Try a more specific farm question.", "empty"));
                     showDefaultChips();

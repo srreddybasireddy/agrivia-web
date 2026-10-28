@@ -132,6 +132,8 @@ function isFarmPath(path) {
         || path === "/notifications/unread-count"
         || /^\/notifications\/[^/]+\/(read|complete|snooze)$/i.test(path)
         || path === "/farm/today"
+        || path === "/advisor/threads"
+        || /^\/advisor\/threads\/(general|[0-9a-f-]+)\/messages$/i.test(path)
     );
 }
 
@@ -355,6 +357,12 @@ async function handleApi(request, env) {
     }
     if (path === "/welcome_greeting" && request.method === "GET") {
         return await proxyWelcome(request, env);
+    }
+    if (request.method === "POST" && /^\/advisor\/threads\/(general|[0-9a-f-]+)\/messages$/i.test(path)) {
+        const limited = await enforceLimits(request);
+        if (limited) {
+            return limited;
+        }
     }
     if (farm || guides) {
         if (/^\/illustrations\/.+/i.test(path)) {
