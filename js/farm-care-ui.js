@@ -434,6 +434,22 @@
             } else if (row.kind === "hint") {
                 value.className = "farm-fact-hint";
                 value.textContent = row.value;
+            } else if (row.kind === "heat") {
+                value.className = "farm-fact-heat";
+                value.textContent = row.value;
+            } else if (row.kind === "next") {
+                value.textContent = row.value;
+                if (row.moreCount > 0) {
+                    value.appendChild(document.createTextNode(" · "));
+                    const more = button(`+${row.moreCount} more`, "farm-care-link");
+                    more.setAttribute("aria-label", `${row.moreCount} more care tasks for ${model.name}`);
+                    more.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        showAsset(asset.id);
+                    });
+                    value.appendChild(more);
+                }
             } else if (row.kind === "reminders") {
                 value.appendChild(document.createTextNode(row.value));
                 if (row.action) {
@@ -683,14 +699,20 @@
         copy.appendChild(title);
         const sub = document.createElement("p");
         sub.className = "farm-detail-sub";
-        const subject = model.displayName || model.name;
-        const mismatch = model.displayName && model.name && model.displayName.toLowerCase() !== model.name.toLowerCase();
-        const place = [
-            mismatch ? `Schedule uses ${model.displayName}` : (subject && `${subject} care plan`),
-            model.zip && `ZIP ${model.zip}`,
-            model.climate,
-        ].filter(Boolean).join(" · ");
-        sub.textContent = place;
+        if (model.livestockCard) {
+            const place = [model.zip && `ZIP ${model.zip}`, model.climate].filter(Boolean).join(" · ");
+            sub.textContent = place;
+            sub.hidden = !place;
+        } else {
+            const subject = model.displayName || model.name;
+            const mismatch = model.displayName && model.name && model.displayName.toLowerCase() !== model.name.toLowerCase();
+            const place = [
+                mismatch ? `Schedule uses ${model.displayName}` : (subject && `${subject} care plan`),
+                model.zip && `ZIP ${model.zip}`,
+                model.climate,
+            ].filter(Boolean).join(" · ");
+            sub.textContent = place;
+        }
         copy.appendChild(sub);
         const facts = document.createElement("dl");
         facts.className = "farm-keyfacts";
@@ -724,10 +746,10 @@
             facts.appendChild(item);
         });
         copy.appendChild(facts);
-        if (model.schedule && model.schedule.confidence === "low") {
+        if (!model.livestockCard && model.schedule && model.schedule.confidence === "low") {
             copy.appendChild(line("Low confidence estimate", "farm-care-status"));
         }
-        if (model.schedule && model.schedule.notes) {
+        if (!model.livestockCard && model.schedule && model.schedule.notes) {
             copy.appendChild(line(model.schedule.notes, "farm-care-status"));
         }
         hero.appendChild(copy);
@@ -744,19 +766,23 @@
         const grid = document.createElement("div");
         grid.className = "farm-detail-grid";
         const main = document.createElement("div");
-        if (model.stage && model.stage.stages && model.stage.stages.length) {
+        if (model.livestockCard) {
+            main.appendChild(livestockTaskSection(model));
+        } else if (model.stage && model.stage.stages && model.stage.stages.length) {
             main.appendChild(stageSection(model));
         }
-        if (model.anchor.date && model.milestones.length) {
+        if (!model.livestockCard && model.anchor.date && model.milestones.length) {
             main.appendChild(milestoneSection(model));
-        } else if (!model.anchor.date) {
+        } else if (!model.livestockCard && !model.anchor.date) {
             const empty = document.createElement("section");
             empty.className = "paper-card farm-section";
             const heading = document.createElement("h3");
             heading.textContent = "Estimated milestones";
             empty.appendChild(heading);
             const note = document.createElement("p");
-            note.textContent = "Add a planting date to see estimates.";
+            note.textContent = model.kind === "Cattle"
+                ? "Add the acquired date to see estimates."
+                : "Add a planting date to see estimates.";
             empty.appendChild(note);
             const ctaLabel = care.ctaLabel(model.anchor.promptKey, model.kind, model.status);
             const cta = button(ctaLabel, "farm-fact-add");
@@ -765,7 +791,7 @@
             empty.appendChild(cta);
             main.appendChild(empty);
         }
-        if (model.guidance.length) {
+        if (!model.livestockCard && model.guidance.length) {
             main.appendChild(guidanceSection(model));
         }
         const side = document.createElement("div");
@@ -777,11 +803,60 @@
         title.focus();
     }
 
+    function livestockTaskSection(model) {
+        const section = document.createElement("section");
+        section.className = "paper-card farm-section";
+        const heading = document.createElement("h3");
+        heading.textContent = "Care plan";
+        section.appendChild(heading);
+        const ready = text(model.readyLine)
+            || text(model.livestockCard && (model.livestockCard.ready_line || model.livestockCard.readyLine));
+        if (ready) {
+            const readyRow = document.createElement("article");
+            readyRow.className = "farm-guidance";
+            const readyTitle = document.createElement("h4");
+            readyTitle.textContent = "Ready";
+            const readyCopy = document.createElement("p");
+            readyCopy.textContent = ready;
+            readyRow.appendChild(readyTitle);
+            readyRow.appendChild(readyCopy);
+            section.appendChild(readyRow);
+        }
+        const tasks = model.livestockTasks || [];
+        if (!tasks.length && !ready) {
+            const note = document.createElement("p");
+            note.textContent = "No care tasks yet. Add purpose, acquired date, and last care dates on Edit.";
+            section.appendChild(note);
+            return section;
+        }
+        tasks.forEach((task) => {
+            const row = document.createElement("article");
+            row.className = "farm-guidance";
+            const title = document.createElement("h4");
+            title.textContent = text(task.task);
+            row.appendChild(title);
+            const dueRaw = text(task.due_date || task.dueDate);
+            if (dueRaw) {
+                const when = document.createElement("p");
+                when.textContent = care.formatDate(dueRaw, { year: true }) || dueRaw;
+                row.appendChild(when);
+            }
+            const reason = text(task.reason);
+            if (reason) {
+                const copy = document.createElement("p");
+                copy.textContent = reason;
+                row.appendChild(copy);
+            }
+            section.appendChild(row);
+        });
+        return section;
+    }
+
     function stageSection(model) {
         const section = document.createElement("section");
         section.className = "paper-card farm-section";
         const heading = document.createElement("h3");
-        heading.textContent = "Growth stage";
+        heading.textContent = model.kind === "Cattle" ? "Stage" : "Growth stage";
         section.appendChild(heading);
         const track = document.createElement("div");
         track.className = "farm-stage-track";

@@ -5,6 +5,7 @@
 (function (global) {
     const hensId = "preview-hens";
     const tomatoId = "preview-tomatoes";
+    const lambId = "preview-lamb";
 
     const state = {
         assets: [
@@ -39,6 +40,55 @@
                     nextTask: { task_type: "water", label: "Water · today 6 PM" },
                     milestones: [
                         { label: "Estimated first fruit (range)", estimated_from: "2026-10-20", estimated_to: "2026-11-08" },
+                    ],
+                    remindersEnabledCount: 0,
+                },
+            },
+            {
+                id: lambId,
+                kind: "Cattle",
+                title: "Lamb · Sheep",
+                status: "Healthy",
+                count: 6,
+                livestockCard: {
+                    label: "LIVESTOCK",
+                    title: "Lamb · Sheep",
+                    herd_line: "6 head · 4 ewes, 1 ram, 1 lamb",
+                    purpose_breed_line: "Meat · Dorper",
+                    stage_label: "Ewes bred Oct 8 · lambing Feb 27 – Mar 9, 2027",
+                    ready_line: "Market lambs Apr 24–Jun 23, 2027",
+                    next_task: { task: "CDT ewes (pre-lambing)", due_date: "2027-01-30", reason: "Ewes yearly CDT about 4 weeks before lambing." },
+                    more_task_count: 2,
+                    next_tasks: [
+                        { task: "CDT ewes (pre-lambing)", due_date: "2027-01-30", reason: "Ewes yearly CDT about 4 weeks before lambing." },
+                        { task: "Deworm (FAMACHA check)", due_date: "2026-11-05", reason: "FAMACHA check every 4–6 weeks in the warm season." },
+                        { task: "Log last shearing date", due_date: "2026-10-28", reason: "Last shearing date is not recorded.", missing_last_care: true },
+                    ],
+                    water_today: "~12 gal",
+                    heat_alert: "High 97°F today · check shade and water",
+                    last_care_line: "Deworm Oct 1 · Vaccine Oct 1",
+                    reminders_default_on: true,
+                    details: {
+                        species: "sheep",
+                        total_head: 6,
+                        groups: { ewes: 4, rams: 1, lambs: 1 },
+                        purpose: ["meat"],
+                        breed: "Dorper",
+                        acquired_date: "2026-10-26",
+                        breeding_status: "bred",
+                        breeding_date: "2026-10-08",
+                        last_care: { deworm: "2026-10-01", vaccine: "2026-10-01" },
+                        feed: ["pasture"],
+                        grazing_acres: 2,
+                    },
+                },
+                careSummary: {
+                    hasAnchor: true,
+                    anchorDate: "2026-10-26",
+                    stageLabel: "Germination",
+                    milestones: [
+                        { milestone_key: "first_flower", label: "First flower", estimated_from: "2026-11-01", estimated_to: "2026-11-01" },
+                        { milestone_key: "first_harvest", label: "Harvest", estimated_from: "2027-05-01", estimated_to: "2027-05-01" },
                     ],
                     remindersEnabledCount: 0,
                 },
@@ -91,6 +141,28 @@
     function careView(assetId) {
         const asset = state.assets.find((item) => item.id === assetId) || state.assets[0];
         const summary = asset.careSummary || {};
+        if (asset.kind === "Cattle" && asset.livestockCard) {
+            const card = asset.livestockCard;
+            return {
+                status: "success",
+                has_plan: true,
+                category: "Cattle",
+                asset_id: asset.id,
+                asset_title: card.title || asset.title,
+                display_name: card.title || asset.title,
+                quantity: asset.count,
+                schedule_status: "ready",
+                livestock_card: card,
+                next_tasks: card.next_tasks || [],
+                ready_line: card.ready_line || "",
+                current_stage: card.stage_label ? { label: card.stage_label, stage_key: "livestock" } : null,
+                stages: [],
+                milestones: [],
+                guidance: [],
+                reminders: (state.reminders[asset.id] || []).slice(),
+                disclaimer: "Local preview. Guidance only — not a vet diagnosis or extension visit.",
+            };
+        }
         return {
             asset: {
                 id: asset.id,

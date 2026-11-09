@@ -220,6 +220,24 @@
         return (item && (item.operational_details || item.operationalDetails || item.extra_details || item.extraDetails)) || {};
     }
 
+    function livestockCardOf(row) {
+        const direct = row && (row.livestock_card || row.livestockCard);
+        if (direct && typeof direct === "object") {
+            return direct;
+        }
+        const summary = row && (row.care_summary || row.careSummary);
+        const nested = summary && (summary.livestock_card || summary.livestockCard);
+        return nested && typeof nested === "object" ? nested : null;
+    }
+
+    function breedingFrom(extra) {
+        const source = extra || {};
+        return {
+            status: readText(source.breeding_status || source.breedingStatus),
+            date: readText(source.breeding_date || source.breedingDate || source.bred_on || source.bredOn),
+        };
+    }
+
     function sameOriginIllustration(raw) {
         // Pictures live on the Virginia API host. On agrivia.ai, load them
         // through this site so Cloudflare can reach IPv6 networks.
@@ -422,10 +440,19 @@
                     careItems: [],
                     careSummary: careSummaryOf(row),
                     count: 0,
+                    breeding: breedingFrom(operationalOf(row)),
+                    livestockCard: livestockCardOf(row),
                 });
             }
             const group = groups.get(key);
             group.count += 1;
+            if (!group.livestockCard) {
+                group.livestockCard = livestockCardOf(row);
+            }
+            const breeding = breedingFrom(operationalOf(row));
+            if (breeding.date || breeding.status) {
+                group.breeding = breeding;
+            }
             if (!group.imageUrl) {
                 group.imageUrl = readImageUrl(row, operationalOf(row));
             }
@@ -565,23 +592,37 @@
         });
     }
 
-    async function addAsset(kind, title) {
+    function speciesColumn(species) {
+        return {
+            sheep: "Sheep",
+            cattle: "Cattle",
+            goat: "Goat",
+            other: "Livestock",
+        }[species] || "Livestock";
+    }
+
+    async function addAsset(kind, title, fields) {
         const farmUuid = requireFarmUuid();
         const name = (title || "").trim();
         if (!name) {
             throw new Error("Name the plant, animal, or flock first.");
         }
         if (kind === "Cattle") {
+            const details = fields && fields.livestockDetails;
+            const body = {
+                deviceUuid: farmUuid,
+                tagNumber: name.slice(0, 50),
+                breed: speciesColumn(details && details.species),
+                ageMonths: 0,
+                status: "Healthy",
+            };
+            if (details) {
+                body.livestockDetails = details;
+            }
             return request("/cattle", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    deviceUuid: farmUuid,
-                    tagNumber: name.slice(0, 50),
-                    breed: "Mixed",
-                    ageMonths: 0,
-                    status: "Healthy",
-                }),
+                body: JSON.stringify(body),
             });
         }
         if (kind === "Crops") {
@@ -618,16 +659,19 @@
             throw new Error("This asset cannot be edited yet.");
         }
         if (asset.kind === "Cattle") {
+            const body = {
+                deviceUuid: farmUuid,
+                tagNumber: fields.title,
+                status: fields.status,
+                count: fields.count,
+            };
+            if (fields.livestockDetails) {
+                body.livestockDetails = fields.livestockDetails;
+            }
             return request(`/cattle/${farmUuid}/${assetId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    deviceUuid: farmUuid,
-                    tagNumber: fields.title,
-                    breed: fields.variety,
-                    status: fields.status,
-                    count: fields.count,
-                }),
+                body: JSON.stringify(body),
             });
         }
         if (asset.kind === "Crops") {

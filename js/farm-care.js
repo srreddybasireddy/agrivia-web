@@ -900,14 +900,188 @@
             model.stage = null;
             model.nextTask = null;
         }
+        applyLivestockDisplay(model, asset);
+        applyLivestockCard(model, asset, summary, view);
         model.reminders.suggested = suggestedReminders(model, view);
         return model;
+    }
+
+    function livestockCardFrom(asset, summary, view) {
+        const fromView = view && (view.livestock_card || view.livestockCard);
+        if (fromView && typeof fromView === "object") {
+            return fromView;
+        }
+        const direct = asset && (asset.livestockCard || asset.livestock_card);
+        if (direct && typeof direct === "object") {
+            return direct;
+        }
+        const nested = summary && (summary.livestock_card || summary.livestockCard);
+        if (nested && typeof nested === "object") {
+            return nested;
+        }
+        const raw = asset && (asset.careSummary || asset.care_summary);
+        const fromRaw = raw && (raw.livestock_card || raw.livestockCard);
+        return fromRaw && typeof fromRaw === "object" ? fromRaw : null;
+    }
+
+    function applyLivestockCard(model, asset, summary, view) {
+        const card = livestockCardFrom(asset, summary, view);
+        if (!card) {
+            return;
+        }
+        model.livestockCard = card;
+        const label = text(card.label);
+        if (label) {
+            model.kindLabel = label;
+        }
+        const title = text(card.title);
+        if (title) {
+            model.name = title;
+        }
+        model.variety = "";
+        model.milestones = [];
+        model.guidance = [];
+        model.nextTask = null;
+        const stageLabel = text(card.stage_label || card.stageLabel);
+        model.stage = stageLabel ? {
+            label: stageLabel,
+            day: null,
+            index: null,
+            total: 0,
+            summary: "",
+            nextLabel: "",
+            stages: [],
+        } : null;
+        const tasks = card.next_tasks || card.nextTasks || (view && (view.next_tasks || view.nextTasks));
+        model.livestockTasks = Array.isArray(tasks) ? tasks : [];
+        model.readyLine = text(card.ready_line || card.readyLine)
+            || text(view && (view.ready_line || view.readyLine));
+    }
+
+    function livestockFactRows(model, scope) {
+        const card = model.livestockCard || {};
+        const rows = [];
+        const herd = text(card.herd_line || card.herdLine);
+        if (herd) {
+            rows.push({ label: "Herd", value: herd, kind: "value" });
+        }
+        const purpose = text(card.purpose_breed_line || card.purposeBreedLine);
+        if (purpose) {
+            rows.push({ label: "Purpose · Breed", value: purpose, kind: "value" });
+        }
+        const stage = text(card.stage_label || card.stageLabel);
+        if (stage) {
+            rows.push({ label: "Stage", value: stage, kind: "value" });
+        }
+        const ready = text(model.readyLine) || text(card.ready_line || card.readyLine);
+        if (ready) {
+            rows.push({ label: "Ready", value: ready, kind: "value" });
+        }
+        if (scope !== "detail") {
+            const next = card.next_task || card.nextTask;
+            if (next && text(next.task)) {
+                const dueRaw = text(next.due_date || next.dueDate);
+                const due = dueRaw ? (formatDate(dueRaw, { year: true }) || dueRaw) : "";
+                const moreRaw = card.more_task_count != null ? card.more_task_count : card.moreTaskCount;
+                const more = Number(moreRaw);
+                rows.push({
+                    label: "Next",
+                    value: due ? `${text(next.task)} · ${due}` : text(next.task),
+                    moreCount: Number.isFinite(more) && more > 0 ? more : 0,
+                    kind: "next",
+                });
+            }
+        }
+        const water = text(card.water_today || card.waterToday);
+        if (water) {
+            rows.push({ label: "Water today", value: water, kind: "value" });
+        }
+        const heat = text(card.heat_alert || card.heatAlert);
+        if (heat) {
+            rows.push({ label: "Heat", value: heat, kind: "heat" });
+        }
+        const lastCare = text(card.last_care_line || card.lastCareLine);
+        if (lastCare) {
+            rows.push({ label: "Last care", value: lastCare, kind: "value" });
+        }
+        if (scope === "detail") {
+            return rows;
+        }
+        const defaultOn = card.reminders_default_on === true || card.remindersDefaultOn === true;
+        const savedOn = model.reminders.enabledCount > 0;
+        rows.push({
+            label: "Reminders",
+            value: savedOn ? `On (${model.reminders.enabledCount})` : (defaultOn ? "On" : "Off"),
+            action: savedOn || defaultOn ? "" : "Turn on",
+            kind: "reminders",
+        });
+        return rows;
+    }
+
+    function isPlantFact(item) {
+        const key = text(item && item.key).toLowerCase();
+        const label = text(item && item.label).toLowerCase();
+        if (key === "first_flower" || key === "first_fruit" || key === "first_harvest" || key === "harvest" || key === "germination" || key === "flower" || key === "fruit") {
+            return true;
+        }
+        return /\b(flowers?|fruits?|harvest|germination|blooms?)\b/.test(label);
+    }
+
+    function claimsBreeding(value) {
+        return /\b(lambing|pregnancy|pregnant|calving|kidding|breeding|bred|first lamb)\b/i.test(text(value));
+    }
+
+    function breedingIsKnown(asset) {
+        const record = asset && asset.breeding;
+        if (!record) {
+            return false;
+        }
+        if (text(record.date)) {
+            return true;
+        }
+        const status = text(record.status).toLowerCase();
+        return Boolean(status) && status !== "unknown" && status !== "open";
+    }
+
+    function isGenericWaterTask(task) {
+        const label = text(task && task.label).toLowerCase();
+        if (!label || (task && task.intervalDays > 0)) {
+            return false;
+        }
+        return /fresh water/.test(label) && !/\d/.test(label);
+    }
+
+    function applyLivestockDisplay(model, asset) {
+        if (!model || model.kind !== "Cattle") {
+            return;
+        }
+        const known = breedingIsKnown(asset);
+        model.milestones = (model.milestones || []).filter((item) => {
+            if (isPlantFact(item)) {
+                return false;
+            }
+            return known || !claimsBreeding(item.label);
+        });
+        if (model.stage && !known && claimsBreeding(model.stage.label)) {
+            model.stage.label = model.anchor && model.anchor.date ? "Since acquired" : "";
+            model.stage.summary = "";
+        }
+        if (model.stage && !known && claimsBreeding(model.stage.nextLabel)) {
+            model.stage.nextLabel = "";
+            model.stage.nextStartsDay = null;
+        }
+        if (isGenericWaterTask(model.nextTask)) {
+            model.nextTask = null;
+        }
     }
 
     function factRows(model, scope) {
         const rows = [];
         if (!model) {
             return rows;
+        }
+        if (model.livestockCard) {
+            return livestockFactRows(model, scope);
         }
         if (model.kind === "Crops") {
             if (model.acres != null) {
