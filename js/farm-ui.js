@@ -373,6 +373,238 @@
         return "Count";
     }
 
+    const LIVESTOCK_SPECIES = [
+        { value: "", label: "Species" },
+        { value: "sheep", label: "Sheep" },
+        { value: "cattle", label: "Cattle" },
+        { value: "goat", label: "Goat" },
+        { value: "other", label: "Other" },
+    ];
+    const LIVESTOCK_GROUPS = {
+        sheep: [["ewes", "Ewes"], ["rams", "Rams"], ["wethers", "Wethers"], ["lambs", "Lambs"]],
+        cattle: [["cows", "Cows"], ["bulls", "Bulls"], ["steers", "Steers"], ["heifers", "Heifers"], ["calves", "Calves"]],
+        goat: [["does", "Does"], ["bucks", "Bucks"], ["wethers", "Wethers"], ["kids", "Kids"]],
+        other: [],
+    };
+    const LIVESTOCK_PURPOSES = [["meat", "Meat"], ["wool", "Wool"], ["milk", "Milk"], ["breeding", "Breeding"], ["pets", "Pets"]];
+    const LIVESTOCK_FEED = [["pasture", "Pasture"], ["hay", "Hay"], ["grain", "Grain"]];
+    const LIVESTOCK_CARE = [["deworm", "Deworm"], ["vaccine", "Vaccine"], ["hoof_trim", "Hoof trim"], ["shearing", "Shearing"], ["vet_visit", "Vet visit"]];
+
+    function selectInput(options, value) {
+        const select = document.createElement("select");
+        select.className = "form-input";
+        options.forEach((option) => {
+            const node = document.createElement("option");
+            node.value = option.value;
+            node.textContent = option.label;
+            select.appendChild(node);
+        });
+        select.value = value || "";
+        return select;
+    }
+
+    function choiceRow(name, options, selected) {
+        const row = document.createElement("div");
+        row.className = "farm-choice-row";
+        row.dataset.choice = name;
+        const chosen = Array.isArray(selected) ? selected : [];
+        options.forEach((option) => {
+            const label = document.createElement("label");
+            const input = document.createElement("input");
+            input.type = "checkbox";
+            input.value = option[0];
+            input.checked = chosen.indexOf(option[0]) >= 0;
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(option[1]));
+            row.appendChild(label);
+        });
+        return row;
+    }
+
+    function checkedValues(root, name) {
+        const row = root.querySelector(`[data-choice="${name}"]`);
+        if (!row) {
+            return [];
+        }
+        return Array.from(row.querySelectorAll("input:checked")).map((input) => input.value);
+    }
+
+    function livestockSource(asset) {
+        const card = (asset && (asset.livestockCard || asset.livestock_card)) || {};
+        const details = card.details && typeof card.details === "object" ? card.details : {};
+        return {
+            species: details.species || card.species || "",
+            total_head: details.total_head || card.total_head || (asset && asset.count) || "",
+            groups: details.groups || card.groups || {},
+            purpose: details.purpose || card.purpose || [],
+            breed: details.breed || "",
+            acquired_date: details.acquired_date || card.acquired_date || "",
+            breeding_status: details.breeding_status || card.breeding_status || "",
+            breeding_date: details.breeding_date || card.breeding_date || "",
+            last_care: details.last_care || card.last_care || {},
+            feed: details.feed || [],
+            grazing_acres: details.grazing_acres == null ? "" : details.grazing_acres,
+        };
+    }
+
+    function mountLivestockFields(host, source) {
+        const record = source || {};
+        host.replaceChildren();
+        host.classList.add("farm-livestock-fields");
+
+        const species = selectInput(LIVESTOCK_SPECIES, record.species);
+        species.dataset.livestock = "species";
+        species.required = true;
+        host.appendChild(labeledControl("Species", species));
+
+        const head = numberInput(record.total_head, 1);
+        head.dataset.livestock = "head";
+        head.required = true;
+        head.min = "1";
+        host.appendChild(labeledControl("Total head", head));
+
+        const groups = document.createElement("div");
+        groups.className = "farm-group-grid";
+        groups.dataset.livestock = "groups";
+        host.appendChild(groups);
+
+        function paintGroups() {
+            const current = {};
+            groups.querySelectorAll("[data-group]").forEach((input) => {
+                if (input.value !== "") {
+                    current[input.dataset.group] = input.value;
+                }
+            });
+            const saved = record.groups || {};
+            groups.replaceChildren();
+            (LIVESTOCK_GROUPS[species.value] || []).forEach((option) => {
+                const input = numberInput(current[option[0]] != null ? current[option[0]] : saved[option[0]], 0);
+                input.dataset.group = option[0];
+                input.required = false;
+                groups.appendChild(labeledControl(option[1], input));
+            });
+        }
+        species.addEventListener("change", paintGroups);
+        paintGroups();
+
+        host.appendChild(labeledControl("Purpose", choiceRow("purpose", LIVESTOCK_PURPOSES, record.purpose)));
+        const breed = textInput(record.breed, 100);
+        breed.dataset.livestock = "breed";
+        host.appendChild(labeledControl("Breed", breed));
+
+        const acquired = document.createElement("input");
+        acquired.className = "form-input";
+        acquired.type = "date";
+        acquired.dataset.livestock = "acquired";
+        acquired.value = record.acquired_date || "";
+        host.appendChild(labeledControl("Acquired", acquired));
+
+        const breeding = selectInput([
+            { value: "", label: "Breeding" },
+            { value: "open", label: "Open" },
+            { value: "bred", label: "Bred" },
+            { value: "unknown", label: "Unknown" },
+        ], record.breeding_status);
+        breeding.dataset.livestock = "breeding";
+        host.appendChild(labeledControl("Breeding", breeding));
+
+        const bredOn = document.createElement("input");
+        bredOn.className = "form-input";
+        bredOn.type = "date";
+        bredOn.dataset.livestock = "bred-on";
+        bredOn.value = record.breeding_date || "";
+        host.appendChild(labeledControl("Breeding date", bredOn));
+
+        const careGrid = document.createElement("div");
+        careGrid.className = "farm-group-grid";
+        const lastCare = record.last_care || {};
+        LIVESTOCK_CARE.forEach((option) => {
+            const input = document.createElement("input");
+            input.className = "form-input";
+            input.type = "date";
+            input.dataset.care = option[0];
+            input.value = lastCare[option[0]] || "";
+            careGrid.appendChild(labeledControl(option[1], input));
+        });
+        host.appendChild(labeledControl("Last care", careGrid));
+
+        host.appendChild(labeledControl("Feed", choiceRow("feed", LIVESTOCK_FEED, record.feed)));
+        const acres = numberInput(record.grazing_acres, 0);
+        acres.dataset.livestock = "acres";
+        acres.step = "0.1";
+        acres.required = false;
+        host.appendChild(labeledControl("Grazing acres", acres));
+
+        return {
+            read: function readLivestockFields() {
+                const speciesValue = species.value;
+                const headValue = Number(head.value);
+                if (!speciesValue) {
+                    return { error: "Choose a species." };
+                }
+                if (!Number.isFinite(headValue) || headValue < 1) {
+                    return { error: "Enter the total head count." };
+                }
+                const details = {
+                    species: speciesValue,
+                    total_head: Math.round(headValue),
+                };
+                const groupCounts = {};
+                groups.querySelectorAll("[data-group]").forEach((input) => {
+                    if (input.value === "") {
+                        return;
+                    }
+                    const count = Number(input.value);
+                    if (Number.isFinite(count) && count > 0) {
+                        groupCounts[input.dataset.group] = Math.round(count);
+                    }
+                });
+                if (Object.keys(groupCounts).length) {
+                    details.groups = groupCounts;
+                }
+                const purpose = checkedValues(host, "purpose");
+                if (purpose.length) {
+                    details.purpose = purpose;
+                }
+                const breedName = breed.value.trim();
+                if (breedName) {
+                    details.breed = breedName;
+                }
+                if (acquired.value) {
+                    details.acquired_date = acquired.value;
+                }
+                if (breeding.value) {
+                    details.breeding_status = breeding.value;
+                }
+                if (bredOn.value) {
+                    details.breeding_date = bredOn.value;
+                }
+                const care = {};
+                let hasCare = false;
+                host.querySelectorAll("[data-care]").forEach((input) => {
+                    care[input.dataset.care] = input.value || null;
+                    if (input.value) {
+                        hasCare = true;
+                    }
+                });
+                if (hasCare) {
+                    details.last_care = care;
+                }
+                const feed = checkedValues(host, "feed");
+                if (feed.length) {
+                    details.feed = feed;
+                }
+                if (acres.value !== "") {
+                    const grazing = Number(acres.value);
+                    if (Number.isFinite(grazing)) {
+                        details.grazing_acres = grazing;
+                    }
+                }
+                return { count: Math.round(headValue), livestockDetails: details };
+            },
+        };
+    }
+
     function appendEditor(copy, asset) {
         const form = document.createElement("form");
         form.className = "farm-asset-editor";
@@ -384,15 +616,16 @@
         nameInput.required = true;
         form.appendChild(labeledControl("Name", nameInput));
 
-        let breedInput = null;
         let varietyInput = null;
         let acresInput = null;
         let detailsInput = null;
         let countInput = null;
+        let livestockRead = null;
 
         if (asset.kind === "Cattle") {
-            breedInput = textInput(asset.variety || "", 100);
-            form.appendChild(labeledControl("Breed", breedInput));
+            const livestockHost = document.createElement("div");
+            livestockRead = mountLivestockFields(livestockHost, livestockSource(asset)).read;
+            form.appendChild(livestockHost);
         }
         if (asset.kind === "Crops") {
             varietyInput = textInput(asset.variety || "", 100);
@@ -405,7 +638,7 @@
             detailsInput = textInput(asset.subtitle || "", 255);
             form.appendChild(labeledControl("Details", detailsInput));
         }
-        if (COUNTED_KINDS[asset.kind]) {
+        if (COUNTED_KINDS[asset.kind] && asset.kind !== "Cattle") {
             countInput = numberInput(asset.count, 0);
             countInput.dataset.count = "1";
             form.appendChild(labeledControl(countLabel(asset.kind), countInput));
@@ -454,8 +687,17 @@
                     title: title,
                     status: statusInput.value,
                 };
-                if (breedInput) {
-                    fields.variety = breedInput.value.trim();
+                if (livestockRead) {
+                    const parsed = livestockRead();
+                    if (parsed.error) {
+                        error.textContent = parsed.error;
+                        error.hidden = false;
+                        save.disabled = false;
+                        cancel.disabled = false;
+                        return;
+                    }
+                    fields.count = parsed.count;
+                    fields.livestockDetails = parsed.livestockDetails;
                 }
                 if (varietyInput) {
                     fields.variety = varietyInput.value.trim();
@@ -618,8 +860,11 @@
         setHidden(empty, lastAssets.length > 0);
         assets.forEach((asset) => {
             const careApi = global.AgriviaFarmCare;
+            const livestockCard = asset.livestockCard || asset.livestock_card;
             const imageUrl = careApi && careApi.illustrationFor ? careApi.illustrationFor(asset) : asset.imageUrl;
-            const shownName = careApi && careApi.displayName ? (careApi.displayName(asset.title) || asset.title) : asset.title;
+            const shownName = livestockCard && livestockCard.title
+                ? livestockCard.title
+                : (careApi && careApi.displayName ? (careApi.displayName(asset.title) || asset.title) : asset.title);
             const card = document.createElement("article");
             card.className = imageUrl ? "farm-asset-card has-image" : "farm-asset-card";
             if (asset.id) {
@@ -633,7 +878,7 @@
             head.className = "farm-asset-head";
             const kind = document.createElement("span");
             kind.className = "farm-asset-kind";
-            kind.textContent = kindLabel(asset.kind);
+            kind.textContent = livestockCard && livestockCard.label ? livestockCard.label : kindLabel(asset.kind);
             head.appendChild(kind);
             if (asset.status) {
                 const pill = document.createElement("span");
@@ -656,7 +901,7 @@
                 appendEditor(copy, asset);
             } else {
                 const model = careApi && careApi.normalizeAsset ? careApi.normalizeAsset(asset) : null;
-                if (model && model.variety) {
+                if (model && model.variety && !livestockCard) {
                     const variety = document.createElement("p");
                     variety.className = "farm-asset-variety";
                     variety.textContent = model.variety;
@@ -989,15 +1234,36 @@
             });
         }
 
+        const livestockHost = el("farmLivestockFields");
+        const livestockFields = livestockHost ? mountLivestockFields(livestockHost, {}) : null;
+        const kindInput = el("farmAssetKind");
+        function syncLivestockAdd() {
+            const show = Boolean(kindInput && kindInput.value === "Cattle" && livestockHost);
+            if (livestockHost) {
+                livestockHost.hidden = !show;
+            }
+            if (!livestockHost) {
+                return;
+            }
+            livestockHost.querySelectorAll("[data-livestock='species'], [data-livestock='head']").forEach((input) => {
+                input.required = show;
+            });
+        }
+        if (kindInput) {
+            kindInput.addEventListener("change", syncLivestockAdd);
+        }
+        syncLivestockAdd();
+
         const assetForm = el("farmAssetForm");
         if (assetForm) {
             assetForm.addEventListener("submit", async (event) => {
                 event.preventDefault();
                 const status = el("farmAssetStatus");
                 const titleInput = el("farmAssetTitle");
-                const kindInput = el("farmAssetKind");
+                const kindSelect = el("farmAssetKind");
                 const submitButton = event.submitter || assetForm.querySelector("button[type='submit']");
                 const name = titleInput ? titleInput.value.trim() : "";
+                const kind = kindSelect ? kindSelect.value : "";
                 if (!name) {
                     if (status) {
                         status.textContent = "Name the plant, animal, or flock first.";
@@ -1007,6 +1273,19 @@
                     }
                     return;
                 }
+                let livestockDetails = null;
+                let livestockCount = null;
+                if (kind === "Cattle" && livestockFields) {
+                    const parsed = livestockFields.read();
+                    if (parsed.error) {
+                        if (status) {
+                            status.textContent = parsed.error;
+                        }
+                        return;
+                    }
+                    livestockDetails = parsed.livestockDetails;
+                    livestockCount = parsed.count;
+                }
                 if (submitButton) {
                     submitButton.disabled = true;
                 }
@@ -1014,7 +1293,10 @@
                     status.textContent = "Saving…";
                 }
                 try {
-                    await global.AgriviaFarmApi.addAsset(kindInput ? kindInput.value : "", name);
+                    await global.AgriviaFarmApi.addAsset(kind, name, {
+                        count: livestockCount,
+                        livestockDetails: livestockDetails,
+                    });
                     if (titleInput) {
                         titleInput.value = "";
                     }

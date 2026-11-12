@@ -166,6 +166,70 @@
         };
     }
 
+    function errorFromBody(data, fallback) {
+        if (data && typeof data.detail === "string" && data.detail.trim()) {
+            return new Error(data.detail.trim());
+        }
+        if (data && typeof data.error === "string" && data.error.trim()) {
+            return new Error(data.error.trim());
+        }
+        return new Error(fallback);
+    }
+
+    async function getThreadMessages(deviceUuid, threadRef, options) {
+        const params = new URLSearchParams({
+            deviceUuid: deviceUuid,
+            limit: String((options && options.limit) || 20),
+        });
+        if (options && options.before) {
+            params.set("before", options.before);
+        }
+        const ref = threadRef || "general";
+        const response = await fetchWithTimeout(
+            `${apiUrl("/advisor/threads/" + encodeURIComponent(ref) + "/messages")}?${params.toString()}`,
+            { method: "GET", headers: { Accept: "application/json" } },
+            config.welcomeTimeoutMs
+        );
+        const data = await parseJson(response);
+        if (!response.ok) {
+            throw errorFromBody(data, "Could not load this conversation.");
+        }
+        return {
+            messages: Array.isArray(data.messages) ? data.messages : [],
+            hasMore: Boolean(data.has_more),
+            nextCursor: readableString(data.next_cursor),
+        };
+    }
+
+    async function postThreadMessage(deviceUuid, threadRef, content) {
+        const ref = threadRef || "general";
+        const response = await fetchWithTimeout(
+            apiUrl("/advisor/threads/" + encodeURIComponent(ref) + "/messages"),
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    deviceUuid: deviceUuid,
+                    content: content,
+                }),
+            },
+            config.chatTimeoutMs
+        );
+        const data = await parseJson(response);
+        if (!response.ok) {
+            throw errorFromBody(data, "The advisor could not answer that request.");
+        }
+        const assistant = data.assistant_message || {};
+        return {
+            answer: typeof assistant.content === "string" ? assistant.content : "",
+            routed: Boolean(data.routed),
+            thread: data.thread || {},
+        };
+    }
+
     async function getWelcomeGreeting(deviceUuid, category, localHour) {
         const params = new URLSearchParams({
             device_uuid: deviceUuid,
@@ -242,6 +306,8 @@
         getOrCreateDeviceUuid: getOrCreateDeviceUuid,
         getAdvisoryResponse: getAdvisoryResponse,
         getWelcomeGreeting: getWelcomeGreeting,
+        getThreadMessages: getThreadMessages,
+        postThreadMessage: postThreadMessage,
         submitRating: submitRating,
     };
 })(window);

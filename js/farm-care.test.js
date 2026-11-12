@@ -387,6 +387,132 @@ test("reminder times normalize to HH:MM for the time input", () => {
     assert.equal(care.timeOfDayValue("morning", "08:00"), "08:00");
 });
 
+test("cattle cards hide plant dates and unconfirmed lambing", () => {
+    const model = care.normalizeAsset({
+        id: "lamb",
+        kind: "Cattle",
+        title: "Lamb · Sheep",
+        status: "Healthy",
+        count: 6,
+        careSummary: {
+            has_anchor: true,
+            anchor_date: "2026-10-26",
+            anchor_prompt_key: "acquired_age",
+            stage_label: "Lambing",
+            age_label: "day 2",
+            schedule_status: "ready",
+            next_task: { label: "Provide fresh water at all times." },
+            milestones: [
+                { milestone_key: "first_harvest", label: "First harvest", estimated_from: "2027-10-26", estimated_to: "2027-10-26" },
+                { milestone_key: "first_flower", label: "First flower", estimated_from: "2026-10-26", estimated_to: "2026-10-26" },
+                { milestone_key: "first_fruit", label: "First fruit", estimated_from: "2027-04-24", estimated_to: "2027-04-24" },
+                { milestone_key: "first_lamb", label: "First Lamb", estimated_from: "2027-03-07", estimated_to: "2027-04-06" },
+                { milestone_key: "weaning", label: "Weaning", estimated_from: "2027-01-01", estimated_to: "2027-01-20" },
+            ],
+        },
+    });
+    const rows = care.factRows(model, "card");
+    assert.equal(rows.some((row) => /flower|fruit|harvest|lamb/i.test(row.label)), false);
+    assert.equal(rows.find((row) => row.label === "Stage").value, "Since acquired · day 2");
+    assert.match(rows.find((row) => row.label === "Weaning").value, /Jan 1/);
+    assert.equal(rows.some((row) => row.label === "Next"), false);
+    assert.equal(rows.find((row) => row.label === "Acquired").value, "Oct 26, 2026");
+    assert.equal(rows.find((row) => row.label === "Head").value, "6");
+});
+
+test("a livestock card hides crop rows and shows the API lines", () => {
+    const model = care.normalizeAsset({
+        id: "lamb",
+        kind: "Cattle",
+        title: "Sheep · Mixed",
+        status: "Healthy",
+        count: 6,
+        variety: "Mixed",
+        careSummary: {
+            has_anchor: true,
+            anchor_date: "2026-10-26",
+            stage_label: "Calculating care timing",
+            schedule_status: "processing",
+            milestones: [
+                { milestone_key: "first_harvest", label: "First harvest", estimated_from: "2027-10-26", estimated_to: "2027-10-26" },
+                { milestone_key: "first_flower", label: "First flower", estimated_from: "2026-11-01", estimated_to: "2026-11-01" },
+                { milestone_key: "first_fruit", label: "First fruit", estimated_from: "2027-04-24", estimated_to: "2027-04-24" },
+            ],
+        },
+        livestockCard: {
+            label: "LIVESTOCK",
+            title: "Lamb · Sheep",
+            herd_line: "6 head · 4 ewes, 1 ram, 1 lamb",
+            purpose_breed_line: "Meat · Dorper",
+            stage_label: "Ewes bred Oct 8 · lambing Feb 27 – Mar 9, 2027",
+            ready_line: "Market lambs Apr 24–Jun 23, 2027",
+            next_task: { task: "CDT ewes (pre-lambing)", due_date: "2027-01-30" },
+            more_task_count: 2,
+            next_tasks: [
+                { task: "CDT ewes (pre-lambing)", due_date: "2027-01-30", reason: "Ewes yearly CDT about 4 weeks before lambing." },
+            ],
+            water_today: "~12 gal",
+            heat_alert: "High 97°F today · check shade and water",
+            last_care_line: "Vaccine Oct 1",
+            reminders_default_on: true,
+        },
+    });
+    const rows = care.factRows(model, "card");
+    const labels = rows.map((row) => row.label);
+    assert.equal(model.name, "Lamb · Sheep");
+    assert.equal(model.kindLabel, "LIVESTOCK");
+    assert.equal(model.milestones.length, 0);
+    assert.deepEqual(labels.filter((label) => /harvest|flower|fruit|planted|head|acquired/i.test(label)), []);
+    assert.equal(rows.find((row) => row.label === "Herd").value, "6 head · 4 ewes, 1 ram, 1 lamb");
+    assert.equal(rows.find((row) => row.label === "Purpose · Breed").value, "Meat · Dorper");
+    assert.equal(rows.find((row) => row.label === "Stage").value, "Ewes bred Oct 8 · lambing Feb 27 – Mar 9, 2027");
+    assert.equal(rows.find((row) => row.label === "Ready").value, "Market lambs Apr 24–Jun 23, 2027");
+    assert.match(rows.find((row) => row.label === "Next").value, /CDT ewes/);
+    assert.equal(rows.find((row) => row.label === "Next").moreCount, 2);
+    assert.equal(rows.find((row) => row.label === "Water today").value, "~12 gal");
+    assert.equal(rows.find((row) => row.label === "Heat").kind, "heat");
+    assert.equal(rows.find((row) => row.label === "Last care").value, "Vaccine Oct 1");
+    assert.equal(rows.find((row) => row.label === "Reminders").value, "On");
+    assert.equal(rows.find((row) => row.label === "Reminders").action, "");
+});
+
+test("livestock reminders stay off until the API says they are on", () => {
+    const model = care.normalizeAsset({
+        kind: "Cattle",
+        livestockCard: {
+            label: "LIVESTOCK",
+            title: "Sheep · Sheep",
+            herd_line: "5 head",
+            stage_label: "Open flock",
+            reminders_default_on: false,
+        },
+    });
+    const reminders = care.factRows(model, "card").find((row) => row.label === "Reminders");
+    assert.equal(reminders.value, "Off");
+    assert.equal(reminders.action, "Turn on");
+});
+
+test("cattle keeps a lambing date after a breeding date is saved", () => {
+    const model = care.normalizeAsset({
+        kind: "Cattle",
+        title: "Sheep",
+        breeding: { status: "Bred", date: "2026-10-08" },
+        careSummary: {
+            has_anchor: true,
+            anchor_date: "2026-10-08",
+            stage_label: "Pregnancy and Lambing",
+            age_label: "day 20",
+            schedule_status: "ready",
+            milestones: [
+                { milestone_key: "first_lamb", label: "First Lamb", estimated_from: "2027-03-07", estimated_to: "2027-04-06" },
+            ],
+        },
+    });
+    assert.equal(model.stage.label, "Pregnancy and Lambing");
+    assert.equal(model.milestones.length, 1);
+    assert.equal(model.milestones[0].label, "First Lamb");
+});
+
 test("done and snooze lower the unread count", () => {
     assert.equal(care.unreadAfter(3, "complete"), 2);
     assert.equal(care.unreadAfter(1, "snooze"), 0);
