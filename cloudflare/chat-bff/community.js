@@ -314,6 +314,52 @@ async function makeRoomForMedia(kv, r2, neededBytes) {
     return nextIds;
 }
 
+function likeUserId(row) {
+    if (typeof row === "string") {
+        return row;
+    }
+    if (row && typeof row.id === "string") {
+        return row.id;
+    }
+    return "";
+}
+
+function likeDisplayName(row) {
+    if (!row || typeof row === "string") {
+        return "";
+    }
+    const name = typeof row.name === "string" ? row.name.trim() : "";
+    return name && !/^grower$/i.test(name) ? name : "";
+}
+
+function findLikeIndex(likes, userId) {
+    if (!userId) {
+        return -1;
+    }
+    return likes.findIndex((row) => likeUserId(row) === userId);
+}
+
+function publicLikedBy(likes) {
+    const names = [];
+    const seen = new Set();
+    for (const row of likes) {
+        const name = likeDisplayName(row);
+        if (!name) {
+            continue;
+        }
+        const key = name.toLowerCase();
+        if (seen.has(key)) {
+            continue;
+        }
+        seen.add(key);
+        names.push(name);
+        if (names.length >= 24) {
+            break;
+        }
+    }
+    return names;
+}
+
 function publicPost(post, viewerId, origin, viewerPoint) {
     const comments = Array.isArray(post.comments) ? post.comments : [];
     const visibleComments = comments
@@ -337,7 +383,8 @@ function publicPost(post, viewerId, origin, viewerPoint) {
         createdAt: post.createdAt,
         hasMedia: Boolean(post.hasMedia),
         likeCount: likes.length,
-        liked: Boolean(viewerId && likes.indexOf(viewerId) !== -1),
+        liked: findLikeIndex(likes, viewerId) !== -1,
+        likedBy: publicLikedBy(likes),
         commentCount: visibleComments.length,
         comments: visibleComments,
         miles: milesBetween(viewerPoint, { lat: post.lat, lng: post.lng }),
@@ -346,9 +393,19 @@ function publicPost(post, viewerId, origin, viewerPoint) {
 }
 
 function parsePoint(url) {
-    const lat = Number(url.searchParams.get("lat"));
-    const lng = Number(url.searchParams.get("lng"));
+    // Number(null) and Number("") are 0 — treat missing coords as "no location",
+    // not the Gulf of Guinea, or "Near you" hides every real post.
+    const latRaw = url.searchParams.get("lat");
+    const lngRaw = url.searchParams.get("lng");
+    if (latRaw == null || lngRaw == null || latRaw === "" || lngRaw === "") {
+        return null;
+    }
+    const lat = Number(latRaw);
+    const lng = Number(lngRaw);
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return null;
+    }
+    if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
         return null;
     }
     return { lat, lng };
@@ -449,6 +506,7 @@ export function isCommunityPath(path) {
     return path === "/community/feed"
         || path === "/community/posts"
         || /^\/community\/media\/[a-z0-9-]+$/i.test(path)
+        || /^\/community\/posts\/[a-z0-9-]+$/i.test(path)
         || /^\/community\/posts\/[a-z0-9-]+\/like$/i.test(path)
         || /^\/community\/posts\/[a-z0-9-]+\/comments$/i.test(path)
         || /^\/community\/posts\/[a-z0-9-]+\/report$/i.test(path)
@@ -496,6 +554,16 @@ export async function handleCommunity(request, env, fetchOrigin) {
                         renamed = true;
                     }
                 });
+                const likes = Array.isArray(post.likes) ? post.likes : [];
+                const likeAt = findLikeIndex(likes, viewer.id);
+                if (likeAt !== -1) {
+                    const row = likes[likeAt];
+                    if (typeof row === "string" || !row.name || row.name !== viewer.name) {
+                        likes[likeAt] = { id: viewer.id, name: viewer.name };
+                        post.likes = likes;
+                        renamed = true;
+                    }
+                }
                 if (renamed) {
                     await writePost(kv, post);
                 }
@@ -648,6 +716,25 @@ export async function handleCommunity(request, env, fetchOrigin) {
         return json(201, { post: publicPost(post, viewer.id, origin, null) });
     }
 
+    const deletePath = path.match(/^\/community\/posts\/([a-z0-9-]+)$/i);
+    if (deletePath && request.method === "DELETE") {
+        const viewer = await currentUser(request, env, fetchOrigin);
+        if (!viewer) {
+            return json(401, { error: "Sign in to delete a post." });
+        }
+        const post = await readPost(kv, deletePath[1]);
+        if (!post) {
+            return json(404, { error: "Post not found." });
+        }
+        if (post.authorId !== viewer.id) {
+            return json(403, { error: "You can only delete your own posts." });
+        }
+        await deleteStoredPost(kv, r2, post);
+        const ids = await readIndex(kv);
+        await writeIndex(kv, ids.filter((id) => id !== post.id));
+        return json(200, { ok: true, id: post.id });
+    }
+
     const likePath = path.match(/^\/community\/posts\/([a-z0-9-]+)\/like$/i);
     if (likePath && request.method === "POST") {
         const viewer = await currentUser(request, env, fetchOrigin);
@@ -660,17 +747,28 @@ export async function handleCommunity(request, env, fetchOrigin) {
         }
         const body = await request.json().catch(() => ({}));
         const likes = Array.isArray(post.likes) ? post.likes.slice() : [];
-        const already = likes.indexOf(viewer.id);
+        const already = findLikeIndex(likes, viewer.id);
         if (body.liked === false) {
             if (already !== -1) {
                 likes.splice(already, 1);
             }
         } else if (already === -1) {
-            likes.push(viewer.id);
+            likes.push({ id: viewer.id, name: viewer.name || "" });
+        } else {
+            const row = likes[already];
+            if (typeof row === "string") {
+                likes[already] = { id: viewer.id, name: viewer.name || "" };
+            } else if (viewer.name && row.name !== viewer.name) {
+                likes[already] = { id: viewer.id, name: viewer.name };
+            }
         }
         post.likes = likes;
         await writePost(kv, post);
-        return json(200, { liked: likes.indexOf(viewer.id) !== -1, likeCount: likes.length });
+        return json(200, {
+            liked: findLikeIndex(likes, viewer.id) !== -1,
+            likeCount: likes.length,
+            likedBy: publicLikedBy(likes),
+        });
     }
 
     const commentMatch = path.match(/^\/community\/posts\/([a-z0-9-]+)\/comments$/i);

@@ -1,6 +1,6 @@
 /**
  * Community feed. Same /api origin as farm and guides.
- * Guests may read. Sign-in is required to post, like, comment, or report.
+ * Guests may read. Sign-in is required to post, like, comment, report, or delete.
  * Photos and videos are sent as multipart bytes (R2 on the worker), not data URLs.
  */
 (function (global) {
@@ -214,6 +214,11 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ liked: Boolean(liked) }),
+            });
+        },
+        deletePost: function (postId) {
+            return request(`/community/posts/${encodeURIComponent(postId)}`, {
+                method: "DELETE",
             });
         },
         comment: function (postId, body) {

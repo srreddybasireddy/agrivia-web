@@ -109,6 +109,54 @@
         return new Error("The advisor could not answer that request.");
     }
 
+    function openAdvisorNav(data) {
+        const nested = data && data.nextQuestion ? data.nextQuestion.navPrompt : null;
+        const nav = (data && data.navPrompt) || nested || null;
+        const thread = (data && data.thread) || {};
+        const assetId = readableString(nav && nav.assetId)
+            || readableString(thread.asset_id)
+            || readableString(thread.assetId);
+        const action = readableString(nav && nav.action);
+        if (!assetId) {
+            return null;
+        }
+        if (action && action !== "open_advisor_item") {
+            return null;
+        }
+        if (!action && !(data && data.routed)) {
+            return null;
+        }
+        return {
+            action: "open_advisor_item",
+            assetId: assetId,
+            assetName: readableString(nav && nav.assetName) || readableString(thread.label) || "",
+            category: readableString(nav && nav.category) || "",
+        };
+    }
+
+    function followUpFromBody(data) {
+        const nextFromRoot = readableString(data && data.nextQuestionPrompt);
+        const nextFromNested = data && data.nextQuestion
+            ? readableString(data.nextQuestion.prompt)
+            : null;
+        const suggestionChips = uniqueSuggestions(
+            [].concat(
+                (data && data.suggestionChips) || [],
+                data && data.nextQuestion && data.nextQuestion.suggestionChips
+                    ? data.nextQuestion.suggestionChips
+                    : []
+            )
+        );
+        return {
+            suggestionChips: suggestionChips,
+            nextQuestionPrompt: nextFromRoot || nextFromNested,
+            navPrompt: openAdvisorNav(data),
+            routed: Boolean(data && data.routed),
+            thread: (data && data.thread) || {},
+            usedModel: !data || data.usedModel !== false,
+        };
+    }
+
     async function getAdvisoryResponse(deviceUuid, category, query, focus) {
         const body = {
             deviceUuid: deviceUuid,
@@ -144,25 +192,17 @@
         }
 
         const data = await parseJson(response);
-        const nextFromRoot = readableString(data.nextQuestionPrompt);
-        const nextFromNested = data.nextQuestion
-            ? readableString(data.nextQuestion.prompt)
-            : null;
-        const suggestionChips = uniqueSuggestions(
-            [].concat(
-                data.suggestionChips || [],
-                data.nextQuestion && data.nextQuestion.suggestionChips
-                    ? data.nextQuestion.suggestionChips
-                    : []
-            )
-        );
-
+        const followUp = followUpFromBody(data);
         return {
             answer: typeof data.answer === "string" ? data.answer : "",
             qaId: readableString(data.qaId),
-            suggestionChips: suggestionChips,
+            suggestionChips: followUp.suggestionChips,
             isProfileComplete: Boolean(data.isProfileComplete),
-            nextQuestionPrompt: nextFromRoot || nextFromNested,
+            nextQuestionPrompt: followUp.nextQuestionPrompt,
+            navPrompt: followUp.navPrompt,
+            routed: followUp.routed,
+            thread: followUp.thread,
+            usedModel: followUp.usedModel,
         };
     }
 
@@ -223,10 +263,18 @@
             throw errorFromBody(data, "The advisor could not answer that request.");
         }
         const assistant = data.assistant_message || {};
+        const followUp = followUpFromBody(data);
         return {
             answer: typeof assistant.content === "string" ? assistant.content : "",
-            routed: Boolean(data.routed),
-            thread: data.thread || {},
+            qaId: readableString(data.qaId),
+            suggestionChips: followUp.suggestionChips,
+            nextQuestionPrompt: followUp.nextQuestionPrompt,
+            navPrompt: followUp.navPrompt,
+            routed: followUp.routed || Boolean(data.routed),
+            thread: followUp.thread && followUp.thread.asset_id
+                ? followUp.thread
+                : (data.thread || {}),
+            usedModel: followUp.usedModel && data.usedModel !== false,
         };
     }
 
