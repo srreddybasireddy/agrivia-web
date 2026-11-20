@@ -1,5 +1,5 @@
 /**
- * Homepage community strip: feed ranks, composer, likes, comments, reports.
+ * Homepage community strip: feed ranks, composer, likes, comments, reports, delete.
  */
 (function (global) {
     const api = global.AgriviaCommunityApi;
@@ -159,6 +159,36 @@
         return `<div class="community-tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>`;
     }
 
+    function likedByLabel(post) {
+        const names = Array.isArray(post.likedBy)
+            ? post.likedBy.map((name) => String(name || "").trim()).filter(Boolean)
+            : [];
+        const count = Number(post.likeCount) || 0;
+        if (!count) {
+            return "";
+        }
+        if (!names.length) {
+            return count === 1 ? "1 person liked this" : `${count} people liked this`;
+        }
+        if (names.length >= count) {
+            return names.join(", ");
+        }
+        const extra = count - names.length;
+        return `${names.join(", ")} and ${extra} other${extra === 1 ? "" : "s"}`;
+    }
+
+    function likeControl(post, liked) {
+        const count = Number(post.likeCount) || 0;
+        const tip = likedByLabel(post);
+        const tipId = `likers-${post.id}`;
+        return `
+            <span class="community-like-wrap">
+                <button type="button" class="community-like${liked ? " is-on" : ""}" data-like="${escapeHtml(post.id)}" aria-pressed="${liked ? "true" : "false"}"${tip ? ` title="${escapeHtml(tip)}" aria-describedby="${escapeHtml(tipId)}"` : ""}>♥ ${count}</button>
+                ${tip ? `<span id="${escapeHtml(tipId)}" class="community-likers" role="tooltip">${escapeHtml(tip)}</span>` : ""}
+            </span>
+        `;
+    }
+
     function commentsBlock(post) {
         const comments = Array.isArray(post.comments) ? post.comments : [];
         const items = comments.map((comment) => `
@@ -213,9 +243,11 @@
                 ${mediaBlock(post)}
                 ${tagsBlock(post)}
                 <div class="community-actions">
-                    <button type="button" class="community-like${liked ? " is-on" : ""}" data-like="${escapeHtml(post.id)}" aria-pressed="${liked ? "true" : "false"}">♥ ${Number(post.likeCount) || 0}</button>
+                    ${likeControl(post, liked)}
                     <button type="button" class="community-toggle-comments" data-toggle-comments="${escapeHtml(post.id)}">Comment ${Number(post.commentCount) || 0}</button>
-                    <button type="button" class="community-report" data-report-post="${escapeHtml(post.id)}" aria-label="Report post">Report</button>
+                    ${post.mine
+                        ? `<button type="button" class="community-delete" data-delete-post="${escapeHtml(post.id)}" aria-label="Delete your post">Delete</button>`
+                        : `<button type="button" class="community-report" data-report-post="${escapeHtml(post.id)}" aria-label="Report post">Report</button>`}
                 </div>
                 ${commentsBlock(post)}
             `;
@@ -496,10 +528,30 @@
                 if (post) {
                     post.liked = Boolean(data.liked);
                     post.likeCount = Number(data.likeCount) || 0;
+                    post.likedBy = Array.isArray(data.likedBy) ? data.likedBy : post.likedBy;
                 }
                 renderPosts();
             } catch (err) {
                 setStatus(err.message || "Could not like that post.", true);
+            }
+            return;
+        }
+        const deleteBtn = event.target.closest("[data-delete-post]");
+        if (deleteBtn) {
+            if (!requireSignIn("delete a post")) {
+                return;
+            }
+            const id = deleteBtn.getAttribute("data-delete-post");
+            if (!window.confirm("Delete this post? This cannot be undone.")) {
+                return;
+            }
+            try {
+                await api.deletePost(id);
+                posts = posts.filter((row) => row.id !== id);
+                renderPosts();
+                setStatus("Post deleted.", false);
+            } catch (err) {
+                setStatus(err.message || "Could not delete that post.", true);
             }
             return;
         }

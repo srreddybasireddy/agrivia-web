@@ -748,9 +748,17 @@ textarea:focus-visible {
     margin-top: 0.15rem;
 }
 
+.community-like-wrap {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+}
+
 .community-like,
 .community-toggle-comments,
-.community-report {
+.community-report,
+.community-delete {
     background: none;
     border: 0;
     color: var(--ink-2);
@@ -759,6 +767,7 @@ textarea:focus-visible {
     cursor: pointer;
     min-height: 44px;
     padding: 0.4rem 0.5rem;
+    width: 100%;
 }
 
 .community-like.is-on,
@@ -766,8 +775,53 @@ textarea:focus-visible {
     color: #B42318;
 }
 
-.community-report {
+.community-report,
+.community-delete {
     color: var(--ink-3);
+}
+
+.community-delete:hover,
+.community-delete:focus-visible {
+    color: #B42318;
+}
+
+.community-likers {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.35rem);
+    transform: translateX(-50%);
+    z-index: 5;
+    min-width: 8rem;
+    max-width: 16rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 0.55rem;
+    background: var(--ink, #1a1f16);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 550;
+    line-height: 1.35;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(26, 31, 22, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+}
+
+.community-likers::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border: 5px solid transparent;
+    border-top-color: var(--ink, #1a1f16);
+}
+
+.community-like-wrap:hover .community-likers,
+.community-like-wrap:focus-within .community-likers {
+    opacity: 1;
+    visibility: visible;
 }
 
 .community-comments {

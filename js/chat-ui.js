@@ -308,6 +308,8 @@
         let activeAsset = null;
         let threadLoadToken = 0;
         let isSending = false;
+        let followUpTimer = 0;
+        let followUpSeq = 0;
         let lastWelcomeGreeting = "";
         const defaultTitle = welcomeTitle ? welcomeTitle.textContent : "What are you working on today?";
         const defaultPlaceholder = input.getAttribute("placeholder") || "";
@@ -360,6 +362,55 @@
         function persistActiveThread() {
             const id = activeAsset && activeAsset.assetId ? activeAsset.assetId : "general";
             writeThread(id, captureThread());
+        }
+
+        function cancelFollowUpQuestion() {
+            followUpSeq += 1;
+            if (followUpTimer) {
+                global.clearTimeout(followUpTimer);
+                followUpTimer = 0;
+            }
+        }
+
+        function stripFollowUpPrompt(text, prompt) {
+            const raw = String(text || "").trim();
+            const question = String(prompt || "").trim();
+            if (!raw || !question) {
+                return raw;
+            }
+            const needle = question.replace(/[?؟]+$/u, "").trim().toLowerCase();
+            if (!needle) {
+                return raw;
+            }
+            const idx = raw.toLowerCase().lastIndexOf(needle);
+            if (idx < 0) {
+                return raw;
+            }
+            const tail = raw.slice(idx + needle.length).replace(/[?؟.\s]+$/u, "");
+            if (tail) {
+                return raw;
+            }
+            return raw.slice(0, idx).trim();
+        }
+
+        function scheduleFollowUpQuestion(prompt, usedModel) {
+            cancelFollowUpQuestion();
+            const text = String(prompt || "").trim();
+            if (!text) {
+                return;
+            }
+            const seq = followUpSeq;
+            const delayMs = usedModel === false
+                ? (config.followupDelaySkipMs || 3000)
+                : (config.followupDelayModelMs || 5000);
+            followUpTimer = global.setTimeout(() => {
+                followUpTimer = 0;
+                if (seq !== followUpSeq || isSending) {
+                    return;
+                }
+                appendNode(createMessage("assistant", text));
+                persistActiveThread();
+            }, delayMs);
         }
 
         function assetRecord(assetId) {
@@ -434,13 +485,14 @@
             }
         }
 
-        function focusAsset(detail) {
+        async function focusAsset(detail, options) {
             const payload = detail || {};
             const assetId = payload.assetId || "";
             if (!assetId) {
                 return;
             }
             persistActiveThread();
+            cancelFollowUpQuestion();
             const record = assetRecord(assetId);
             activeAsset = {
                 assetId: assetId,
@@ -452,11 +504,49 @@
             applyWelcomeCopy();
             highlightFarmRail();
             if (isSignedIn() && api.getThreadMessages) {
-                loadItemThread(assetId);
+                await loadItemThread(assetId);
             } else {
                 renderThread(readThread(assetId));
             }
             input.focus();
+        }
+
+        function openAdvisorFocus(result) {
+            const nav = result && result.navPrompt;
+            if (nav && nav.assetId) {
+                return {
+                    assetId: nav.assetId,
+                    category: nav.category || "",
+                    title: nav.assetName || "",
+                };
+            }
+            const thread = result && result.thread;
+            if (result && result.routed && thread && thread.asset_id) {
+                return {
+                    assetId: thread.asset_id,
+                    category: "",
+                    title: thread.label || "",
+                };
+            }
+            return null;
+        }
+
+        function threadHasUserQuery(query) {
+            const nodes = messages.querySelectorAll(".chat-ask-q");
+            const last = nodes[nodes.length - 1];
+            return Boolean(last && last.textContent === query);
+        }
+
+        function popTrailingUserQuery(query) {
+            const nodes = messages.querySelectorAll(".chat-message-user");
+            const last = nodes[nodes.length - 1];
+            if (!last) {
+                return;
+            }
+            const question = last.querySelector(".chat-ask-q");
+            if (question && question.textContent === query) {
+                last.remove();
+            }
         }
 
         async function loadItemThread(assetId) {
@@ -465,7 +555,7 @@
             messages.appendChild(createStatus("Loading conversation…", "loading"));
             showEmpty(false);
             try {
-                const page = await api.getThreadMessages(currentDeviceUuid(), assetId, { limit: 20 });
+                const page = await api.getThreadMessages(currentDeviceUuid(), assetId, { limit: 50 });
                 if (token !== threadLoadToken) {
                     return;
                 }
@@ -781,6 +871,7 @@
             }
 
             input.value = "";
+            cancelFollowUpQuestion();
             chips.replaceChildren();
             appendNode(createMessage("user", query));
             const pending = createStatus("Thinking…", "loading");
@@ -801,24 +892,32 @@
                     ? await api.postThreadMessage(deviceUuid, activeAsset.assetId, query)
                     : await api.getAdvisoryResponse(deviceUuid, category, query, chatFocus());
                 pending.remove();
-                if (onItemThread && result.routed && result.thread && result.thread.asset_id && result.thread.asset_id !== activeAsset.assetId) {
-                    focusAsset({
-                        assetId: result.thread.asset_id,
-                        title: result.thread.label || "",
-                    });
-                    return;
+                const dest = openAdvisorFocus(result);
+                const currentId = activeAsset && activeAsset.assetId ? activeAsset.assetId : "";
+                let switchedItem = false;
+                if (dest && dest.assetId && dest.assetId !== currentId) {
+                    popTrailingUserQuery(query);
+                    await focusAsset(dest);
+                    switchedItem = true;
                 }
-                const answerText = onItemThread ? result.answer : answerWithFollowUp(result);
-                if (!answerText) {
+                const prompt = String(result.nextQuestionPrompt || "").trim();
+                const answerText = stripFollowUpPrompt(result.answer, prompt);
+                const alreadyOnThread = switchedItem && threadHasUserQuery(query);
+                if (!answerText && !prompt && !alreadyOnThread) {
                     appendNode(createStatus("No answer came back. Try a more specific farm question.", "empty"));
                     showDefaultChips();
                     return;
                 }
-                const assistant = createMessage("assistant", answerText);
-                if (result.qaId) {
-                    addRatingRow(assistant.querySelector(".chat-message-body") || assistant, result.qaId, deviceUuid);
+                if (switchedItem && !alreadyOnThread) {
+                    appendNode(createMessage("user", query));
                 }
-                appendNode(assistant);
+                if (!alreadyOnThread && answerText) {
+                    const assistant = createMessage("assistant", answerText);
+                    if (result.qaId) {
+                        addRatingRow(assistant.querySelector(".chat-message-body") || assistant, result.qaId, deviceUuid);
+                    }
+                    appendNode(assistant);
+                }
                 try {
                     await showFarmFeedback(before);
                 } catch (err) {
@@ -829,6 +928,9 @@
                 renderChips(chips, followUps.slice(0, 4), (query) => {
                     sendQuery(query);
                 });
+                if (!alreadyOnThread) {
+                    scheduleFollowUpQuestion(prompt, result.usedModel);
+                }
             } catch (err) {
                 pending.remove();
                 const message = err && err.name === "AbortError"
@@ -862,20 +964,6 @@
         function isGenericChip(text) {
             // Greeting leftovers only. Farm-task / seasonal chips are real API templates now.
             return /how can i help you|planning and managing your farm/i.test(text || "");
-        }
-
-        function answerWithFollowUp(result) {
-            let text = String(result.answer || "").trim();
-            const prompt = String(result.nextQuestionPrompt || "").trim();
-            if (!prompt) {
-                return text;
-            }
-            const haystack = text.toLowerCase();
-            const needle = prompt.toLowerCase().replace(/[?؟]$/, "").trim();
-            if (needle && haystack.includes(needle)) {
-                return text;
-            }
-            return `${text}\n\n${prompt}`;
         }
 
         function chipsAfterAnswer(result) {
